@@ -41,18 +41,27 @@ public class UserDao {
                 getUserParams);
     }
 
-//    public User getCheck(PostLoginReq postLoginReq) {
-//        String getCheckQuery = "select name, phoneNo, birthday from User where userIdx = ?";
-//        String getCheckParams = postLoginReq.getPhoneNo();
-//
-//        return this.jdbcTemplate.queryForObject(getCheckQuery,
-//                (rs, rowNum) -> new User(
-//                        rs.getString("name"),
-//                        rs.getString("phoneNo"),
-//                        rs.getDate("birthday")),
-//                getCheckParams
-//                );
-//    }
+    public User getUser(PostLoginReq postLoginReq) {
+        String getCheckQuery = "select userIdx, name, phoneNo, birthday from User where phoneNo = ?";
+        String getCheckParams = postLoginReq.getPhoneNo();
+
+        return this.jdbcTemplate.queryForObject(getCheckQuery,
+                (rs, rowNum) -> new User(
+                        rs.getInt("userIdx"),
+                        rs.getString("name"),
+                        rs.getString("phoneNo"),
+                        rs.getDate("birthday"),
+                        rs.getString("address"),
+                        rs.getFloat("latitude"),
+                        rs.getFloat("longitude"),
+                        rs.getTimestamp("createAt"),
+                        rs.getTimestamp("updateAt"),
+                        rs.getString("status"),
+                        rs.getString("profileImgUrl"),
+                        rs.getString("shopDescription")),
+                getCheckParams
+                );
+    }
 
     public PostLoginRes checkUser(PostLoginReq postLoginReq) {
         String checkUserQuery = "select exists(select name, phoneNo from User where phoneNo = ?)";
@@ -75,11 +84,11 @@ public class UserDao {
         return this.jdbcTemplate.queryForObject(lastInserIdQuery,int.class);
     }
 
-    public int checkPhoneNo(String phoneNo) {
-        String checkUserIdxQuery = "select exists(select phoneNo from User where phoneNo = ?)";
-        return this.jdbcTemplate.queryForObject(checkUserIdxQuery,
-                int.class,
-                phoneNo);
+    public int checkPhoneNo(PostLoginReq postLoginReq) {
+        String checkUserIdxQuery = "select exists(select name, phoneNo from User where phoneNo = ?)";
+        String checkPhoneNoParma = postLoginReq.getPhoneNo();
+
+        return this.jdbcTemplate.queryForObject(checkUserIdxQuery,int.class, checkPhoneNoParma);
     }
 
 //    public void deleteUser(int userIdx) {
@@ -100,41 +109,5 @@ public class UserDao {
         Object[] modifyShopParams = new Object[]{patchShopInfoReq.getProfileImgUrl(), patchShopInfoReq.getShopDescription(), userIdx};
         return this.jdbcTemplate.update(modifyShopQuery, modifyShopParams);
     }
-
-
-//
-//    public int checkEmail(String email){
-//        String checkEmailQuery = "select exists(select email from UserInfo where email = ?)";
-//        String checkEmailParams = email;
-//        return this.jdbcTemplate.queryForObject(checkEmailQuery,
-//                int.class,
-//                checkEmailParams);
-//
-//    }
-//
-//    public int modifyUserName(PatchUserReq patchUserReq){
-//        String modifyUserNameQuery = "update UserInfo set userName = ? where userIdx = ? ";
-//        Object[] modifyUserNameParams = new Object[]{patchUserReq.getUserName(), patchUserReq.getUserIdx()};
-//
-//        return this.jdbcTemplate.update(modifyUserNameQuery,modifyUserNameParams);
-//    }
-//
-//    public User getPwd(PostLoginReq postLoginReq){
-//        String getPwdQuery = "select userIdx, password,email,userName,ID from UserInfo where ID = ?";
-//        String getPwdParams = postLoginReq.getId();
-//
-//        return this.jdbcTemplate.queryForObject(getPwdQuery,
-//                (rs,rowNum)-> new User(
-//                        rs.getInt("userIdx"),
-//                        rs.getString("ID"),
-//                        rs.getString("userName"),
-//                        rs.getString("password"),
-//                        rs.getString("email")
-//                ),
-//                getPwdParams
-//                );
-//
-//    }
-
 
 }
