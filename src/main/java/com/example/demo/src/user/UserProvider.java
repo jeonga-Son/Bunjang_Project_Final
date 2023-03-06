@@ -2,16 +2,12 @@ package com.example.demo.src.user;
 
 
 import com.example.demo.config.BaseException;
-import com.example.demo.config.BaseResponseStatus;
 import com.example.demo.src.user.model.*;
 import com.example.demo.utils.JwtService;
-import com.example.demo.utils.SHA256;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 import static com.example.demo.config.BaseResponseStatus.*;
 
@@ -41,31 +37,23 @@ public class UserProvider {
         }
     }
 
-//    public int checkEmail(String email) throws BaseException{
-//        try{
-//            return userDao.checkEmail(email);
-//        } catch (Exception exception){
-//            logger.error("App - checkEmail Provider Error", exception);
-//            throw new BaseException(DATABASE_ERROR);
-//        }
-//    }
-//
+    public int checkPhoneNo(String phoneNo) throws BaseException{
+        try{
+            return userDao.checkPhoneNo(phoneNo);
+        } catch (Exception exception){
+            logger.error("App - checkPhoneNo Provider Error", exception);
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
 //    public PostLoginRes logIn(PostLoginReq postLoginReq) throws BaseException {
 //        try {
-//            User user = userDao.getPwd(postLoginReq);
-//
-//            String encryptPwd;
-//            try {
-//                encryptPwd = new SHA256().encrypt(postLoginReq.getPassword());
-//            } catch (Exception exception) {
-//                logger.error("App - logIn Provider Encrypt Error", exception);
-//                throw new BaseException(PASSWORD_DECRYPTION_ERROR);
-//            }
-//
-//            if(user.getPassword().equals(encryptPwd)){
-//                int userIdx = user.getUserIdx();
+//            User postLoginRes = userDao.checkUser(postLoginReq);
+//            if(postLoginRes.equals(true)){
+//                int userIdx = postLoginRes.getUserIdx();
 //                String jwt = jwtService.createJwt(userIdx);
-//                return new PostLoginRes(userIdx,jwt);
+//                String name = postLoginRes.getName();
+//                return new PostLoginSeccessRes(userIdx,name,jwt);
 //            }
 //            else{
 //                throw new BaseException(FAILED_TO_LOGIN);

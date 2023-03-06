@@ -1,13 +1,13 @@
 package com.example.demo.src.user;
 
 
+import com.example.demo.config.BaseException;
 import com.example.demo.src.user.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
-import java.util.List;
 
 @Repository
 public class UserDao {
@@ -27,21 +27,86 @@ public class UserDao {
 
         return this.jdbcTemplate.queryForObject(getUserQuery,
                 (rs, rowNum) -> new GetUserRes(
-                        rs.getString("profileImgUrl"),
+                        rs.getInt("userIdx"),
+                        rs.getString("name"),
+                        rs.getString("phoneNo"),
+                        rs.getDate("birthday"),
+                        rs.getString("address"),
+                        rs.getFloat("latitude"),
+                        rs.getFloat("longitude"),
+                        rs.getTimestamp("createAt"),
+                        rs.getTimestamp("updateAt"),
                         rs.getString("status"),
+                        rs.getString("profileImgUrl"),
                         rs.getString("shopDescription")),
                 getUserParams);
     }
-    
 
-//    public int createUser(PostUserReq postUserReq){
-//        String createUserQuery = "insert into UserInfo (userName, ID, password, email) VALUES (?,?,?,?)";
-//        Object[] createUserParams = new Object[]{postUserReq.getUserName(), postUserReq.getId(), postUserReq.getPassword(), postUserReq.getEmail()};
-//        this.jdbcTemplate.update(createUserQuery, createUserParams);
+//    public User getCheck(PostLoginReq postLoginReq) {
+//        String getCheckQuery = "select name, phoneNo, birthday from User where userIdx = ?";
+//        String getCheckParams = postLoginReq.getPhoneNo();
 //
-//        String lastInserIdQuery = "select last_insert_id()";
-//        return this.jdbcTemplate.queryForObject(lastInserIdQuery,int.class);
+//        return this.jdbcTemplate.queryForObject(getCheckQuery,
+//                (rs, rowNum) -> new User(
+//                        rs.getString("name"),
+//                        rs.getString("phoneNo"),
+//                        rs.getDate("birthday")),
+//                getCheckParams
+//                );
 //    }
+
+    public PostLoginRes checkUser(PostLoginReq postLoginReq) {
+        String checkUserQuery = "select exists(select name, phoneNo from User where phoneNo = ?)";
+        String checkUserParam = postLoginReq.getPhoneNo();
+        return this.jdbcTemplate.queryForObject(checkUserQuery,
+                (rs, rowNum) -> new PostLoginRes(
+                        rs.getInt("userIdx"),
+                        rs.getString("name"),
+                        rs.getString("jwt")),
+                checkUserParam);
+    }
+
+
+    public int createUser(PostUserReq postUserReq){
+        String createUserQuery = "insert into User (name, phoneNo, birthday) VALUES (?,?,?)";
+        Object[] createUserParams = new Object[]{postUserReq.getName(), postUserReq.getPhoneNo(), postUserReq.getBirthday()};
+        this.jdbcTemplate.update(createUserQuery, createUserParams);
+
+        String lastInserIdQuery = "select last_insert_id()";
+        return this.jdbcTemplate.queryForObject(lastInserIdQuery,int.class);
+    }
+
+    public int checkPhoneNo(String phoneNo) {
+        String checkUserIdxQuery = "select exists(select phoneNo from User where phoneNo = ?)";
+        return this.jdbcTemplate.queryForObject(checkUserIdxQuery,
+                int.class,
+                phoneNo);
+    }
+
+//    public void deleteUser(int userIdx) {
+//        String deleteUserQuery = "update User set status = ? where userIdx = ? ";
+//        Object[] deleteUserParams = new Object[]{patchUserReq.getUserName(), pa.getUserIdx()};
+//
+//        this.jdbcTemplate.update(deleteUserQuery,deleteUserParams);
+//    }
+
+    public int deleteUser(int userIdx) {
+        String deleteUserQuery = "update User set status = 'Deleted' where userIdx = ? ";
+
+        return this.jdbcTemplate.update(deleteUserQuery,userIdx);
+    }
+
+    public int modifyShop(int userIdx) {
+        String deleteUserQuery = "update User set profileImgUrl = ?, shopDescription = ?  where userIdx = ? ";
+        GetUserRes user = getUser(userIdx);
+
+        Object[] createUserParams = new Object[]{user.getProfileImgUrl(), user.getShopDescription()};
+        return this.jdbcTemplate.update(deleteUserQuery,
+                int.class,
+                userIdx);
+    }
+
+
 //
 //    public int checkEmail(String email){
 //        String checkEmailQuery = "select exists(select email from UserInfo where email = ?)";
