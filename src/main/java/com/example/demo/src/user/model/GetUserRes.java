@@ -1,10 +1,14 @@
 package com.example.demo.src.user.model;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.sql.Timestamp;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -12,8 +16,29 @@ import lombok.Setter;
 @AllArgsConstructor
 public class GetUserRes {
     private int userIdx;
-    private String userName;
-    private String ID;
-    private String email;
-    private String password;
+
+    private String name;
+
+    private String phoneNo;
+
+    private Date birthday;
+
+    private String address;
+
+    private Float latitude;
+
+    private Float longitude;
+
+    @JsonFormat(pattern = "yyyy.MM.dd'T'hh:mm", timezone = "Asia/Seoul")
+    private Timestamp createAt;
+
+    @JsonFormat(pattern = "yyyy.MM.dd'T'hh:mm", timezone = "Asia/Seoul")
+    private Timestamp updateAt;
+
+    private String status;
+
+    private String profileImgUrl;
+
+    private String shopDescription;
+
 }
