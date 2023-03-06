@@ -1,7 +1,6 @@
 package com.example.demo.src.user;
 
 
-import com.example.demo.config.BaseException;
 import com.example.demo.src.user.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -96,14 +95,10 @@ public class UserDao {
         return this.jdbcTemplate.update(deleteUserQuery,userIdx);
     }
 
-    public int modifyShop(int userIdx) {
-        String deleteUserQuery = "update User set profileImgUrl = ?, shopDescription = ?  where userIdx = ? ";
-        GetUserRes user = getUser(userIdx);
-
-        Object[] createUserParams = new Object[]{user.getProfileImgUrl(), user.getShopDescription()};
-        return this.jdbcTemplate.update(deleteUserQuery,
-                int.class,
-                userIdx);
+    public int modifyShop(int userIdx, PatchShopInfoReq patchShopInfoReq) {
+        String modifyShopQuery = "update User set profileImgUrl = ?, shopDescription = ?  where userIdx = ? ";
+        Object[] modifyShopParams = new Object[]{patchShopInfoReq.getProfileImgUrl(), patchShopInfoReq.getShopDescription(), userIdx};
+        return this.jdbcTemplate.update(modifyShopQuery, modifyShopParams);
     }
 
 

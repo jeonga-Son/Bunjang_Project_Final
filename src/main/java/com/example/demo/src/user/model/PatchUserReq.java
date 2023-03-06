@@ -12,8 +12,8 @@ import lombok.Setter;
 public class PatchUserReq {
     private int userIdx;
 
-    private String name;
+    private String profileImgUrl;
 
-    private String phoneNo;
+    private String shopDescription;
 
 }

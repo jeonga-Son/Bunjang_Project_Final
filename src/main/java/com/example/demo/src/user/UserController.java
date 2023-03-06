@@ -111,7 +111,7 @@ public class UserController {
      */
     @ResponseBody
     @PatchMapping("/{userIdx}")
-    public BaseResponse<String> modifyShopInfo(@PathVariable("userIdx") int userIdx) {
+    public BaseResponse<String> modifyShopInfo(@PathVariable("userIdx") int userIdx, @RequestBody PatchShopInfoReq patchShopInfoReq) {
         try {
             GetUserRes user = userProvider.getUser(userIdx);
 
@@ -122,7 +122,7 @@ public class UserController {
                 return new BaseResponse<>(INVALID_USER_JWT);
             }
 
-            userService.modifyShop(userIdx);
+            userService.modifyShop(userIdx, patchShopInfoReq);
 
             String result = user.getName() + "님의 상점 소개가 수정되었습니다.";
             return new BaseResponse<>(result);

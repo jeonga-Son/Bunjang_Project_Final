@@ -61,14 +61,14 @@ public class UserService {
         }
     }
 
-    public void modifyShop(int userIdx) throws BaseException {
+    public void modifyShop(int userIdx, PatchShopInfoReq patchShopInfoReq) throws BaseException {
         try {
-            int result = userDao.modifyShop(userIdx);
+            int result = userDao.modifyShop(userIdx, patchShopInfoReq);
             if(result == 0) {
                 throw new BaseException(MODIFY_FAIL_SHOP);
             }
         } catch (Exception exception) {
-            logger.error("App - deleteUser Service Error", exception);
+            logger.error("App - modifyShop Service Error", exception);
             throw new BaseException(DATABASE_ERROR);
         }
     }
