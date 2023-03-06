@@ -28,7 +28,7 @@
 * DB Dummy Data 입력 완료
 * ERD 보수
 * 금일 1차 피드백 진행 from 핀
-* 피드백 내용
+* 피드백 내용  
 ✅ 1. 상점에서 평점 빼기 : 평점은 그때그때 리뷰테이블에서 계산해서 가져오는게 더 나음  
 ✅ 2. 찜 상태값 추가 필요 : 데이터에 대한 status 말고 찜 상태에 대한 likeStatus도 필요 → followStatus, favoriteStatus 추가함  
 ✅ 3. 주소는 위도 경도까지 저장 필요  
