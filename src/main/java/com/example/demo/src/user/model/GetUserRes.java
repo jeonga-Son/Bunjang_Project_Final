@@ -15,30 +15,11 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GetUserRes {
-    private int userIdx;
 
-    private String name;
-
-    private String phoneNo;
-
-    private Date birthday;
-
-    private String address;
-
-    private Float latitude;
-
-    private Float longitude;
-
-    @JsonFormat(pattern = "yyyy.MM.dd'T'hh:mm", timezone = "Asia/Seoul")
-    private Timestamp createAt;
-
-    @JsonFormat(pattern = "yyyy.MM.dd'T'hh:mm", timezone = "Asia/Seoul")
-    private Timestamp updateAt;
+    private String shopDescription;
 
     private String status;
 
     private String profileImgUrl;
-
-    private String shopDescription;
 
 }
