@@ -41,11 +41,33 @@ public class UserDao {
                 getUserParams);
     }
 
-    public User getUser(PostLoginReq postLoginReq) {
-        String getCheckQuery = "select userIdx, name, phoneNo, birthday from User where phoneNo = ?";
-        String getCheckParams = postLoginReq.getPhoneNo();
+//    public User getUser(PostLoginReq postLoginReq) {
+//        String getCheckQuery = "select userIdx, name, phoneNo, birthday from User where phoneNo = ?";
+//        String getCheckParams = postLoginReq.getPhoneNo();
+//
+//        return this.jdbcTemplate.queryForObject(getCheckQuery,
+//                (rs, rowNum) -> new User(
+//                        rs.getInt("userIdx"),
+//                        rs.getString("name"),
+//                        rs.getString("phoneNo"),
+//                        rs.getDate("birthday"),
+//                        rs.getString("address"),
+//                        rs.getFloat("latitude"),
+//                        rs.getFloat("longitude"),
+//                        rs.getTimestamp("createAt"),
+//                        rs.getTimestamp("updateAt"),
+//                        rs.getString("status"),
+//                        rs.getString("profileImgUrl"),
+//                        rs.getString("shopDescription")),
+//                getCheckParams
+//                );
+//    }
 
-        return this.jdbcTemplate.queryForObject(getCheckQuery,
+    public User checkUser(PostLoginReq postLoginReq) {
+        String checkUserQuery = "select userIdx, name, phoneNo, birthday, address, latitude," +
+                "longitude, createAt, updateAt, status, profileImgUrl, shopDescription from User where phoneNo = ?";
+        String checkUserParam = postLoginReq.getPhoneNo();
+        return this.jdbcTemplate.queryForObject(checkUserQuery,
                 (rs, rowNum) -> new User(
                         rs.getInt("userIdx"),
                         rs.getString("name"),
@@ -59,18 +81,6 @@ public class UserDao {
                         rs.getString("status"),
                         rs.getString("profileImgUrl"),
                         rs.getString("shopDescription")),
-                getCheckParams
-                );
-    }
-
-    public PostLoginRes checkUser(PostLoginReq postLoginReq) {
-        String checkUserQuery = "select exists(select name, phoneNo from User where phoneNo = ?)";
-        String checkUserParam = postLoginReq.getPhoneNo();
-        return this.jdbcTemplate.queryForObject(checkUserQuery,
-                (rs, rowNum) -> new PostLoginRes(
-                        rs.getInt("userIdx"),
-                        rs.getString("name"),
-                        rs.getString("jwt")),
                 checkUserParam);
     }
 
@@ -90,13 +100,6 @@ public class UserDao {
 
         return this.jdbcTemplate.queryForObject(checkUserIdxQuery,int.class, checkPhoneNoParma);
     }
-
-//    public void deleteUser(int userIdx) {
-//        String deleteUserQuery = "update User set status = ? where userIdx = ? ";
-//        Object[] deleteUserParams = new Object[]{patchUserReq.getUserName(), pa.getUserIdx()};
-//
-//        this.jdbcTemplate.update(deleteUserQuery,deleteUserParams);
-//    }
 
     public int deleteUser(int userIdx) {
         String deleteUserQuery = "update User set status = 'Deleted' where userIdx = ? ";

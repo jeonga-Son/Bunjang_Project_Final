@@ -4,7 +4,6 @@ package com.example.demo.src.user;
 import com.example.demo.config.BaseException;
 import com.example.demo.src.user.model.*;
 import com.example.demo.utils.JwtService;
-import com.example.demo.utils.SHA256;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +49,7 @@ public class UserProvider {
 
     public PostLoginRes logIn(PostLoginReq postLoginReq) throws BaseException {
         try {
-            User user = userDao.getUser(postLoginReq);
+            User user = userDao.checkUser(postLoginReq);
             int resultIdx = userDao.checkPhoneNo(postLoginReq);
 
             if(resultIdx == 1){
@@ -68,4 +67,11 @@ public class UserProvider {
         }
     }
 
+    public boolean checkUser(PostUserReq postUserReq) {
+        if(checkUser(postUserReq) == true) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

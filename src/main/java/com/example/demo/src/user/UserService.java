@@ -31,23 +31,23 @@ public class UserService {
     }
 
     //POST
-//    public PostUserRes createUser(PostUserReq postUserReq) throws BaseException {
-//        //중복
-//        if (userProvider.getUser(postUserReq) == 1) {
-//            throw new BaseException(POST_USERS_EXISTS_PHONENO);
-//        }
-//
-//        try{
-//            int userIdx = userDao.createUser(postUserReq);
-//            //jwt 발급.
-//            String jwt = jwtService.createJwt(userIdx);
-//            return new PostUserRes(userIdx,jwt);
-//        } catch (Exception exception) {
-//            logger.error("App - createUser Service Error", exception);
-//            throw new BaseException(DATABASE_ERROR);
-//
-//        }
-//    }
+    public PostUserRes createUser(PostUserReq postUserReq) throws BaseException {
+        //중복
+        if (userProvider.checkUser(postUserReq) == true) {
+            throw new BaseException(POST_USERS_EXISTS_PHONENO);
+        }
+
+        try{
+            int userIdx = userDao.createUser(postUserReq);
+            //jwt 발급.
+            String jwt = jwtService.createJwt(userIdx);
+            return new PostUserRes(userIdx,jwt);
+        } catch (Exception exception) {
+            logger.error("App - createUser Service Error", exception);
+            throw new BaseException(DATABASE_ERROR);
+
+        }
+    }
 
     public void deleteUser(int userIdx) throws BaseException {
         try {

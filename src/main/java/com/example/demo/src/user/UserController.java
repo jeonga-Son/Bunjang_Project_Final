@@ -55,54 +55,53 @@ public class UserController {
      *
      * @return BaseResponse<Pos tUserRes>
      */
-    // Body
-//    @ResponseBody
-//    @PostMapping("")
-//    public BaseResponse<PostUserRes> createUser(@RequestBody PostUserReq postUserReq) {
-//        if (postUserReq.getName() == null) {
-//            return new BaseResponse<>(POST_USERS_EMPTY_NAME);
-//        }
-//
-//        if (postUserReq.getPhoneNo() == null) {
-//            return new BaseResponse<>(POST_USERS_EMPTY_PHONENO);
-//        }
-//
-//        if (postUserReq.getBirthday() == null) {
-//            return new BaseResponse<>(POST_USERS_EMPTY_BIRTHDAY);
-//        }
-//
-//        try {
-//            PostUserRes postUserRes = userService.createUser(postUserReq);
-//            return new BaseResponse<>(postUserRes);
-//        } catch (BaseException exception) {
-//            return new BaseResponse<>(exception.getStatus());
-//        }
-//    }
+    @ResponseBody
+    @PostMapping("")
+    public BaseResponse<PostUserRes> createUser(@RequestBody PostUserReq postUserReq) {
+        if (postUserReq.getName() == null) {
+            return new BaseResponse<>(POST_USERS_EMPTY_NAME);
+        }
+
+        if (postUserReq.getPhoneNo() == null) {
+            return new BaseResponse<>(POST_USERS_EMPTY_PHONENO);
+        }
+
+        if (postUserReq.getBirthday() == null) {
+            return new BaseResponse<>(POST_USERS_EMPTY_BIRTHDAY);
+        }
+
+        try {
+            PostUserRes postUserRes = userService.createUser(postUserReq);
+            return new BaseResponse<>(postUserRes);
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
 
 
-//    /**
-//     * 로그인 API
-//     * [POST] /users/logIn
-//     * @return BaseResponse<PostLoginRes>
-//     */
-//    @ResponseBody
-//    @PostMapping("/logIn")
-//    public BaseResponse<PostLoginRes> logIn(@RequestBody PostLoginReq postLoginReq){
-//        if(postLoginReq.getName() == null){
-//            return new BaseResponse<>(POST_USERS_EMPTY_NAME);
-//        }
-//
-//        if(postLoginReq.getPhoneNo() == null){
-//            return new BaseResponse<>(POST_USERS_EMPTY_PHONENO);
-//        }
-//
-//        try{
-//            PostLoginRes postLoginRes = userProvider.logIn(postLoginReq);
-//            return new BaseResponse<>(postLoginRes);
-//        } catch (BaseException exception){
-//            return new BaseResponse<>(exception.getStatus());
-//        }
-//    }
+    /**
+     * 로그인 API
+     * [POST] /users/logIn
+     * @return BaseResponse<PostLoginRes>
+     */
+    @ResponseBody
+    @PostMapping("/logIn")
+    public BaseResponse<PostLoginRes> logIn(@RequestBody PostLoginReq postLoginReq){
+        if(postLoginReq.getName() == null){
+            return new BaseResponse<>(POST_USERS_EMPTY_NAME);
+        }
+
+        if(postLoginReq.getPhoneNo() == null){
+            return new BaseResponse<>(POST_USERS_EMPTY_PHONENO);
+        }
+
+        try{
+            PostLoginRes postLoginRes = userProvider.logIn(postLoginReq);
+            return new BaseResponse<>(postLoginRes);
+        } catch (BaseException exception){
+            return new BaseResponse<>(exception.getStatus());
+        }
+    }
 
     /**
      * 상점 소개 편집 API
