@@ -18,7 +18,6 @@ public class UserDao {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
-
     public GetUserRes getUser(int userIdx){
         String getUserQuery = "select * from User where userIdx = ?";
 
@@ -41,27 +40,26 @@ public class UserDao {
                 getUserParams);
     }
 
-//    public User getUser(PostLoginReq postLoginReq) {
-//        String getCheckQuery = "select userIdx, name, phoneNo, birthday from User where phoneNo = ?";
-//        String getCheckParams = postLoginReq.getPhoneNo();
-//
-//        return this.jdbcTemplate.queryForObject(getCheckQuery,
-//                (rs, rowNum) -> new User(
-//                        rs.getInt("userIdx"),
-//                        rs.getString("name"),
-//                        rs.getString("phoneNo"),
-//                        rs.getDate("birthday"),
-//                        rs.getString("address"),
-//                        rs.getFloat("latitude"),
-//                        rs.getFloat("longitude"),
-//                        rs.getTimestamp("createAt"),
-//                        rs.getTimestamp("updateAt"),
-//                        rs.getString("status"),
-//                        rs.getString("profileImgUrl"),
-//                        rs.getString("shopDescription")),
-//                getCheckParams
-//                );
-//    }
+    public GetUserRes getShop(int userIdx) {
+        String getUserQuery = "select * from User where userIdx = ?";
+        int getUserParams = userIdx;
+
+        return this.jdbcTemplate.queryForObject(getUserQuery,
+                (rs, rowNum) -> new GetUserRes(
+                        rs.getInt("userIdx"),
+                        rs.getString("name"),
+                        rs.getString("phoneNo"),
+                        rs.getDate("birthday"),
+                        rs.getString("address"),
+                        rs.getFloat("latitude"),
+                        rs.getFloat("longitude"),
+                        rs.getTimestamp("createAt"),
+                        rs.getTimestamp("updateAt"),
+                        rs.getString("status"),
+                        rs.getString("profileImgUrl"),
+                        rs.getString("shopDescription")),
+                getUserParams);
+    }
 
     public User checkUser(PostLoginReq postLoginReq) {
         String checkUserQuery = "select userIdx, name, phoneNo, birthday, address, latitude," +

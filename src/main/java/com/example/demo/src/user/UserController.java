@@ -37,7 +37,7 @@ public class UserController {
      * @return BaseResponse<GetUserRes>
      */
     @ResponseBody
-    @GetMapping("/mypage/{userIdx}") // (GET) 127.0.0.1:9000/users/:userIdx
+    @GetMapping("/mypage/{userIdx}") // (GET) 127.0.0.1:9000/users/mypage/:userIdx
     public BaseResponse<GetUserRes> getUser(@PathVariable("userIdx") int userIdx) {
         // Get Users
         try {
@@ -50,9 +50,21 @@ public class UserController {
     }
 
     /**
+     * 특정 상점 조회 API
+     * [GET] /users/:userIdx
+     *
+     * @return BaseResponse<GetUserRes>
+     */
+    @ResponseBody
+    @GetMapping("/{userIdx}") // (GET) 127.0.0.1:9000/users/:userIdx
+    public BaseResponse<GetUserRes> getShop(@PathVariable("userIdx") int userIdx) {
+        GetUserRes getUserRes = userProvider.getShop(userIdx);
+        return new BaseResponse<>(getUserRes);
+    }
+
+    /**
      * 회원가입 API
      * [POST] /users
-     *
      * @return BaseResponse<Pos tUserRes>
      */
     @ResponseBody

@@ -37,15 +37,15 @@ public class UserProvider {
         }
     }
 
-//    public int getUser(PostUserReq postUserReq) throws BaseException {
-//        try {
-//            GetUserRes getUserRes = userDao.getUser(postUserReq);
-//            return getUserRes;
-//        } catch (Exception exception) {
-//            logger.error("App - getUser Provider Error", exception);
-//            throw new BaseException(DATABASE_ERROR);
-//        }
-//    }
+    public GetUserRes getShop(int userIdx) {
+        try {
+            GetUserRes getUserRes = userDao.getShop(userIdx);
+            return getUserRes;
+        } catch (Exception exception) {
+            logger.error("App - getShop Provider Error", exception);
+        }
+        return null;
+    }
 
     public PostLoginRes logIn(PostLoginReq postLoginReq) throws BaseException {
         try {
