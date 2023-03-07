@@ -9,11 +9,13 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PatchUserReq {
+public class PatchUserRes {
     private int userIdx;
 
-    private String profileImgUrl;
+    private String name;
 
-    private String shopDescription;
+    private String phoneNo;
+
+    private String status;
 
 }

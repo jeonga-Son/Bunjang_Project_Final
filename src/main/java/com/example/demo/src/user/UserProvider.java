@@ -2,16 +2,12 @@ package com.example.demo.src.user;
 
 
 import com.example.demo.config.BaseException;
-import com.example.demo.config.BaseResponseStatus;
 import com.example.demo.src.user.model.*;
 import com.example.demo.utils.JwtService;
-import com.example.demo.utils.SHA256;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 import static com.example.demo.config.BaseResponseStatus.*;
 
@@ -41,38 +37,41 @@ public class UserProvider {
         }
     }
 
-//    public int checkEmail(String email) throws BaseException{
-//        try{
-//            return userDao.checkEmail(email);
-//        } catch (Exception exception){
-//            logger.error("App - checkEmail Provider Error", exception);
-//            throw new BaseException(DATABASE_ERROR);
-//        }
-//    }
-//
-//    public PostLoginRes logIn(PostLoginReq postLoginReq) throws BaseException {
-//        try {
-//            User user = userDao.getPwd(postLoginReq);
-//
-//            String encryptPwd;
-//            try {
-//                encryptPwd = new SHA256().encrypt(postLoginReq.getPassword());
-//            } catch (Exception exception) {
-//                logger.error("App - logIn Provider Encrypt Error", exception);
-//                throw new BaseException(PASSWORD_DECRYPTION_ERROR);
-//            }
-//
-//            if(user.getPassword().equals(encryptPwd)){
-//                int userIdx = user.getUserIdx();
-//                String jwt = jwtService.createJwt(userIdx);
-//                return new PostLoginRes(userIdx,jwt);
-//            }
-//            else{
-//                throw new BaseException(FAILED_TO_LOGIN);
-//            }
-//        } catch (Exception exception) {
-//            logger.error("App - logIn Provider Error", exception);
-//            throw new BaseException(DATABASE_ERROR);
-//        }
-//    }
+    public GetUserRes getShop(int userIdx) {
+        try {
+            GetUserRes getUserRes = userDao.getShop(userIdx);
+            return getUserRes;
+        } catch (Exception exception) {
+            logger.error("App - getShop Provider Error", exception);
+        }
+        return null;
+    }
+
+    public PostLoginRes logIn(PostLoginReq postLoginReq) throws BaseException {
+        try {
+            User user = userDao.checkUser(postLoginReq);
+            int resultIdx = userDao.checkPhoneNo(postLoginReq);
+
+            if(resultIdx == 1){
+                int userIdx = user.getUserIdx();
+                String jwt = jwtService.createJwt(userIdx);
+                String name = user.getName();
+                return new PostLoginRes(userIdx,name,jwt);
+            }
+            else{
+                throw new BaseException(FAILED_TO_LOGIN);
+            }
+        } catch (Exception exception) {
+            logger.error("App - logIn Provider Error", exception);
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    public boolean checkUser(PostUserReq postUserReq) {
+        if(checkUser(postUserReq) == true) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

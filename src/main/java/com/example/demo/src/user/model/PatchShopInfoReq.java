@@ -9,9 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PatchUserReq {
-    private int userIdx;
-
+public class PatchShopInfoReq {
     private String profileImgUrl;
 
     private String shopDescription;

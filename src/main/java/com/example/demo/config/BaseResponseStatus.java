@@ -28,9 +28,12 @@ public enum BaseResponseStatus {
     // [POST] /users
     POST_USERS_EMPTY_EMAIL(false, 2015, "이메일을 입력해주세요."),
     POST_USERS_INVALID_EMAIL(false, 2016, "이메일 형식을 확인해주세요."),
-    POST_USERS_EXISTS_EMAIL(false,2017,"중복된 이메일입니다."),
-
-
+    POST_USERS_EXISTS_PHONENO(false,2017,"중복된 휴대폰번호 입니다."),
+    POST_USERS_EMPTY_NAME(false, 2018, "이름을 입력해주세요."),
+    POST_USERS_EMPTY_PHONENO(false, 2018, "핸드폰 번호를 입력해주세요."),
+    POST_USERS_EMPTY_BIRTHDAY(false, 2019, "생년월일을 입력해주세요."),
+    INACTIVE_USER(false, 2020, "비활성화 상태입니다"),
+    DELETED_USER(false, 2021, "삭제된 사용자 입니다."),
 
     /**
      * 3000 : Response 오류
@@ -41,6 +44,7 @@ public enum BaseResponseStatus {
     // [POST] /users
     DUPLICATED_EMAIL(false, 3013, "중복된 이메일입니다."),
     FAILED_TO_LOGIN(false,3014,"없는 아이디거나 비밀번호가 틀렸습니다."),
+    DELETE_FAIL_USER(false,3015, "유저를 삭제하는데 실패하였습니다."),
 
 
 
@@ -54,8 +58,8 @@ public enum BaseResponseStatus {
     MODIFY_FAIL_USERNAME(false,4014,"유저네임 수정 실패"),
 
     PASSWORD_ENCRYPTION_ERROR(false, 4011, "비밀번호 암호화에 실패하였습니다."),
-    PASSWORD_DECRYPTION_ERROR(false, 4012, "비밀번호 복호화에 실패하였습니다.");
-
+    PASSWORD_DECRYPTION_ERROR(false, 4012, "비밀번호 복호화에 실패하였습니다."),
+    MODIFY_FAIL_SHOP(false, 4013, "상점 변경에 실패하였습니다.");
 
     // 5000 : 필요시 만들어서 쓰세요
     // 6000 : 필요시 만들어서 쓰세요

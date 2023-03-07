@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PatchUserReq {
+public class PatchShopInfoRes {
     private int userIdx;
 
     private String profileImgUrl;
