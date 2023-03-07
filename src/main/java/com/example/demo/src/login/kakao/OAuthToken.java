@@ -1,4 +1,4 @@
-package com.example.demo.src.login.oauth;
+package com.example.demo.src.login.kakao;
 
 import lombok.Data;
 import lombok.Getter;

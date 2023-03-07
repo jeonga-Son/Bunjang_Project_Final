@@ -1,4 +1,4 @@
-package com.example.demo.src.login.oauth;
+package com.example.demo.src.login.kakao;
 
 import com.example.demo.src.user.UserDao;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -16,32 +16,30 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @RestController
-@RequestMapping("/oauth")
+@RequestMapping("")
 public class KakaoLoginController {
 
 
     @ResponseBody
-    @GetMapping("/kakao")
+    @GetMapping("/auth/kakao")
     public void kakao(HttpServletResponse response) {
         try {
 
             String url = "https://kauth.kakao.com/oauth/authorize?" +
                     "client_id=dbb23105ff6306ffeee6ae14ef950096" +
-                    "&redirect_uri=http://localhost:9000/oauth/kakao/callback" +
+                    "&redirect_uri=http://localhost:9000/auth/kakao/callback" +
                     "&response_type=code";
 
             response.sendRedirect(url);
         } catch (IOException exception) {
             exception.printStackTrace();
+
         }
+
     }
 
-    /**
-     * 카카오 callback
-     * [GET] /oauth/kakao
-     */
     @ResponseBody
-    @GetMapping("/kakao/callback")
+    @GetMapping("/auth/kakao/callback")
     public void kakao2(@RequestParam String code) {
         System.out.println("카카오 코드 : " + code);
 
@@ -56,7 +54,7 @@ public class KakaoLoginController {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("grant_type", "authorization_code");
         params.add("client_id", "dbb23105ff6306ffeee6ae14ef950096");
-        params.add("redirect_uri", "http://localhost:9000/oauth/kakao/callback");
+        params.add("redirect_uri", "http://localhost:9000/auth/kakao/callback");
         params.add("code", code);
 
         //HttpHeader와 HttpBody를 하나의 오브젝트에 담기
@@ -84,7 +82,7 @@ public class KakaoLoginController {
         }
     }
 
-    public void getProfile(OAuthToken oauthToken, UserDao userDao) {
+    public void getProfile(OAuthToken oauthToken, UserRepository userRepository) {
         RestTemplate rt = new RestTemplate(); //http 요청을 간단하게 해줄 수 있는 클래스
 
         //HttpHeader 오브젝트 생성
@@ -113,5 +111,16 @@ public class KakaoLoginController {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
+
+//        //username, password, email
+//        User user = new User();
+//        user.setName(profile.getProperties().getNickname());
+//        user.setEmail(profile.getKakao_account().getEmail());
+//        user.setGender(1);
+//        user.setAge_range(25);
+//        user.setBirth(9999);
+//
+//        userRepository.save(user);
+
     }
 }
