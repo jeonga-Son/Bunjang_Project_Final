@@ -1,8 +1,6 @@
 package com.example.demo.src.user;
 
 import com.example.demo.src.product.model.GetProductList;
-import com.example.demo.src.product.model.PostProductImgs;
-import com.example.demo.src.product.model.PostTags;
 import com.example.demo.src.user.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -21,7 +19,14 @@ public class UserDao {
     }
 
     public GetUserRes getUser(int userIdx){
-        String getUserQuery = "select * from User where userIdx = ?";
+        String getUserQuery = "select (select count(Follow.followingUserIdx) \n" +
+                "from User\n" +
+                "    left join Follow on User.userIdx = Follow.followingUserIdx\n" +
+                " where userIdx = ?) AS followerCount,\n" +
+                "     (select count(Follow.followerUserIdx) \n" +
+                "from User\n" +
+                "    left join Follow on User.userIdx = Follow.followerUserIdx\n" +
+                " where userIdx = ?) AS followingCount from User where userIdx = ?";
 
         int getUserParam = userIdx;
 
@@ -34,20 +39,8 @@ public class UserDao {
                         rs.getString("address"),
                         rs.getFloat("latitude"),
                         rs.getFloat("longitude"),
-                        this.jdbcTemplate.queryForObject("select count(Follow.followingUserIdx) AS followerCount\n" +
-                                        "from User\n" +
-                                        "    left join Follow on User.userIdx = Follow.followingUserIdx\n" +
-                                        " where userIdx = ?;",
-                                (rs2, rowNum2) -> new GetFollowerRes(
-                                        rs2.getInt("followerCount")),
-                                rs.getInt("userIdx")),
-                        this.jdbcTemplate.queryForObject("select count(Follow.followerUserIdx) AS followingCount\n" +
-                                        "from User\n" +
-                                        "    left join Follow on User.userIdx = Follow.followerUserIdx\n" +
-                                        " where userIdx = ?;",
-                                (rs3,rowNum3) -> new GetFollowingRes(
-                                        rs3.getInt("followingCount")),
-                                rs.getInt("userIdx")),
+                        rs.getInt("followerCount"),
+                        rs.getInt("followingCount"),
                         rs.getString("status"),
                         rs.getString("profileImgUrl"),
                         rs.getString("shopDescription")
