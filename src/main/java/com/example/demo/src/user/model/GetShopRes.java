@@ -24,9 +24,9 @@ public class GetShopRes {
 
     private String shopDescription;
 
-    private int followerUserIdx;
+    private int followerCount;
 
-    private int followingUserIdx;
+    private int followingCount;
 
     private List<GetProductList> productList;
 

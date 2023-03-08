@@ -55,9 +55,9 @@ public class UserService {
         }
     }
 
-    public void deleteUser(int userIdx) throws BaseException {
+    public void deleteUser(int userIdx, PatchDeleteUserReq patchDeleteUserReq) throws BaseException {
         try {
-            int result = userDao.deleteUser(userIdx);
+            int result = userDao.deleteUser(userIdx, patchDeleteUserReq);
             if(result == 0) {
                 throw new BaseException(DELETE_FAIL_USER);
             }

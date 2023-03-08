@@ -1,8 +1,6 @@
 package com.example.demo.src.user;
 
 import com.example.demo.src.product.model.GetProductList;
-import com.example.demo.src.product.model.PostProductImgs;
-import com.example.demo.src.product.model.PostTags;
 import com.example.demo.src.user.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -21,9 +19,19 @@ public class UserDao {
     }
 
     public GetUserRes getUser(int userIdx){
-        String getUserQuery = "select * from User where userIdx = ?";
+        String getUserQuery = "select User.userIdx, User.name, phoneNo, birthday,\n" +
+                "       address, latitude, longitude, User.status, profileImgURl,\n" +
+                "       shopDescription,\n" +
+                "       (select count(Follow.followingUserIdx)\n" +
+                "from User\n" +
+                "    left join Follow on User.userIdx = Follow.followingUserIdx\n" +
+                " where userIdx = ?) AS followerCount,\n" +
+                "     (select count(Follow.followerUserIdx)\n" +
+                "from User\n" +
+                "    left join Follow on User.userIdx = Follow.followerUserIdx\n" +
+                " where userIdx = ?) AS followingCount from User where userIdx = ?";
 
-        int getUserParam = userIdx;
+        Object[] getUserParams = new Object[]{userIdx, userIdx, userIdx};
 
         return this.jdbcTemplate.queryForObject(getUserQuery,
                 (rs, rowNum) -> new GetUserRes(
@@ -34,24 +42,12 @@ public class UserDao {
                         rs.getString("address"),
                         rs.getFloat("latitude"),
                         rs.getFloat("longitude"),
-                        this.jdbcTemplate.queryForObject("select count(Follow.followingUserIdx) AS followerCount\n" +
-                                        "from User\n" +
-                                        "    left join Follow on User.userIdx = Follow.followingUserIdx\n" +
-                                        " where userIdx = ?;",
-                                (rs2, rowNum2) -> new GetFollowerRes(
-                                        rs2.getInt("followerCount")),
-                                rs.getInt("userIdx")),
-                        this.jdbcTemplate.queryForObject("select count(Follow.followerUserIdx) AS followingCount\n" +
-                                        "from User\n" +
-                                        "    left join Follow on User.userIdx = Follow.followerUserIdx\n" +
-                                        " where userIdx = ?;",
-                                (rs3,rowNum3) -> new GetFollowingRes(
-                                        rs3.getInt("followingCount")),
-                                rs.getInt("userIdx")),
+                        rs.getInt("followerCount"),
+                        rs.getInt("followingCount"),
                         rs.getString("status"),
                         rs.getString("profileImgUrl"),
                         rs.getString("shopDescription")
-                ), getUserParam);
+                ), getUserParams);
     }
 
     public GetMyPageRes getMyPage(int userIdx){
@@ -68,7 +64,7 @@ public class UserDao {
                 "where u.userIdx = ?";
 
         GetUserRes getUser = getUser(userIdx);
-        Object[] getUserParams = new Object[]{userIdx, getUser.getFollowingCount(), getUser.getFollowerCount()};
+        Object[] getUserParams = new Object[]{userIdx, userIdx, userIdx, userIdx};
 
         return this.jdbcTemplate.queryForObject(getUserQuery,
                 (rs, rowNum) -> new GetMyPageRes(
@@ -77,12 +73,11 @@ public class UserDao {
                         rs.getInt("userIdx"),
                         rs.getString("name"),
                         rs.getString("profileImgUrl"),
-                        rs.getString("shopDescription"),
                         rs.getFloat("avgStar"),
                         rs.getInt("point"),
-                        rs.getInt("follower"),
-                        rs.getInt("following"),
-                        this.jdbcTemplate.query("select productImgUrl\n" +
+                        rs.getInt("followerCount"),
+                        rs.getInt("followingCount"),
+                        this.jdbcTemplate.query("select Product.productIdx, Product.productName, Product.price, ProductImg.productImgUrl\n" +
                                         "from Product\n" +
                                         "left join ProductImg on Product.productIdx=ProductImg.productIdx\n" +
                                         "left join User on Product.userIdx=User.userIdx\n" +
@@ -98,7 +93,7 @@ public class UserDao {
 
     public GetShopRes getShop(int userIdx) {
         // 상점 조회
-        String getUserQuery = "select User.userIdx,User.name, AVG(Review.star) as avgStar,\n" +
+        String getUserQuery = "select User.userIdx,User.name, AVG(Review.star) as avgStar, User.profileImgUrl, User.shopDescription,\n" +
                 "       (select count(followerUserIdx) from Follow where Follow.followingUserIdx=? and status='ACTIVE') AS followerCount,\n" +
                 "       (select count(followingUserIdx) from Follow where Follow.followerUserIdx=? and status='ACTIVE') AS followingCount,\n" +
                 "       (select count(productIdx) from Product where userIdx=? and status = 'ACTIVE') As TotalProduct\n" +
@@ -108,7 +103,7 @@ public class UserDao {
                 "    left join Product on Review.productIdx = Product.productIdx\n" +
                 "    left join ProductImg on Product.productIdx = ProductImg.productIdx\n" +
                 "    where User.userIdx=? and ProductImg.status='ACTIVE';";
-        int getUserParams = userIdx;
+        Object[] getUserParams = new Object[]{userIdx, userIdx, userIdx, userIdx};
 
         return this.jdbcTemplate.queryForObject(getUserQuery,
                 (rs, rowNum) -> new GetShopRes(
@@ -118,9 +113,9 @@ public class UserDao {
                         rs.getString("name"),
                         rs.getString("profileImgUrl"),
                         rs.getString("shopDescription"),
-                        rs.getInt("follwerUserIdx"),
-                        rs.getInt("followingUserIdx"),
-                        this.jdbcTemplate.query("select Product.productIdx, Product.productName, Product.price, Product.saleStatus, ProductImg.productImgUrl\n" +
+                        rs.getInt("followerCount"),
+                        rs.getInt("followingCount"),
+                        this.jdbcTemplate.query("select Product.productIdx, Product.productName, Product.price, ProductImg.productImgUrl\n" +
                                         "from Product\n" +
                                         "    left join User on User.userIdx = Product.userIdx\n" +
                                         "    left join ProductImg on Product.productIdx = ProductImg.productIdx\n" +
@@ -158,9 +153,11 @@ public class UserDao {
         return this.jdbcTemplate.queryForObject(checkUserIdxQuery,int.class, checkPhoneNoParma);
     }
 
-    public int deleteUser(int userIdx) {
+    public int deleteUser(int userIdx, PatchDeleteUserReq patchDeleteUserReq) {
         String deleteUserQuery = "update User set status = 'Deleted' where userIdx = ? ";
-
+        String insertDeleteCommentQuery = "insert into DeleteReason (userIdx, content) values(?, ?)";
+        Object[] insertDeleteUserParams = new Object[]{patchDeleteUserReq.getUserIdx(), patchDeleteUserReq.getContent()};
+        this.jdbcTemplate.update(insertDeleteCommentQuery, insertDeleteUserParams);
         return this.jdbcTemplate.update(deleteUserQuery,userIdx);
     }
 

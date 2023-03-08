@@ -9,6 +9,9 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class GetFollowerRes {
-    private int followerCount;
+public class PatchDeleteUserReq {
+    private int userIdx;
+
+    private String content;
+
 }
