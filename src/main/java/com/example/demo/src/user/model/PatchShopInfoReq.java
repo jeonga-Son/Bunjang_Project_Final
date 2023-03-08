@@ -10,6 +10,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PatchShopInfoReq {
+    private int userIdx;
+
     private String profileImgUrl;
 
     private String shopDescription;

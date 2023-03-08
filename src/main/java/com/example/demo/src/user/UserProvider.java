@@ -4,6 +4,7 @@ package com.example.demo.src.user;
 import com.example.demo.config.BaseException;
 import com.example.demo.src.user.model.*;
 import com.example.demo.utils.JwtService;
+import com.example.demo.utils.SHA256;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,15 +63,22 @@ public class UserProvider {
         return null;
     }
 
-    public PostLoginRes logIn(PostUserReq postUserReq) throws BaseException {
+    public PostLoginRes logIn(PostLoginReq postLoginReq) throws BaseException {
         try {
-            int resultIdx = userDao.checkPhoneNo(postUserReq);
+            User user = userDao.getPwd(postLoginReq);
 
-            if(resultIdx == 1){
-                String jwt = jwtService.createJwt(postUserReq.getUserIdx());
-                String name = postUserReq.getName();
-                String resultMessage = "'" + name + "'" + "님 로그인에 성공하였습니다.";
-                return new PostLoginRes(name,jwt,resultMessage);
+            String encryptPwd;
+            try {
+                encryptPwd = new SHA256().encrypt(postLoginReq.getPassword());
+            } catch (Exception exception) {
+                logger.error("App - logIn Provider Encrypt Error", exception);
+                throw new BaseException(PASSWORD_DECRYPTION_ERROR);
+            }
+
+            if(user.getPassword().equals(encryptPwd)){
+                int userIdx = user.getUserIdx();
+                String jwt = jwtService.createJwt(userIdx);
+                return new PostLoginRes(userIdx,jwt);
             }
             else{
                 throw new BaseException(FAILED_TO_LOGIN);
@@ -81,4 +89,12 @@ public class UserProvider {
         }
     }
 
+    public int checkPhoneNo(String phoneNo) throws BaseException {
+        try{
+            return userDao.checkPhoneNo(phoneNo);
+        } catch (Exception exception) {
+            logger.error("App - checkPhoneNo Provider Error", exception);
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 }

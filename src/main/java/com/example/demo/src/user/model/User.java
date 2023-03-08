@@ -43,4 +43,7 @@ public class User {
 
     private String shopDescription;
 
+    private String password;
+
+    private String deleteReasonContent;
 }

@@ -12,6 +12,6 @@ import lombok.Setter;
 public class PatchDeleteUserReq {
     private int userIdx;
 
-    private String content;
+    private String deleteReasonContent;
 
 }
