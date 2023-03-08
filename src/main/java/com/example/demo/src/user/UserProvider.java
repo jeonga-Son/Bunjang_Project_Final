@@ -27,6 +27,16 @@ public class UserProvider {
         this.jwtService = jwtService;
     }
 
+    public GetUserRes getUser(int userIdx) throws BaseException {
+        try {
+            GetUserRes getUserRes = userDao.getUser(userIdx);
+            return getUserRes;
+        } catch (Exception exception) {
+            logger.error("App - getUser Provider Error", exception);
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
     public GetMyPageRes getMyPage(int userIdx) throws BaseException {
         try {
             GetMyPageRes getMyPageRes = userDao.getMyPage(userIdx);

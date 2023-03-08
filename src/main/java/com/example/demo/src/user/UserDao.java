@@ -1,7 +1,5 @@
 package com.example.demo.src.user;
 
-
-import com.example.demo.src.point.model.Point;
 import com.example.demo.src.product.model.PostProductImgs;
 import com.example.demo.src.user.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,27 +19,25 @@ public class UserDao {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
-//    public GetUserRes getUser(int userIdx){
-//        String getUserQuery = "select * from User where userIdx = ?";
-//
-//        int getUserParams = userIdx;
-//
-//        return this.jdbcTemplate.queryForObject(getUserQuery,
-//                (rs, rowNum) -> new GetUserRes(
-//                        rs.getInt("userIdx"),
-//                        rs.getString("name"),
-//                        rs.getString("phoneNo"),
-//                        rs.getDate("birthday"),
-//                        rs.getString("address"),
-//                        rs.getFloat("latitude"),
-//                        rs.getFloat("longitude"),
-//                        rs.getTimestamp("createAt"),
-//                        rs.getTimestamp("updateAt"),
-//                        rs.getString("status"),
-//                        rs.getString("profileImgUrl"),
-//                        rs.getString("shopDescription")),
-//                getUserParams);
-//    }
+    public GetUserRes getUser(int userIdx){
+        String getUserQuery = "select * from User where userIdx = ?";
+
+        int getUserParams = userIdx;
+
+        return this.jdbcTemplate.queryForObject(getUserQuery,
+                (rs, rowNum) -> new GetUserRes(
+                        rs.getInt("userIdx"),
+                        rs.getString("name"),
+                        rs.getString("phoneNo"),
+                        rs.getDate("birthday"),
+                        rs.getString("address"),
+                        rs.getFloat("latitude"),
+                        rs.getFloat("longitude"),
+                        rs.getString("status"),
+                        rs.getString("profileImgUrl"),
+                        rs.getString("shopDescription")),
+                getUserParams);
+    }
 
     public GetMyPageRes getMyPage(int userIdx){
         // 마이페이지 조회
@@ -81,7 +77,7 @@ public class UserDao {
     }
 
     public GetMyShopRes getShop(int userIdx) {
-        //
+        // 상점 조회
         String getUserQuery = "select User.userIdx,User.name, AVG(Review.star),\n" +
                 "       (select count(followerUserIdx) from Follow where Follow.followingUserIdx=? and status='ACTIVE') AS follower,\n" +
                 "       (select count(followingUserIdx) from Follow where Follow.followerUserIdx=? and status='ACTIVE') AS following,\n" +
@@ -96,6 +92,8 @@ public class UserDao {
 
         return this.jdbcTemplate.queryForObject(getUserQuery,
                 (rs, rowNum) -> new GetMyShopRes(
+                        // 상호명, 후기 평점, 팔로워, 팔로잉, 판매상품 개수, 판매상품 list(최신순)
+                        // 상품 id, 상품이름, 상품 가격,상품판매 상태, 상품 이미지 불러오기 List
                         rs.getInt("userIdx"),
                         rs.getString("name"),
                         rs.getString("profileImgUrl"),

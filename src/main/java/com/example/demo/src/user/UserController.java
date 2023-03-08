@@ -29,17 +29,16 @@ public class UserController {
         this.jwtService = jwtService;
     }
 
-
     /**
      * 마이페이지 조회 API
      * [GET] /users/mypage/:userIdx
-     * @return BaseResponse<GetUserRes>
+     * @return BaseResponse<GetMyPageRes>
      */
     @ResponseBody
     @GetMapping("/mypage/{userIdx}") // (GET) 127.0.0.1:9000/users/mypage/:userIdx
     public BaseResponse<GetMyPageRes> getUser(@PathVariable("userIdx") int userIdx) {
         try {
-            GetMyPageRes getMyPageRes = userProvider.getUser(userIdx);
+            GetMyPageRes getMyPageRes = userProvider.getMyPage(userIdx);
             return new BaseResponse<>(getMyPageRes);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
@@ -50,7 +49,7 @@ public class UserController {
     /**
      * 특정 상점 조회 API
      * [GET] /users/:userIdx
-     * @return BaseResponse<GetUserRes>
+     * @return BaseResponse<GetMyShopRes>
      */
     @ResponseBody
     @GetMapping("/{userIdx}") // (GET) 127.0.0.1:9000/users/:userIdx
@@ -62,7 +61,7 @@ public class UserController {
     /**
      * 회원가입 API
      * [POST] /users
-     * @return BaseResponse<Pos tUserRes>
+     * @return BaseResponse<PostUserRes>
      */
     @ResponseBody
     @PostMapping("")
@@ -148,7 +147,7 @@ public class UserController {
     @PatchMapping("/{userIdx}/status")
     public BaseResponse<String> deleteUser(@PathVariable("userIdx") int userIdx) {
         try {
-            User user = userProvider.getUser(userIdx);
+            GetUserRes user = userProvider.getUser(userIdx);
 
             //jwt에서 idx 추출.
             int userIdxByJwt = jwtService.getUserIdx();
