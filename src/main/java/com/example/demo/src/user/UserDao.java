@@ -1,12 +1,15 @@
 package com.example.demo.src.user;
 
 
+import com.example.demo.src.point.model.Point;
+import com.example.demo.src.product.model.PostProductImgs;
 import com.example.demo.src.user.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.awt.*;
 
 @Repository
 public class UserDao {
@@ -18,34 +21,70 @@ public class UserDao {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
-    public GetUserRes getUser(int userIdx){
-        String getUserQuery = "select * from User where userIdx = ?";
+//    public GetUserRes getUser(int userIdx){
+//        String getUserQuery = "select * from User where userIdx = ?";
+//
+//        int getUserParams = userIdx;
+//
+//        return this.jdbcTemplate.queryForObject(getUserQuery,
+//                (rs, rowNum) -> new GetUserRes(
+//                        rs.getInt("userIdx"),
+//                        rs.getString("name"),
+//                        rs.getString("phoneNo"),
+//                        rs.getDate("birthday"),
+//                        rs.getString("address"),
+//                        rs.getFloat("latitude"),
+//                        rs.getFloat("longitude"),
+//                        rs.getTimestamp("createAt"),
+//                        rs.getTimestamp("updateAt"),
+//                        rs.getString("status"),
+//                        rs.getString("profileImgUrl"),
+//                        rs.getString("shopDescription")),
+//                getUserParams);
+//    }
+
+    public GetMyPageRes getUser(int userIdx){
+        String getUserQuery = "Select u.userIdx, u.profileImgUrl ,u.name, p.point, AVG(r.star),\n" +
+                "       (select count(followerUserIdx) from Follow where Follow.followingUserIdx=? and status='ACTIVE') AS follower,\n" +
+                "       (select count(followingUserIdx) from Follow where Follow.followerUserIdx=? and status = 'ACTIVE') AS following,\n" +
+                "       (select count(productIdx) from Product where userIdx=? and status = 'ACTIVE') As TotalProduct,\n" +
+                "       pd.productName, sum(pd.price) pointBalance, pd.saleStatus\n" +
+                "From User u\n" +
+                "    left join Point p on u.userIdx=p.userIdx\n" +
+                "    left join Product pd on u.userIdx=pd.userIdx\n" +
+                "    left join Review r on u.userIdx = r.sellerIdx\n" +
+                "where u.userIdx = ?";
 
         int getUserParams = userIdx;
 
         return this.jdbcTemplate.queryForObject(getUserQuery,
-                (rs, rowNum) -> new GetUserRes(
+                (rs, rowNum) -> new GetMyPageRes(
+                        // 유저 id, 이름, 프로필이미지Url, 상점 설명, 포인트 잔액, 팔로워 id, 팔로잉 id
+                        // 상품 이미지 불러오기 List
                         rs.getInt("userIdx"),
                         rs.getString("name"),
-                        rs.getString("phoneNo"),
-                        rs.getDate("birthday"),
-                        rs.getString("address"),
-                        rs.getFloat("latitude"),
-                        rs.getFloat("longitude"),
-                        rs.getTimestamp("createAt"),
-                        rs.getTimestamp("updateAt"),
-                        rs.getString("status"),
                         rs.getString("profileImgUrl"),
-                        rs.getString("shopDescription")),
-                getUserParams);
+                        rs.getString("shopDescription"),
+                        rs.getInt("point"),
+                        rs.getInt("follwerUserIdx"),
+                        rs.getInt("followingUserIdx"),
+                        this.jdbcTemplate.query("select productImgUrl\n" +
+                                        "from Product\n" +
+                                        "left join ProductImg on Product.productIdx=ProductImg.productIdx\n" +
+                                        "left join User on Product.userIdx=User.userIdx\n" +
+                                        "where User.userIdx = 1 and ProductImg.status='ACTIVE';",
+                                (rs2, rowNum2) -> new PostProductImgs(
+                                        rs2.getString("productImgUrl")),
+                                rs.getInt("productIdx"))
+                ), getUserParams);
     }
 
-    public GetUserRes getShop(int userIdx) {
+    public GetMyPageRes getShop(int userIdx) {
         String getUserQuery = "select * from User where userIdx = ?";
         int getUserParams = userIdx;
 
         return this.jdbcTemplate.queryForObject(getUserQuery,
-                (rs, rowNum) -> new GetUserRes(
+                (rs, rowNum) -> new GetMyPageRes(
                         rs.getInt("userIdx"),
                         rs.getString("name"),
                         rs.getString("phoneNo"),

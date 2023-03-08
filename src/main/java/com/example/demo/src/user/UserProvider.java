@@ -27,20 +27,20 @@ public class UserProvider {
         this.jwtService = jwtService;
     }
 
-    public GetUserRes getUser(int userIdx) throws BaseException {
+    public GetMyPageRes getUser(int userIdx) throws BaseException {
         try {
-            GetUserRes getUserRes = userDao.getUser(userIdx);
-            return getUserRes;
+            GetMyPageRes getMyPageRes = userDao.getUser(userIdx);
+            return getMyPageRes;
         } catch (Exception exception) {
             logger.error("App - getUser Provider Error", exception);
             throw new BaseException(DATABASE_ERROR);
         }
     }
 
-    public GetUserRes getShop(int userIdx) {
+    public GetMyPageRes getShop(int userIdx) {
         try {
-            GetUserRes getUserRes = userDao.getShop(userIdx);
-            return getUserRes;
+            GetMyPageRes getMyPageRes = userDao.getShop(userIdx);
+            return getMyPageRes;
         } catch (Exception exception) {
             logger.error("App - getShop Provider Error", exception);
         }

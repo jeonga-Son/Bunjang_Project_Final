@@ -33,16 +33,14 @@ public class UserController {
     /**
      * 마이페이지 조회 API
      * [GET] /users/mypage/:userIdx
-     *
      * @return BaseResponse<GetUserRes>
      */
     @ResponseBody
     @GetMapping("/mypage/{userIdx}") // (GET) 127.0.0.1:9000/users/mypage/:userIdx
-    public BaseResponse<GetUserRes> getUser(@PathVariable("userIdx") int userIdx) {
-        // Get Users
+    public BaseResponse<GetMyPageRes> getUser(@PathVariable("userIdx") int userIdx) {
         try {
-            GetUserRes getUserRes = userProvider.getUser(userIdx);
-            return new BaseResponse<>(getUserRes);
+            GetMyPageRes getMyPageRes = userProvider.getUser(userIdx);
+            return new BaseResponse<>(getMyPageRes);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
@@ -52,14 +50,13 @@ public class UserController {
     /**
      * 특정 상점 조회 API
      * [GET] /users/:userIdx
-     *
      * @return BaseResponse<GetUserRes>
      */
     @ResponseBody
     @GetMapping("/{userIdx}") // (GET) 127.0.0.1:9000/users/:userIdx
-    public BaseResponse<GetUserRes> getShop(@PathVariable("userIdx") int userIdx) {
-        GetUserRes getUserRes = userProvider.getShop(userIdx);
-        return new BaseResponse<>(getUserRes);
+    public BaseResponse<GetMyPageRes> getShop(@PathVariable("userIdx") int userIdx) {
+        GetMyPageRes getMyPageRes = userProvider.getShop(userIdx);
+        return new BaseResponse<>(getMyPageRes);
     }
 
     /**
@@ -89,7 +86,6 @@ public class UserController {
             return new BaseResponse<>(exception.getStatus());
         }
     }
-
 
     /**
      * 로그인 API
@@ -124,7 +120,7 @@ public class UserController {
     @PatchMapping("/{userIdx}")
     public BaseResponse<String> modifyShopInfo(@PathVariable("userIdx") int userIdx, @RequestBody PatchShopInfoReq patchShopInfoReq) {
         try {
-            GetUserRes user = userProvider.getUser(userIdx);
+            GetMyPageRes user = userProvider.getUser(userIdx);
 
             //jwt에서 idx 추출.
             int userIdxByJwt = jwtService.getUserIdx();
@@ -143,18 +139,16 @@ public class UserController {
         }
     }
 
-
     /**
      * 회원 탈퇴 API
      * [PATCH] /users/:userIdx/status
-     *
      * @return BaseResponse<String>
      */
     @ResponseBody
     @PatchMapping("/{userIdx}/status")
     public BaseResponse<String> deleteUser(@PathVariable("userIdx") int userIdx) {
         try {
-            GetUserRes user = userProvider.getUser(userIdx);
+            GetMyPageRes user = userProvider.getUser(userIdx);
 
             //jwt에서 idx 추출.
             int userIdxByJwt = jwtService.getUserIdx();

@@ -16,6 +16,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
+    // 유저 id, 이름, 휴대폰번호, 생년월일, 주소, 위도, 경도, 생성일, 수정일, 상태, 프로필이미지URL, 상품 소개
     private int userIdx;
 
     private String name;
