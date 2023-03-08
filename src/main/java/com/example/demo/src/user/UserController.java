@@ -150,7 +150,7 @@ public class UserController {
      */
     @ResponseBody
     @PatchMapping("/{userIdx}/status")
-    public BaseResponse<String> deleteUser(@PathVariable("userIdx") int userIdx) {
+    public BaseResponse<String> deleteUser(@PathVariable("userIdx") int userIdx, @RequestBody PatchDeleteUserReq patchDeleteUserReq) {
         try {
             GetUserRes user = userProvider.getUser(userIdx);
 
@@ -163,15 +163,16 @@ public class UserController {
             //접근한 유저가 같고, 유저의 상태가 'Deleted'가 아닐 경우 회원 탈퇴 상태로 변경
             String status = user.getStatus();
             if (!status.equals("Deleted")) {
-                userService.deleteUser(userIdx);
+                userService.deleteUser(userIdx, patchDeleteUserReq);
 
                 String result = user.getName() + "님, 회원탈퇴가 완료되었습니다.\n 탈퇴 후 7일간 재가입이 불가능합니다.";
                 return new BaseResponse<>(result);
+            } else {
+                return new BaseResponse<>(INVALID_USER);
             }
 
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
         }
-        return null;
     }
 }

@@ -25,15 +25,13 @@ public class GetMyPageRes {
 
     private String profileImgUrl;
 
-    private String shopDescription;
-
     private float avgStar;
 
     private int point;
 
-    private int followerUserIdx;
+    private int followerCount;
 
-    private int followingUserIdx;
+    private int followingCount;
 
     private List<GetProductList> productList;
 
