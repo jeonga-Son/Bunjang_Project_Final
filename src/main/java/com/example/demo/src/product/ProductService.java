@@ -88,6 +88,34 @@ public class ProductService {
         }
     }
 
+    // 판매상태 변경 메서드
+    public PatchProductRes patchSaleStatus(int productIdx, String saleStatus) throws BaseException {
+        try {
+            int result = productDao.updateSaleStatus(productIdx, saleStatus);
+
+            if (result == 1)
+                return new PatchProductRes(productIdx);
+            else throw new BaseException(DATABASE_ERROR);
+        } catch (Exception exception) {
+            logger.error("App - postProducts Service Error", exception);
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    // 상품 삭제 (상태변경) 메서드
+    public PatchProductRes deleteProduct(int productIdx) throws BaseException {
+        try {
+            int result = productDao.updateProductStatus(productIdx);
+
+            if (result == 1)
+                return new PatchProductRes(productIdx);
+            else throw new BaseException(DATABASE_ERROR);
+        } catch (Exception exception) {
+            logger.error("App - deleteProduct Service Error", exception);
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
 
 
 

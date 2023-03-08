@@ -28,7 +28,11 @@ public class ProductController {
         this.jwtService = jwtService;
     }
 
-    // 특정 상품 조회 API
+    /** 특정 상품 조회 API
+     *
+     * @param productIdx
+     * @return
+     */
     @ResponseBody
     @GetMapping("/{productIdx}") // (GET) 127.0.0.1:9000/products/:productIdx
     public BaseResponse<GetProductRes> getProductRes(@PathVariable("productIdx") int productIdx) {
@@ -47,7 +51,11 @@ public class ProductController {
 
     }
 
-    // 상품 등록 api
+    /** 상품 등록 api
+     *
+     * @param postProductReq
+     * @return
+     */
     @ResponseBody
     @PostMapping("") // (POST) 127.0.0.1:9000/products
     public BaseResponse<PostProductRes> postProductRes(@RequestBody PostProductReq postProductReq) {
@@ -61,7 +69,12 @@ public class ProductController {
 
     }
 
-    // 상품 수정 api
+    /** 상품 수정 api
+     *
+     * @param patchProductReq
+     * @param productIdx
+     * @return
+     */
     @ResponseBody
     @PatchMapping("/{productIdx}") // (PATCH) 127.0.0.1:9000/products/:productIdx
     public BaseResponse<PatchProductRes> patchProduct(@RequestBody PatchProductReq patchProductReq, @PathVariable("productIdx") int productIdx) {
@@ -73,6 +86,59 @@ public class ProductController {
             return new BaseResponse<>((exception.getStatus()));
         }
     }
+
+    /** 상품 판매상태 변경 api
+     *
+     * @param productIdx
+     * @param saleStatus
+     * @return
+     */
+    @ResponseBody
+    @PatchMapping("") // (PATCH) 127.0.0.1:9000/products?productIdx={productIdx}&saleStatus={saleStatus}
+    public BaseResponse<PatchProductRes> patchSaleStatus(@RequestParam("productIdx") int productIdx, @RequestParam("saleStatus") String saleStatus) {
+        try{
+            PatchProductRes patchProductRes = productService.patchSaleStatus(productIdx, saleStatus);
+            return new BaseResponse<>(patchProductRes);
+
+        } catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    /** 상품 삭제 api
+     *
+     * @param productIdx
+     * @return
+     */
+    @ResponseBody
+    @PatchMapping("/{productIdx}/status") // (PATCH) 127.0.0.1:9000/products/:productIdx/status
+    public BaseResponse<PatchProductRes> deleteProduct(@PathVariable("productIdx") int productIdx) {
+        try{
+            PatchProductRes patchProductRes = productService.deleteProduct(productIdx);
+            return new BaseResponse<>(patchProductRes);
+
+        } catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    /** 태그 검색 api
+     *
+     * @param tag
+     * @return
+     */
+    @ResponseBody
+    @GetMapping("") // (PATCH) 127.0.0.1:9000/products?tag={tag}
+    public BaseResponse<List<GetProductList>> getProductByTag (@RequestParam("tag") String tag) {
+        try{
+            List<GetProductList> getProductList = productProvider.getProductsByTag(tag);
+            return new BaseResponse<>(getProductList);
+
+        } catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
 
 
 

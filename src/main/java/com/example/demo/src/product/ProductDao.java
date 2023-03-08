@@ -76,7 +76,8 @@ public class ProductDao {
                 "    left join Product on User.userIdx = Product.userIdx\n" +
                 "    left join ProductImg on Product.productIdx=ProductImg.productIdx\n" +
                 "where User.userIdx=?\n" +
-                "group by Product.productIdx;";
+                "group by Product.productIdx;" +
+                "limit 6";
         int getProductsParams = userIdx;
 
         return this.jdbcTemplate.query(getProductsQuery,
@@ -88,6 +89,28 @@ public class ProductDao {
                         rs.getString("productName")),
                 getProductsParams
                 );
+    }
+
+
+    public List<GetProductList> getProducts(int userIdx, int limit) {
+        String getProductsQuery = "select Product.productIdx,productImgUrl, price, productName\n" +
+                "from User\n" +
+                "    left join Product on User.userIdx = Product.userIdx\n" +
+                "    left join ProductImg on Product.productIdx=ProductImg.productIdx\n" +
+                "where User.userIdx=?\n" +
+                "group by Product.productIdx" +
+                "limit ?";
+        Object[] getProductsParams = new Object[] {userIdx, limit};
+
+        return this.jdbcTemplate.query(getProductsQuery,
+                (rs, rowNum) -> new GetProductList(
+                        // 이 상점의 상품 list (상품 id, 대표사진, 금액, 상품 이름)
+                        rs.getInt("productIdx"),
+                        rs.getString("productImgUrl"),
+                        rs.getInt("price"),
+                        rs.getString("productName")),
+                getProductsParams
+        );
     }
 
     public GetShopInfo getShopInfo(int userIdx) {
@@ -224,6 +247,41 @@ public class ProductDao {
         int deletePruductTagsParams = productIdx;
         this.jdbcTemplate.update(updateProductImgQuery, deletePruductTagsParams);
 
+    }
+
+    public int updateSaleStatus (int productIdx, String saleStatus) {
+        String updateSaleStatusQuery = "update Product set saleStatus = ? where productIdx=?";
+        Object[] updateSaleStatusParams = new Object [] {saleStatus, productIdx};
+
+        return this.jdbcTemplate.update(updateSaleStatusQuery, updateSaleStatusParams);
+    }
+
+    public int updateProductStatus (int productIdx) {
+        String updateProductStatusQuery = "update Product set status = 'DELETED' where productIdx=?";
+        int updateProductStatusParams = productIdx;
+
+        return this.jdbcTemplate.update(updateProductStatusQuery, updateProductStatusParams);
+    }
+
+    public List<GetProductList> searchByTag(String tag) {
+        String searchByTag = "select Tag.productIdx, productImgUrl, price, productName\n" +
+                "from Product\n" +
+                "    left join Tag on Tag.productIdx=Product.productIdx\n" +
+                "    left join ProductImg on Product.productIdx=ProductImg.productIdx\n" +
+                "where Tag.status='ACTIVE' and ProductImg.status='ACTIVE' and Product.saleStatus = 'ONSALE' and Product.status='ACTIVE' and tag=?";
+
+        String searchByTagParams = tag;
+
+
+        return this.jdbcTemplate.query(searchByTag,
+                (rs, rowNum) -> new GetProductList(
+                        // 상품 list (상품 id, 대표사진, 금액, 상품 이름)
+                        rs.getInt("productIdx"),
+                        rs.getString("productImgUrl"),
+                        rs.getInt("price"),
+                        rs.getString("productName")),
+                searchByTagParams
+        );
     }
 
 

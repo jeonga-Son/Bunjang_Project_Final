@@ -62,7 +62,7 @@ public class ProductProvider {
         }
     }
 
-    // 상점 정보 불러오기
+    // 상품 정보 불러오기
     public GetProductInfoRes getProductInfoRes(int productIdx) throws BaseException {
         try {
             GetProductInfoRes getProductInfoRes = productDao.getProductInfoRes(productIdx);
@@ -72,6 +72,19 @@ public class ProductProvider {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
+    // 태그 검색 메서드
+    public List<GetProductList> getProductsByTag(String tag) throws BaseException {
+        try {
+            List<GetProductList> getProductLists = productDao.searchByTag(tag);
+            return getProductLists;
+        } catch (Exception exception) {
+            logger.error("App - getProductsByTag Provider Error", exception);
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+
 
 
 
