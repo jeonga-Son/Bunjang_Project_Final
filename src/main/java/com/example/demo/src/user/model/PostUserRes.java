@@ -24,4 +24,6 @@ public class PostUserRes {
 
     private String jwt;
 
+    private String resultMessage;
+
 }

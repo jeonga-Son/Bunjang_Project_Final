@@ -44,9 +44,10 @@ public class UserService {
             String name = postUserReq.getName();
             String phoneNo = postUserReq.getPhoneNo();
             Date birthday = postUserReq.getBirthday();
+            String resultmessage = "'" + name + "'" + "님 회원가입을 환영합니다.";
             //jwt 발급.
             String jwt = jwtService.createJwt(userIdx);
-            return new PostUserRes(userIdx,name, phoneNo, birthday, jwt);
+            return new PostUserRes(userIdx,name, phoneNo, birthday, jwt, resultmessage);
         } catch (Exception exception) {
             logger.error("App - createUser Service Error", exception);
             throw new BaseException(DATABASE_ERROR);
