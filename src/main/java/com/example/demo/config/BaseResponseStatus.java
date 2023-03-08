@@ -76,4 +76,8 @@ public enum BaseResponseStatus {
         this.code = code;
         this.message = message;
     }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 1879515 ([feat] 상품, 팔로우, 리뷰 API 추가)

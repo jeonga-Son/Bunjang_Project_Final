@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
+<<<<<<< HEAD
     <data-source source="LOCAL" name="bunjangDB@bunjang-dev.c4t2uq2ojemi.ap-northeast-2.rds.amazonaws.com" uuid="1517b08e-322f-47e1-9234-3ebd95d48e56">
+=======
+    <data-source source="LOCAL" name="bunjangDB@bunjang-dev.c4t2uq2ojemi.ap-northeast-2.rds.amazonaws.com" uuid="00f9e48d-1717-45e9-a3d3-5df3dd153039">
+>>>>>>> 1879515 ([feat] 상품, 팔로우, 리뷰 API 추가)
       <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>

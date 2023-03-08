@@ -40,4 +40,29 @@ public class ReviewController {
         }
     }
 
+
+    // 리뷰 삭제 api
+    @ResponseBody
+    @PatchMapping("/{reviewIdx}/status") // (POST) 127.0.0.1:9000/reviews/:reviewIdx/status
+    public BaseResponse<Integer> patchReviewStatus(@PathVariable("reviewIdx") int reviewIdx) {
+        try{
+            int deletedReviewIdx = reviewService.deleteReview(reviewIdx);
+            return new BaseResponse<>(deletedReviewIdx);
+        } catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+    // 상점 리뷰 조회 api
+    @ResponseBody
+    @GetMapping("") // (POST) 127.0.0.1:9000/reviews?userIdx=1
+    public BaseResponse<GetReviewsRes> getReviews(@RequestParam("userIdx") int userIdx) {
+        try{
+            GetReviewsRes getReviewsRes = reviewProvider.getReviewsRes(userIdx);
+            return new BaseResponse<>(getReviewsRes);
+        } catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
 }
