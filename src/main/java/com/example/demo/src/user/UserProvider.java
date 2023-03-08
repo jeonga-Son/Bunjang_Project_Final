@@ -47,7 +47,12 @@ public class UserProvider {
         }
     }
 
-    public GetShopRes getShop(int userIdx) {
+    public GetShopRes getShop(int userIdx) throws BaseException {
+
+        if (userDao.getUser(userIdx).equals(null)) {
+            throw new BaseException(POST_USERS_EXISTS_PHONENO);
+        }
+
         try {
             GetShopRes getShopRes = userDao.getShop(userIdx);
             return getShopRes;
@@ -62,11 +67,10 @@ public class UserProvider {
             int resultIdx = userDao.checkPhoneNo(postUserReq);
 
             if(resultIdx == 1){
-                int userIdx = postUserReq.getUserIdx();
                 String jwt = jwtService.createJwt(postUserReq.getUserIdx());
                 String name = postUserReq.getName();
                 String resultMessage = "'" + name + "'" + "님 로그인에 성공하였습니다.";
-                return new PostLoginRes(userIdx,name,jwt,resultMessage);
+                return new PostLoginRes(name,jwt,resultMessage);
             }
             else{
                 throw new BaseException(FAILED_TO_LOGIN);

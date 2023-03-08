@@ -32,6 +32,8 @@ public class UserDao {
                         rs.getString("address"),
                         rs.getFloat("latitude"),
                         rs.getFloat("longitude"),
+                        rs.getInt("followerUserIdx"),
+                        rs.getInt("followingUserIdx"),
                         rs.getString("status"),
                         rs.getString("profileImgUrl"),
                         rs.getString("shopDescription")),
@@ -40,9 +42,9 @@ public class UserDao {
 
     public GetMyPageRes getMyPage(int userIdx){
         // 마이페이지 조회
-        String getUserQuery = "Select u.userIdx, u.profileImgUrl ,u.name, p.point, AVG(r.star),\n" +
-                "       (select count(followerUserIdx) from Follow where Follow.followingUserIdx=? and status='ACTIVE') AS follower,\n" +
-                "       (select count(followingUserIdx) from Follow where Follow.followerUserIdx=? and status = 'ACTIVE') AS following,\n" +
+        String getUserQuery = "Select u.userIdx, u.profileImgUrl ,u.name, p.point, AVG(r.star) as avgStar,\n" +
+                "       (select count(followerUserIdx) from Follow where Follow.followingUserIdx=? and status='ACTIVE') AS followingCount,\n" +
+                "       (select count(followingUserIdx) from Follow where Follow.followerUserIdx=? and status = 'ACTIVE') AS followerCount,\n" +
                 "       (select count(productIdx) from Product where userIdx=? and status = 'ACTIVE') As TotalProduct,\n" +
                 "       pd.productName, sum(pd.price) pointBalance, pd.saleStatus\n" +
                 "From User u\n" +
@@ -51,7 +53,8 @@ public class UserDao {
                 "    left join Review r on u.userIdx = r.sellerIdx\n" +
                 "where u.userIdx = ?";
 
-        int getUserParams = userIdx;
+        GetUserRes getUser = getUser(userIdx);
+        Object[] getUserParams = new Object[]{userIdx, getUser.getFollowingUserIdx(), getUser.getFollowerUserIdx()};
 
         return this.jdbcTemplate.queryForObject(getUserQuery,
                 (rs, rowNum) -> new GetMyPageRes(
@@ -63,13 +66,13 @@ public class UserDao {
                         rs.getString("shopDescription"),
                         rs.getFloat("avgStar"),
                         rs.getInt("point"),
-                        rs.getInt("followerCount"),
+                        rs.getInt("followerUserIdx"),
                         rs.getInt("followingUserIdx"),
                         this.jdbcTemplate.query("select productImgUrl\n" +
                                         "from Product\n" +
                                         "left join ProductImg on Product.productIdx=ProductImg.productIdx\n" +
                                         "left join User on Product.userIdx=User.userIdx\n" +
-                                        "where User.userIdx = 1 and ProductImg.status='ACTIVE';",
+                                        "where User.userIdx = ? and ProductImg.status='ACTIVE';",
                                 (rs2, rowNum2) -> new GetProductList(
                                         rs2.getInt("productIdx"),
                                         rs2.getString("productImgUrl"),
@@ -81,9 +84,9 @@ public class UserDao {
 
     public GetShopRes getShop(int userIdx) {
         // 상점 조회
-        String getUserQuery = "select User.userIdx,User.name, AVG(Review.star),\n" +
-                "       (select count(followerUserIdx) from Follow where Follow.followingUserIdx=? and status='ACTIVE') AS follower,\n" +
-                "       (select count(followingUserIdx) from Follow where Follow.followerUserIdx=? and status='ACTIVE') AS following,\n" +
+        String getUserQuery = "select User.userIdx,User.name, AVG(Review.star) as avgStar,\n" +
+                "       (select count(followerUserIdx) from Follow where Follow.followingUserIdx=? and status='ACTIVE') AS followerCount,\n" +
+                "       (select count(followingUserIdx) from Follow where Follow.followerUserIdx=? and status='ACTIVE') AS followingCount,\n" +
                 "       (select count(productIdx) from Product where userIdx=? and status = 'ACTIVE') As TotalProduct\n" +
                 "from User\n" +
                 "    left join Review on User.userIdx = Review.userIdx\n" +

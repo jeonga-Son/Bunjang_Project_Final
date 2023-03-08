@@ -54,8 +54,13 @@ public class UserController {
     @ResponseBody
     @GetMapping("/{userIdx}") // (GET) 127.0.0.1:9000/users/:userIdx
     public BaseResponse<GetShopRes> getShop(@PathVariable("userIdx") int userIdx) {
-        GetShopRes getShopRes = userProvider.getShop(userIdx);
-        return new BaseResponse<>(getShopRes);
+        try {
+            GetShopRes getShopRes = userProvider.getShop(userIdx);
+            return new BaseResponse<>(getShopRes);
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+
     }
 
     /**
@@ -119,7 +124,7 @@ public class UserController {
     @PatchMapping("/{userIdx}")
     public BaseResponse<String> modifyShopInfo(@PathVariable("userIdx") int userIdx, @RequestBody PatchShopInfoReq patchShopInfoReq) {
         try {
-            GetMyPageRes user = userProvider.getMyPage(userIdx);
+            GetUserRes user = userProvider.getUser(userIdx);
 
             //jwt에서 idx 추출.
             int userIdxByJwt = jwtService.getUserIdx();
@@ -157,7 +162,6 @@ public class UserController {
             }
             //접근한 유저가 같고, 유저의 상태가 'Deleted'가 아닐 경우 회원 탈퇴 상태로 변경
             String status = user.getStatus();
-
             if (!status.equals("Deleted")) {
                 userService.deleteUser(userIdx);
 

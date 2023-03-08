@@ -29,6 +29,10 @@ public class GetUserRes {
 
     private Float longitude;
 
+    private int followerUserIdx;
+
+    private int followingUserIdx;
+
     private String status;
 
     private String profileImgUrl;

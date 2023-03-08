@@ -31,9 +31,9 @@ public class GetMyPageRes {
 
     private int point;
 
-    private int followerCount;
+    private int followerUserIdx;
 
-    private int followingCount;
+    private int followingUserIdx;
 
     private List<GetProductList> productList;
 
