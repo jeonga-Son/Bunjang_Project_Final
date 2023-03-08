@@ -1,7 +1,6 @@
 package com.example.demo.src.user;
 
 import com.example.demo.src.product.model.GetProductList;
-import com.example.demo.src.product.model.PostProductImgs;
 import com.example.demo.src.user.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -118,24 +117,11 @@ public class UserDao {
                 ), getUserParams);
     }
 
-    public User checkUser(PostLoginReq postLoginReq) {
-        String checkUserQuery = "select userIdx, name, phoneNo, birthday, address, latitude," +
-                "longitude, createAt, updateAt, status, profileImgUrl, shopDescription from User where phoneNo = ?";
-        String checkUserParam = postLoginReq.getPhoneNo();
+    public int checkUser(PostUserReq postUserReq) {
+        String checkUserQuery = "select exists(select name, phoneNo, birthday from User where phoneNo = ?)";
+        String checkUserParam = postUserReq.getPhoneNo();
         return this.jdbcTemplate.queryForObject(checkUserQuery,
-                (rs, rowNum) -> new User(
-                        rs.getInt("userIdx"),
-                        rs.getString("name"),
-                        rs.getString("phoneNo"),
-                        rs.getDate("birthday"),
-                        rs.getString("address"),
-                        rs.getFloat("latitude"),
-                        rs.getFloat("longitude"),
-                        rs.getTimestamp("createAt"),
-                        rs.getTimestamp("updateAt"),
-                        rs.getString("status"),
-                        rs.getString("profileImgUrl"),
-                        rs.getString("shopDescription")),
+                int.class,
                 checkUserParam);
     }
 
@@ -148,9 +134,9 @@ public class UserDao {
         return this.jdbcTemplate.queryForObject(lastInserIdQuery,int.class);
     }
 
-    public int checkPhoneNo(PostLoginReq postLoginReq) {
+    public int checkPhoneNo(PostUserReq postUserReq) {
         String checkUserIdxQuery = "select exists(select name, phoneNo from User where phoneNo = ?)";
-        String checkPhoneNoParma = postLoginReq.getPhoneNo();
+        String checkPhoneNoParma = postUserReq.getPhoneNo();
 
         return this.jdbcTemplate.queryForObject(checkUserIdxQuery,int.class, checkPhoneNoParma);
     }

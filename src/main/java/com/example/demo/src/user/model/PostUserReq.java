@@ -12,6 +12,8 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PostUserReq {
+    private int userIdx;
+
     private String name;
 
     private String phoneNo;

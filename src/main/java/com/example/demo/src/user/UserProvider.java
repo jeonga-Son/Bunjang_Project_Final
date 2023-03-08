@@ -57,16 +57,16 @@ public class UserProvider {
         return null;
     }
 
-    public PostLoginRes logIn(PostLoginReq postLoginReq) throws BaseException {
+    public PostLoginRes logIn(PostUserReq postUserReq) throws BaseException {
         try {
-            User user = userDao.checkUser(postLoginReq);
-            int resultIdx = userDao.checkPhoneNo(postLoginReq);
+            int resultIdx = userDao.checkPhoneNo(postUserReq);
 
             if(resultIdx == 1){
-                int userIdx = user.getUserIdx();
-                String jwt = jwtService.createJwt(userIdx);
-                String name = user.getName();
-                return new PostLoginRes(userIdx,name,jwt);
+                int userIdx = postUserReq.getUserIdx();
+                String jwt = jwtService.createJwt(postUserReq.getUserIdx());
+                String name = postUserReq.getName();
+                String resultMessage = "'" + name + "'" + "님 로그인에 성공하였습니다.";
+                return new PostLoginRes(userIdx,name,jwt,resultMessage);
             }
             else{
                 throw new BaseException(FAILED_TO_LOGIN);
@@ -77,11 +77,4 @@ public class UserProvider {
         }
     }
 
-    public boolean checkUser(PostUserReq postUserReq) {
-        if(checkUser(postUserReq) == true) {
-            return true;
-        } else {
-            return false;
-        }
-    }
 }

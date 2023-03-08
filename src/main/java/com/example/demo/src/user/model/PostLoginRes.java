@@ -15,4 +15,6 @@ public class PostLoginRes {
     private String name;
 
     private String jwt;
+
+    private String resultMessage;
 }

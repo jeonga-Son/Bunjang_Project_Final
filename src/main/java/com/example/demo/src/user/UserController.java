@@ -1,9 +1,5 @@
 package com.example.demo.src.user;
 
-import com.example.demo.src.product.model.GetProductInfoRes;
-import com.example.demo.src.product.model.GetProductList;
-import com.example.demo.src.product.model.GetProductRes;
-import com.example.demo.src.product.model.GetShopInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.example.demo.config.BaseException;
@@ -12,8 +8,6 @@ import com.example.demo.src.user.model.*;
 import com.example.demo.utils.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 import static com.example.demo.config.BaseResponseStatus.*;
 
@@ -99,17 +93,17 @@ public class UserController {
      */
     @ResponseBody
     @PostMapping("/logIn")
-    public BaseResponse<PostLoginRes> logIn(@RequestBody PostLoginReq postLoginReq){
-        if(postLoginReq.getName() == null){
+    public BaseResponse<PostLoginRes> logIn(@RequestBody PostUserReq postUserReq){
+        if(postUserReq.getName() == null){
             return new BaseResponse<>(POST_USERS_EMPTY_NAME);
         }
 
-        if(postLoginReq.getPhoneNo() == null){
+        if(postUserReq.getPhoneNo() == null){
             return new BaseResponse<>(POST_USERS_EMPTY_PHONENO);
         }
 
         try{
-            PostLoginRes postLoginRes = userProvider.logIn(postLoginReq);
+            PostLoginRes postLoginRes = userProvider.logIn(postUserReq);
             return new BaseResponse<>(postLoginRes);
         } catch (BaseException exception){
             return new BaseResponse<>(exception.getStatus());
