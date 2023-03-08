@@ -165,7 +165,7 @@ public class UserController {
             if (!status.equals("Deleted")) {
                 userService.deleteUser(userIdx);
 
-                String result = user.getName() + "님, 회원탈퇴가 완료되었습니다.";
+                String result = user.getName() + "님, 회원탈퇴가 완료되었습니다.\n 탈퇴 후 7일간 재가입이 불가능합니다.";
                 return new BaseResponse<>(result);
             }
 

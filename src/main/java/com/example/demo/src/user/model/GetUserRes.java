@@ -29,9 +29,9 @@ public class GetUserRes {
 
     private Float longitude;
 
-    private int followerUserIdx;
+    private GetFollowerRes followerCount;
 
-    private int followingUserIdx;
+    private GetFollowingRes followingCount;
 
     private String status;
 

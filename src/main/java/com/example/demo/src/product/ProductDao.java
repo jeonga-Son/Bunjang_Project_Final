@@ -19,7 +19,6 @@ public class ProductDao {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
-
     public int getUserIdxByProductIdx(int productIdx) {
         String getUserIdxQuery = "select User.userIdx\n" +
                 "from User\n" +
