@@ -1668,8 +1668,8 @@ ex) 광고 참여 리워드</Comment>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <column id="413" parent="309" name="tagdx">
-      <AutoIncrement>19</AutoIncrement>
+    <column id="413" parent="309" name="tagIdx">
+      <AutoIncrement>1</AutoIncrement>
       <DasType>int|0s</DasType>
       <NotNull>1</NotNull>
       <Position>1</Position>
@@ -1703,7 +1703,7 @@ ex) 광고 참여 리워드</Comment>
       <Position>6</Position>
     </column>
     <index id="419" parent="309" name="PRIMARY">
-      <ColNames>tagdx</ColNames>
+      <ColNames>tagIdx</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
