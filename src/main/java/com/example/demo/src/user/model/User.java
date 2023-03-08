@@ -16,6 +16,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
+    // 유저 id, 이름, 휴대폰번호, 생년월일, 주소, 위도, 경도, 생성일, 수정일, 상태, 프로필이미지URL, 상품 소개
     private int userIdx;
 
     private String name;
@@ -30,10 +31,10 @@ public class User {
 
     private Float longitude;
 
-    @JsonFormat(pattern = "yyyy.MM.dd'T'hh:mm", timezone = "Asia/Seoul")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private Timestamp createAt;
 
-    @JsonFormat(pattern = "yyyy.MM.dd'T'hh:mm", timezone = "Asia/Seoul")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private Timestamp updateAt;
 
     private String status;

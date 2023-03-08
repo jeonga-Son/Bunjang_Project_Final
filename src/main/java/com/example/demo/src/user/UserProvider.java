@@ -37,26 +37,40 @@ public class UserProvider {
         }
     }
 
-    public GetUserRes getShop(int userIdx) {
+    public GetMyPageRes getMyPage(int userIdx) throws BaseException {
         try {
-            GetUserRes getUserRes = userDao.getShop(userIdx);
-            return getUserRes;
+            GetMyPageRes getMyPageRes = userDao.getMyPage(userIdx);
+            return getMyPageRes;
+        } catch (Exception exception) {
+            logger.error("App - getUser Provider Error", exception);
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    public GetShopRes getShop(int userIdx) throws BaseException {
+
+        if (userDao.getUser(userIdx).equals(null)) {
+            throw new BaseException(POST_USERS_EXISTS_PHONENO);
+        }
+
+        try {
+            GetShopRes getShopRes = userDao.getShop(userIdx);
+            return getShopRes;
         } catch (Exception exception) {
             logger.error("App - getShop Provider Error", exception);
         }
         return null;
     }
 
-    public PostLoginRes logIn(PostLoginReq postLoginReq) throws BaseException {
+    public PostLoginRes logIn(PostUserReq postUserReq) throws BaseException {
         try {
-            User user = userDao.checkUser(postLoginReq);
-            int resultIdx = userDao.checkPhoneNo(postLoginReq);
+            int resultIdx = userDao.checkPhoneNo(postUserReq);
 
             if(resultIdx == 1){
-                int userIdx = user.getUserIdx();
-                String jwt = jwtService.createJwt(userIdx);
-                String name = user.getName();
-                return new PostLoginRes(userIdx,name,jwt);
+                String jwt = jwtService.createJwt(postUserReq.getUserIdx());
+                String name = postUserReq.getName();
+                String resultMessage = "'" + name + "'" + "님 로그인에 성공하였습니다.";
+                return new PostLoginRes(name,jwt,resultMessage);
             }
             else{
                 throw new BaseException(FAILED_TO_LOGIN);
@@ -67,11 +81,4 @@ public class UserProvider {
         }
     }
 
-    public boolean checkUser(PostUserReq postUserReq) {
-        if(checkUser(postUserReq) == true) {
-            return true;
-        } else {
-            return false;
-        }
-    }
 }

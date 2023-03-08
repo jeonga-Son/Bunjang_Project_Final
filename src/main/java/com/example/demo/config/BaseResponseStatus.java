@@ -34,6 +34,7 @@ public enum BaseResponseStatus {
     POST_USERS_EMPTY_BIRTHDAY(false, 2019, "생년월일을 입력해주세요."),
     INACTIVE_USER(false, 2020, "비활성화 상태입니다"),
     DELETED_USER(false, 2021, "삭제된 사용자 입니다."),
+    POST_SHOP_NOT_EXISTS(false, 2022, "존재하지 않는 가게 입니다."),
 
     /**
      * 3000 : Response 오류

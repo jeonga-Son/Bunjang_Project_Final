@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Getter
@@ -12,9 +14,13 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PostUserReq {
+    private int userIdx;
+
     private String name;
 
     private String phoneNo;
 
     private Date birthday;
+
+    private Timestamp createDate = Timestamp.valueOf(LocalDateTime.now());;
 }

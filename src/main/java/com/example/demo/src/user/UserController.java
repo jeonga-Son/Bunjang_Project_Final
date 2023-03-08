@@ -29,20 +29,17 @@ public class UserController {
         this.jwtService = jwtService;
     }
 
-
     /**
      * 마이페이지 조회 API
      * [GET] /users/mypage/:userIdx
-     *
-     * @return BaseResponse<GetUserRes>
+     * @return BaseResponse<GetMyPageRes>
      */
     @ResponseBody
     @GetMapping("/mypage/{userIdx}") // (GET) 127.0.0.1:9000/users/mypage/:userIdx
-    public BaseResponse<GetUserRes> getUser(@PathVariable("userIdx") int userIdx) {
-        // Get Users
+    public BaseResponse<GetMyPageRes> getMyPage(@PathVariable("userIdx") int userIdx) {
         try {
-            GetUserRes getUserRes = userProvider.getUser(userIdx);
-            return new BaseResponse<>(getUserRes);
+            GetMyPageRes getMyPageRes = userProvider.getMyPage(userIdx);
+            return new BaseResponse<>(getMyPageRes);
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
@@ -52,20 +49,24 @@ public class UserController {
     /**
      * 특정 상점 조회 API
      * [GET] /users/:userIdx
-     *
-     * @return BaseResponse<GetUserRes>
+     * @return BaseResponse<GetMyShopRes>
      */
     @ResponseBody
     @GetMapping("/{userIdx}") // (GET) 127.0.0.1:9000/users/:userIdx
-    public BaseResponse<GetUserRes> getShop(@PathVariable("userIdx") int userIdx) {
-        GetUserRes getUserRes = userProvider.getShop(userIdx);
-        return new BaseResponse<>(getUserRes);
+    public BaseResponse<GetShopRes> getShop(@PathVariable("userIdx") int userIdx) {
+        try {
+            GetShopRes getShopRes = userProvider.getShop(userIdx);
+            return new BaseResponse<>(getShopRes);
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
+
     }
 
     /**
      * 회원가입 API
      * [POST] /users
-     * @return BaseResponse<Pos tUserRes>
+     * @return BaseResponse<PostUserRes>
      */
     @ResponseBody
     @PostMapping("")
@@ -90,7 +91,6 @@ public class UserController {
         }
     }
 
-
     /**
      * 로그인 API
      * [POST] /users/logIn
@@ -98,17 +98,17 @@ public class UserController {
      */
     @ResponseBody
     @PostMapping("/logIn")
-    public BaseResponse<PostLoginRes> logIn(@RequestBody PostLoginReq postLoginReq){
-        if(postLoginReq.getName() == null){
+    public BaseResponse<PostLoginRes> logIn(@RequestBody PostUserReq postUserReq){
+        if(postUserReq.getName() == null){
             return new BaseResponse<>(POST_USERS_EMPTY_NAME);
         }
 
-        if(postLoginReq.getPhoneNo() == null){
+        if(postUserReq.getPhoneNo() == null){
             return new BaseResponse<>(POST_USERS_EMPTY_PHONENO);
         }
 
         try{
-            PostLoginRes postLoginRes = userProvider.logIn(postLoginReq);
+            PostLoginRes postLoginRes = userProvider.logIn(postUserReq);
             return new BaseResponse<>(postLoginRes);
         } catch (BaseException exception){
             return new BaseResponse<>(exception.getStatus());
@@ -143,11 +143,9 @@ public class UserController {
         }
     }
 
-
     /**
      * 회원 탈퇴 API
      * [PATCH] /users/:userIdx/status
-     *
      * @return BaseResponse<String>
      */
     @ResponseBody
@@ -164,11 +162,10 @@ public class UserController {
             }
             //접근한 유저가 같고, 유저의 상태가 'Deleted'가 아닐 경우 회원 탈퇴 상태로 변경
             String status = user.getStatus();
-
             if (!status.equals("Deleted")) {
                 userService.deleteUser(userIdx);
 
-                String result = user.getName() + "님, 회원탈퇴가 완료되었습니다.";
+                String result = user.getName() + "님, 회원탈퇴가 완료되었습니다.\n 탈퇴 후 7일간 재가입이 불가능합니다.";
                 return new BaseResponse<>(result);
             }
 

@@ -10,6 +10,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
+
 import static com.example.demo.config.BaseResponseStatus.*;
 
 // Service Create, Update, Delete 의 로직 처리
@@ -33,15 +35,19 @@ public class UserService {
     //POST
     public PostUserRes createUser(PostUserReq postUserReq) throws BaseException {
         //중복
-        if (userProvider.checkUser(postUserReq) == true) {
+        if (userDao.checkUser(postUserReq) == 1) {
             throw new BaseException(POST_USERS_EXISTS_PHONENO);
         }
 
         try{
             int userIdx = userDao.createUser(postUserReq);
+            String name = postUserReq.getName();
+            String phoneNo = postUserReq.getPhoneNo();
+            Date birthday = postUserReq.getBirthday();
+            String resultmessage = "'" + name + "'" + "님 회원가입을 환영합니다.";
             //jwt 발급.
             String jwt = jwtService.createJwt(userIdx);
-            return new PostUserRes(userIdx,jwt);
+            return new PostUserRes(userIdx,name, phoneNo, birthday, jwt, resultmessage);
         } catch (Exception exception) {
             logger.error("App - createUser Service Error", exception);
             throw new BaseException(DATABASE_ERROR);

@@ -9,10 +9,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostLoginRes {
-    private String name;
-
-    private String jwt;
-
-    private String resultMessage;
+public class GetFollowingRes {
+    private int followingCount;
 }

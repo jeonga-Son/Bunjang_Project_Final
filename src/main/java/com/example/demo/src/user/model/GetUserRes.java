@@ -1,21 +1,20 @@
 package com.example.demo.src.user.model;
 
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.example.demo.src.product.model.PostProductImgs;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.sql.Timestamp;
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class GetUserRes {
-
     private int userIdx;
 
     private String name;
@@ -30,11 +29,9 @@ public class GetUserRes {
 
     private Float longitude;
 
-    @JsonFormat(pattern = "yyyy.MM.dd'T'hh:mm", timezone = "Asia/Seoul")
-    private Timestamp createAt;
+    private GetFollowerRes followerCount;
 
-    @JsonFormat(pattern = "yyyy.MM.dd'T'hh:mm", timezone = "Asia/Seoul")
-    private Timestamp updateAt;
+    private GetFollowingRes followingCount;
 
     private String status;
 
