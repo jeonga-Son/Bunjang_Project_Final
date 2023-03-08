@@ -162,11 +162,11 @@ public class UserController {
             // 예외처리 다시 구현하기.!!!
 //            String status = user.getStatus();
 //            if (!status.equals("Deleted")) {
-                PatchDeleteUserReq patchDeleteUserReq = new PatchDeleteUserReq(userIdx, user.getDeleteReasonContent());
-                userService.deleteUser(patchDeleteUserReq);
+            PatchDeleteUserReq patchDeleteUserReq = new PatchDeleteUserReq(userIdx, user.getDeleteReasonContent());
+            userService.deleteUser(patchDeleteUserReq);
 
-                String result = user.getName() + "님, 회원탈퇴가 완료되었습니다.\n 탈퇴 후 7일간 재가입이 불가능합니다.";
-                return new BaseResponse<>(result);
+            String result = "회원탈퇴가 완료되었습니다.";
+            return new BaseResponse<>(result);
 //            } else {
 //                return new BaseResponse<>(INVALID_USER);
 //            }

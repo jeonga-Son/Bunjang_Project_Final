@@ -1,5 +1,3 @@
-
-
 package com.example.demo.src.user.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
