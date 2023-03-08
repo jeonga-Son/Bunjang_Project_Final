@@ -3,10 +3,7 @@ package com.example.demo;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-<<<<<<< HEAD
 
-=======
->>>>>>> 1879515 ([feat] 상품, 팔로우, 리뷰 API 추가)
 @SpringBootApplication
 public class DemoApplication {
 

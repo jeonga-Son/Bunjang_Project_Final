@@ -50,7 +50,6 @@ dependencies {
     annotationProcessor('org.projectlombok:lombok:1.18.24')
 
     // DB
-
     runtimeOnly('mysql:mysql-connector-java:8.0.25') //mysql8
 
     runtimeOnly('mysql:mysql-connector-java') //mysql8
