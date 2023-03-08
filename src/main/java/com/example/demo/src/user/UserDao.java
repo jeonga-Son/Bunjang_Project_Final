@@ -1,5 +1,6 @@
 package com.example.demo.src.user;
 
+import com.example.demo.src.product.model.GetProductList;
 import com.example.demo.src.product.model.PostProductImgs;
 import com.example.demo.src.user.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,7 +8,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
-import java.awt.*;
 
 @Repository
 public class UserDao {
@@ -62,21 +62,25 @@ public class UserDao {
                         rs.getString("name"),
                         rs.getString("profileImgUrl"),
                         rs.getString("shopDescription"),
+                        rs.getFloat("avgStar"),
                         rs.getInt("point"),
-                        rs.getInt("follwerUserIdx"),
+                        rs.getInt("followerCount"),
                         rs.getInt("followingUserIdx"),
-                        this.jdbcTemplate.query("select Product.productIdx, Product.productName, Product.price, Product.saleStatus, ProductImg.productImgUrl\n" +
+                        this.jdbcTemplate.query("select productImgUrl\n" +
                                         "from Product\n" +
-                                        "    left join User on User.userIdx = Product.userIdx\n" +
-                                        "    left join ProductImg on Product.productIdx = ProductImg.productIdx\n" +
-                                        "    where User.userIdx = ? and Product.status='ACTIVE' and ProductImg.status='ACTIVE';",
-                                (rs2, rowNum2) -> new PostProductImgs(
-                                        rs2.getString("productImgUrl")),
-                                rs.getInt("productIdx"))
+                                        "left join ProductImg on Product.productIdx=ProductImg.productIdx\n" +
+                                        "left join User on Product.userIdx=User.userIdx\n" +
+                                        "where User.userIdx = 1 and ProductImg.status='ACTIVE';",
+                                (rs2, rowNum2) -> new GetProductList(
+                                        rs2.getInt("productIdx"),
+                                        rs2.getString("productImgUrl"),
+                                        rs2.getInt("price"),
+                                        rs2.getString("productName")),
+                                rs.getInt("userIdx"))
                 ), getUserParams);
     }
 
-    public GetMyShopRes getShop(int userIdx) {
+    public GetShopRes getShop(int userIdx) {
         // 상점 조회
         String getUserQuery = "select User.userIdx,User.name, AVG(Review.star),\n" +
                 "       (select count(followerUserIdx) from Follow where Follow.followingUserIdx=? and status='ACTIVE') AS follower,\n" +
@@ -91,7 +95,7 @@ public class UserDao {
         int getUserParams = userIdx;
 
         return this.jdbcTemplate.queryForObject(getUserQuery,
-                (rs, rowNum) -> new GetMyShopRes(
+                (rs, rowNum) -> new GetShopRes(
                         // 상호명, 후기 평점, 팔로워, 팔로잉, 판매상품 개수, 판매상품 list(최신순)
                         // 상품 id, 상품이름, 상품 가격,상품판매 상태, 상품 이미지 불러오기 List
                         rs.getInt("userIdx"),
@@ -105,9 +109,12 @@ public class UserDao {
                                         "    left join User on User.userIdx = Product.userIdx\n" +
                                         "    left join ProductImg on Product.productIdx = ProductImg.productIdx\n" +
                                         "    where User.userIdx = ? and Product.status='ACTIVE' and ProductImg.status='ACTIVE';",
-                                (rs2, rowNum2) -> new PostProductImgs(
-                                        rs2.getString("productImgUrl")),
-                                rs.getInt("productIdx"))
+                                (rs2, rowNum2) -> new GetProductList(
+                                        rs2.getInt("productIdx"),
+                                        rs2.getString("productImgUrl"),
+                                        rs2.getInt("price"),
+                                        rs2.getString("productName")),
+                                rs.getInt("userIdx"))
                 ), getUserParams);
     }
 
@@ -131,7 +138,6 @@ public class UserDao {
                         rs.getString("shopDescription")),
                 checkUserParam);
     }
-
 
     public int createUser(PostUserReq postUserReq){
         String createUserQuery = "insert into User (name, phoneNo, birthday) VALUES (?,?,?)";

@@ -1,6 +1,7 @@
 package com.example.demo.src.user.model;
 
 
+import com.example.demo.src.product.model.GetProductList;
 import com.example.demo.src.product.model.PostProductImgs;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,7 +14,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class GetMyShopRes {
+public class GetShopRes {
     // 유저 id, 이름, 프로필이미지URL, 포인트 잔액, 평점평균, 팔로우 id, 팔로잉 id
     private int userIdx;
 
@@ -27,6 +28,6 @@ public class GetMyShopRes {
 
     private int followingUserIdx;
 
-    private List<PostProductImgs> productImgs;
+    private List<GetProductList> productList;
 
 }

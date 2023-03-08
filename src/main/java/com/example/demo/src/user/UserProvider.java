@@ -47,10 +47,10 @@ public class UserProvider {
         }
     }
 
-    public GetMyShopRes getShop(int userIdx) {
+    public GetShopRes getShop(int userIdx) {
         try {
-            GetMyShopRes getMyShopRes = userDao.getShop(userIdx);
-            return getMyShopRes;
+            GetShopRes getShopRes = userDao.getShop(userIdx);
+            return getShopRes;
         } catch (Exception exception) {
             logger.error("App - getShop Provider Error", exception);
         }

@@ -1,6 +1,7 @@
 package com.example.demo.src.user.model;
 
 
+import com.example.demo.src.product.model.GetProductList;
 import com.example.demo.src.product.model.PostProductImgs;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
@@ -26,12 +27,14 @@ public class GetMyPageRes {
 
     private String shopDescription;
 
+    private float avgStar;
+
     private int point;
 
-    private int followerUserIdx;
+    private int followerCount;
 
-    private int followingUserIdx;
+    private int followingCount;
 
-    private List<PostProductImgs> productImgs;
+    private List<GetProductList> productList;
 
 }

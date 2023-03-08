@@ -1,5 +1,9 @@
 package com.example.demo.src.user;
 
+import com.example.demo.src.product.model.GetProductInfoRes;
+import com.example.demo.src.product.model.GetProductList;
+import com.example.demo.src.product.model.GetProductRes;
+import com.example.demo.src.product.model.GetShopInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.example.demo.config.BaseException;
@@ -8,6 +12,8 @@ import com.example.demo.src.user.model.*;
 import com.example.demo.utils.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import static com.example.demo.config.BaseResponseStatus.*;
 
@@ -36,7 +42,7 @@ public class UserController {
      */
     @ResponseBody
     @GetMapping("/mypage/{userIdx}") // (GET) 127.0.0.1:9000/users/mypage/:userIdx
-    public BaseResponse<GetMyPageRes> getUser(@PathVariable("userIdx") int userIdx) {
+    public BaseResponse<GetMyPageRes> getMyPage(@PathVariable("userIdx") int userIdx) {
         try {
             GetMyPageRes getMyPageRes = userProvider.getMyPage(userIdx);
             return new BaseResponse<>(getMyPageRes);
@@ -53,9 +59,9 @@ public class UserController {
      */
     @ResponseBody
     @GetMapping("/{userIdx}") // (GET) 127.0.0.1:9000/users/:userIdx
-    public BaseResponse<GetMyShopRes> getShop(@PathVariable("userIdx") int userIdx) {
-        GetMyShopRes getMyShopRes = userProvider.getShop(userIdx);
-        return new BaseResponse<>(getMyShopRes);
+    public BaseResponse<GetShopRes> getShop(@PathVariable("userIdx") int userIdx) {
+        GetShopRes getShopRes = userProvider.getShop(userIdx);
+        return new BaseResponse<>(getShopRes);
     }
 
     /**
