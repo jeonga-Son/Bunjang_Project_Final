@@ -54,9 +54,9 @@ public class UserController {
      */
     @ResponseBody
     @GetMapping("/{userIdx}") // (GET) 127.0.0.1:9000/users/:userIdx
-    public BaseResponse<GetMyPageRes> getShop(@PathVariable("userIdx") int userIdx) {
-        GetMyPageRes getMyPageRes = userProvider.getShop(userIdx);
-        return new BaseResponse<>(getMyPageRes);
+    public BaseResponse<GetMyShopRes> getShop(@PathVariable("userIdx") int userIdx) {
+        GetMyShopRes getMyShopRes = userProvider.getShop(userIdx);
+        return new BaseResponse<>(getMyShopRes);
     }
 
     /**
@@ -120,7 +120,7 @@ public class UserController {
     @PatchMapping("/{userIdx}")
     public BaseResponse<String> modifyShopInfo(@PathVariable("userIdx") int userIdx, @RequestBody PatchShopInfoReq patchShopInfoReq) {
         try {
-            GetMyPageRes user = userProvider.getUser(userIdx);
+            GetMyPageRes user = userProvider.getMyPage(userIdx);
 
             //jwt에서 idx 추출.
             int userIdxByJwt = jwtService.getUserIdx();
@@ -148,7 +148,7 @@ public class UserController {
     @PatchMapping("/{userIdx}/status")
     public BaseResponse<String> deleteUser(@PathVariable("userIdx") int userIdx) {
         try {
-            GetMyPageRes user = userProvider.getUser(userIdx);
+            User user = userProvider.getUser(userIdx);
 
             //jwt에서 idx 추출.
             int userIdxByJwt = jwtService.getUserIdx();

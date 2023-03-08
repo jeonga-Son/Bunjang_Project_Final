@@ -27,9 +27,9 @@ public class UserProvider {
         this.jwtService = jwtService;
     }
 
-    public GetMyPageRes getUser(int userIdx) throws BaseException {
+    public GetMyPageRes getMyPage(int userIdx) throws BaseException {
         try {
-            GetMyPageRes getMyPageRes = userDao.getUser(userIdx);
+            GetMyPageRes getMyPageRes = userDao.getMyPage(userIdx);
             return getMyPageRes;
         } catch (Exception exception) {
             logger.error("App - getUser Provider Error", exception);
@@ -37,10 +37,10 @@ public class UserProvider {
         }
     }
 
-    public GetMyPageRes getShop(int userIdx) {
+    public GetMyShopRes getShop(int userIdx) {
         try {
-            GetMyPageRes getMyPageRes = userDao.getShop(userIdx);
-            return getMyPageRes;
+            GetMyShopRes getMyShopRes = userDao.getShop(userIdx);
+            return getMyShopRes;
         } catch (Exception exception) {
             logger.error("App - getShop Provider Error", exception);
         }
