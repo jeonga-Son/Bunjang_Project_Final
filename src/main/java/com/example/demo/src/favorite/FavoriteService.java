@@ -2,7 +2,7 @@ package com.example.demo.src.favorite;
 
 
 import com.example.demo.config.BaseException;
-import com.example.demo.src.favorite.model.PostFavoriteReq;
+import com.example.demo.src.favorite.model.*;
 import com.example.demo.utils.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +29,7 @@ public class FavoriteService {
 
     }
 
-    // 리뷰 쓰기 메서드
+    // 찜 하기 메서드
     public int createFavorite(int productIdx, PostFavoriteReq postFavoriteReq) throws BaseException {
         try {
             int userIdx = postFavoriteReq.getUserIdx();
@@ -39,6 +39,21 @@ public class FavoriteService {
 
         } catch (Exception exception) {
             logger.error("App - createFavorite Service Error", exception);
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    // 찜 취소 메서드
+    public String cancelFavorite(int favoriteIdx) throws BaseException {
+        try {
+            String resultMessage = "찜 해제 완료";
+            int result = favoriteDao.updateFavoriteStatus(favoriteIdx);
+
+            if (result == 1)  return resultMessage;
+            else throw new BaseException(DATABASE_ERROR);
+
+        } catch (Exception exception) {
+            logger.error("App - cancelFavorite Service Error", exception);
             throw new BaseException(DATABASE_ERROR);
         }
     }

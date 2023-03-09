@@ -139,6 +139,20 @@ public class ProductController {
         }
     }
 
+    // 상품 리스트 뽑아내기 api
+    @ResponseBody
+    @GetMapping("/home") // (PATCH) 127.0.0.1:9000/products/home
+    public BaseResponse<List<GetProductList>> getProducts () {
+        try{
+            List<GetProductList> getProductList = productProvider.getProducts();
+            return new BaseResponse<>(getProductList);
+
+        } catch(BaseException exception){
+            return new BaseResponse<>((exception.getStatus()));
+        }
+    }
+
+
 
 
 

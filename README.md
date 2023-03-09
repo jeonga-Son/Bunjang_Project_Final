@@ -112,3 +112,11 @@
 * Product API 구현 완료
 * Follow API 구현 완료
 * Review API 구현 완료
+
+## 2023-03-09
+* [작업 중 DB 접속이 안되는 문제 발생 -> 원인을 알 수가 없어서, 초기 템플릿에 소스코드만 붙여넣는 방식으로 해결
+* 그러나 깃 원격저장소와 내용이 달라져서 push 안됨
+* 그래서 rich_2 로 브랜치를 새로 팠습니다.]
+* Favorite API 구현 완료
+* Product API 회원용으로 전환 및 validation 처리 작업중
+* Favorite 회월용으로 전환 및 validation 처리 작업중

@@ -1,5 +1,5 @@
 package com.example.demo.src.product;
-import com.example.demo.src.chat.model.GetChatRoomList;
+
 import com.example.demo.src.product.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -111,6 +111,25 @@ public class ProductDao {
                         rs.getInt("price"),
                         rs.getString("productName")),
                 getProductsParams
+        );
+    }
+
+    public List<GetProductList> getProducts() {
+        String getProductsQuery = "select Product.productIdx,productImgUrl, price, productName\n" +
+                "from User\n" +
+                "    left join Product on User.userIdx = Product.userIdx\n" +
+                "    left join ProductImg on Product.productIdx=ProductImg.productIdx\n" +
+                "where Product.status='ACTIVE' and Product.saleStatus='ONSALE'\n" +
+                "group by Product.productIdx\n" +
+                "limit 6";
+
+        return this.jdbcTemplate.query(getProductsQuery,
+                (rs, rowNum) -> new GetProductList(
+                        // 상품 id, 대표사진, 금액, 상품 이름
+                        rs.getInt("productIdx"),
+                        rs.getString("productImgUrl"),
+                        rs.getInt("price"),
+                        rs.getString("productName"))
         );
     }
 

@@ -50,6 +50,19 @@ public class ProductProvider {
         }
     }
 
+    // 랜덤으로 상품 목록 뽑아내기 (홈 화면 용)
+    public List<GetProductList> getProducts() throws BaseException {
+        try {
+            List<GetProductList> getProductList = productDao.getProducts();
+            return getProductList;
+        } catch (Exception exception) {
+            logger.error("App - getProducts Provider Error", exception);
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+
+
 
     // 상점 정보 불러오기
     public GetShopInfo getShopInfo(int userIdx) throws BaseException {
