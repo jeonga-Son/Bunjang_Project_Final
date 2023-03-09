@@ -11,12 +11,18 @@ import java.sql.Timestamp;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChatMember {
-    private int chatMemberIdx;
+public class PostChatReq {
+    private int userIdx;
+
+    private int chatIdx;
+
     private int chatRoomIdx;
-    private int userIdx1;
-    private int userIdx2;
+
+    private String message;
+
     private Timestamp createAt;
+
     private Timestamp updateAt;
+
     private String status;
 }
