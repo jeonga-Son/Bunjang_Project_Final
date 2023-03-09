@@ -1,4 +1,5 @@
 package com.example.demo.src.product;
+import com.example.demo.src.chat.model.GetChatRoomList;
 import com.example.demo.src.product.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -28,6 +29,7 @@ public class ProductDao {
 
         return this.jdbcTemplate.queryForObject(getUserIdxQuery, int.class, getProductIdxParams);
     }
+
     public List<GetReviewList> getReviews(int userIdx){
         String getReviewsQuery = "select reviewIdx, star, content, reviewImgUrl, User.name as userName, Review.createAt\n" +
                 "from Review\n" +
@@ -90,7 +92,6 @@ public class ProductDao {
                 getProductsParams
                 );
     }
-
 
     public List<GetProductList> getProducts(int userIdx, int limit) {
         String getProductsQuery = "select Product.productIdx,productImgUrl, price, productName\n" +
@@ -230,7 +231,6 @@ public class ProductDao {
 
         return this.jdbcTemplate.update(updatePruductQuery, updatePruductParams);
 
-
     }
 
     public void deleteProductImgs (int productIdx) {
@@ -272,7 +272,6 @@ public class ProductDao {
 
         String searchByTagParams = tag;
 
-
         return this.jdbcTemplate.query(searchByTag,
                 (rs, rowNum) -> new GetProductList(
                         // 상품 list (상품 id, 대표사진, 금액, 상품 이름)
@@ -283,6 +282,4 @@ public class ProductDao {
                 searchByTagParams
         );
     }
-
-
 }

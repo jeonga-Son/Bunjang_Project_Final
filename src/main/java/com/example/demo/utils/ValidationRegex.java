@@ -5,8 +5,6 @@ import java.util.regex.Pattern;
 
 public class ValidationRegex {
 
-    // public static boolean isRegexPhoneNO(String target) {
-
     public static boolean isRegexEmail(String target) {
 
         String regex = "^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$";
@@ -15,4 +13,3 @@ public class ValidationRegex {
         return matcher.find();
     }
 }
-

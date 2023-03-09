@@ -1,5 +1,3 @@
-
-
 package com.example.demo.src.user.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -43,4 +41,7 @@ public class User {
 
     private String shopDescription;
 
+    private String password;
+
+    private String deleteReasonContent;
 }

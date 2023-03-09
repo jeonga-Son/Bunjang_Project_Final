@@ -98,17 +98,17 @@ public class UserController {
      */
     @ResponseBody
     @PostMapping("/logIn")
-    public BaseResponse<PostLoginRes> logIn(@RequestBody PostUserReq postUserReq){
-        if(postUserReq.getName() == null){
+    public BaseResponse<PostLoginRes> logIn(@RequestBody PostLoginReq postLoginReq){
+        if(postLoginReq.getName() == null){
             return new BaseResponse<>(POST_USERS_EMPTY_NAME);
         }
 
-        if(postUserReq.getPhoneNo() == null){
+        if(postLoginReq.getPhoneNo() == null){
             return new BaseResponse<>(POST_USERS_EMPTY_PHONENO);
         }
 
         try{
-            PostLoginRes postLoginRes = userProvider.logIn(postUserReq);
+            PostLoginRes postLoginRes = userProvider.logIn(postLoginReq);
             return new BaseResponse<>(postLoginRes);
         } catch (BaseException exception){
             return new BaseResponse<>(exception.getStatus());
@@ -122,20 +122,20 @@ public class UserController {
      */
     @ResponseBody
     @PatchMapping("/{userIdx}")
-    public BaseResponse<String> modifyShopInfo(@PathVariable("userIdx") int userIdx, @RequestBody PatchShopInfoReq patchShopInfoReq) {
+    public BaseResponse<String> modifyShopInfo(@PathVariable("userIdx") int userIdx, @RequestBody User user) {
         try {
-            GetUserRes user = userProvider.getUser(userIdx);
-
             //jwt에서 idx 추출.
             int userIdxByJwt = jwtService.getUserIdx();
             //userIdx와 접근한 유저가 같은지 확인
             if (userIdx != userIdxByJwt) {
+                System.out.println("userIdx : " + userIdx + " // userIdxByJwt : " + userIdxByJwt);
                 return new BaseResponse<>(INVALID_USER_JWT);
             }
 
-            userService.modifyShop(userIdx, patchShopInfoReq);
+            PatchShopInfoReq patchShopInfoReq = new PatchShopInfoReq(userIdx, user.getProfileImgUrl(), user.getShopDescription());
+            userService.modifyShop(patchShopInfoReq);
 
-            String result = user.getName() + "님의 상점 소개가 수정되었습니다.";
+            String result = "상점 소개가 수정되었습니다.";
             return new BaseResponse<>(result);
 
         } catch (BaseException exception){
@@ -150,10 +150,8 @@ public class UserController {
      */
     @ResponseBody
     @PatchMapping("/{userIdx}/status")
-    public BaseResponse<String> deleteUser(@PathVariable("userIdx") int userIdx, @RequestBody PatchDeleteUserReq patchDeleteUserReq) {
+    public BaseResponse<String> deleteUser(@PathVariable("userIdx") int userIdx, @RequestBody User user) {
         try {
-            GetUserRes user = userProvider.getUser(userIdx);
-
             //jwt에서 idx 추출.
             int userIdxByJwt = jwtService.getUserIdx();
             //userIdx와 접근한 유저가 같은지 확인
@@ -161,15 +159,17 @@ public class UserController {
                 return new BaseResponse<>(INVALID_USER_JWT);
             }
             //접근한 유저가 같고, 유저의 상태가 'Deleted'가 아닐 경우 회원 탈퇴 상태로 변경
-            String status = user.getStatus();
-            if (!status.equals("Deleted")) {
-                userService.deleteUser(userIdx, patchDeleteUserReq);
+            // 예외처리 다시 구현하기.!!!
+//            String status = user.getStatus();
+//            if (!status.equals("Deleted")) {
+            PatchDeleteUserReq patchDeleteUserReq = new PatchDeleteUserReq(userIdx, user.getDeleteReasonContent());
+            userService.deleteUser(patchDeleteUserReq);
 
-                String result = user.getName() + "님, 회원탈퇴가 완료되었습니다.\n 탈퇴 후 7일간 재가입이 불가능합니다.";
-                return new BaseResponse<>(result);
-            } else {
-                return new BaseResponse<>(INVALID_USER);
-            }
+            String result = "회원탈퇴가 완료되었습니다.";
+            return new BaseResponse<>(result);
+//            } else {
+//                return new BaseResponse<>(INVALID_USER);
+//            }
 
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
