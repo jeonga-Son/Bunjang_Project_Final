@@ -43,5 +43,17 @@ public class ReviewService {
         }
     }
 
+    // 리뷰 삭제 메서드
+    public int deleteReview(int reviewIdx) throws BaseException {
+        try {
+            int result = reviewDao.updateReviewStatus(reviewIdx);
+
+            if (result == 1) return reviewIdx;
+            else throw new BaseException(DATABASE_ERROR);
+        } catch (Exception exception) {
+            logger.error("App - deleteReview Service Error", exception);
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 
 }

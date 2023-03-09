@@ -1,13 +1,12 @@
 package com.example.demo.src.review;
 
 import com.example.demo.config.BaseException;
+import com.example.demo.src.review.model.GetReviewsRes;
 import com.example.demo.utils.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 import static com.example.demo.config.BaseResponseStatus.DATABASE_ERROR;
 
@@ -27,16 +26,15 @@ public class ReviewProvider {
     }
 
 
-    // 팔로잉 조회 메서드
-//    public List<GetFollowingsRes> getFollowings(int userIdx) throws BaseException {
-//        try {
-//            List<GetFollowingsRes> getFollowingsRes = reviewDao.getFollowings(userIdx);
-//            return getFollowingsRes;
-//        } catch (Exception exception) {
-//            logger.error("App - getFollowings Provider Error", exception);
-//            throw new BaseException(DATABASE_ERROR);
-//        }
-//    }
+    public GetReviewsRes getReviewsRes(int userIdx) throws BaseException {
+        try {
+            GetReviewsRes getReviewsRes = reviewDao.getReviews(userIdx);
+            return getReviewsRes;
+        } catch (Exception exception) {
+            logger.error("App - getFollowings Provider Error", exception);
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 
 
 
