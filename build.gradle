@@ -35,6 +35,7 @@ repositories {
 
 dependencies {
     implementation 'org.jetbrains:annotations:23.0.0'
+    implementation 'org.wso2.appserver:wso2appserver-samples-tomcat-webapps-jdbc-data-source:5.3.0'
 
 
     // Spring Boot Starter
@@ -46,7 +47,7 @@ dependencies {
     annotationProcessor ('org.projectlombok:lombok:1.18.24')
 
     // DB
-    runtimeOnly ('mysql:mysql-connector-java') //mysql8
+    runtimeOnly ('mysql:mysql-connector-java:8.0.25') //mysql8
     //runtimeOnly 'mysql:mysql-connector-java:5.1.47' //mysql5
     implementation ('org.springframework.boot:spring-boot-starter-jdbc')
     implementation('org.springframework.boot:spring-boot-starter-data-jpa') //mysql 5버전의 경우 삭제.
@@ -70,6 +71,7 @@ dependencies {
 
     implementation('org.springframework.boot:spring-boot-starter')
     implementation('org.springframework.boot:spring-boot-starter-web')
+
 }
 
 test {
