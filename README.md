@@ -119,4 +119,4 @@
 * 그래서 rich_2 로 브랜치를 새로 팠습니다.]
 * Favorite API 구현 완료
 * Product API 회원용으로 전환 및 validation 처리 작업중
-* Favorite 회월용으로 전환 및 validation 처리 작업중
+* Favorite API 회원용으로 전환 및 validation 처리 작업중
