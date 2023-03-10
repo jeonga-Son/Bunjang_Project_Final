@@ -1,5 +1,6 @@
 package com.example.demo.src.chat.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,8 +19,7 @@ public class GetChat {
 
     private String message;
 
-    private Timestamp createAt;
-
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private Timestamp updateAt;
 
     private String status;

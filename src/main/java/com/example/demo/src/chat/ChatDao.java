@@ -2,10 +2,7 @@ package com.example.demo.src.chat;
 
 import com.example.demo.src.chat.model.GetChat;
 import com.example.demo.src.chat.model.GetChatRoomList;
-import com.example.demo.src.chat.model.PatchChatRes;
 import com.example.demo.src.chat.model.PostChatReq;
-import com.example.demo.src.product.model.GetProductList;
-import com.example.demo.src.user.model.GetMyPageRes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -25,73 +22,59 @@ public class ChatDao {
 
     public List<GetChatRoomList> getChatList(int userIdx) {
         // 프로필 이미지 url, 이름, 상점 소개
-        String searchChatRoomsByUserIdxQuery = "select User.userIdx, User.name, User.shopDescription, User.profileImgUrl\n" +
-                "from User\n" +
-                "    where User.userIdx = any(select ChatMember.userIdx2\n" +
-                "    from ChatMember\n" +
-                "        left join User on User.userIdx = ChatMember.userIdx1\n" +
-                "        left join Chat on Chat.userIdx = User.userIdx\n" +
-                "        where User.userIdx = ? and ChatMember.status = 'ACTIVE');";
+        String searchChatRoomsByUserIdxQuery = "select User.userIdx as chatPartner, Chat.chatRoomIdx, " +
+                "User.profileImgUrl, User.shopDescription, Chat.updateAt from User " +
+                "left join Chat on User.userIdx = Chat.chatIdx where Chat.userIdx = ?";
 
         int searchChatRoomsByUserIdxParams = userIdx;
 
         return this.jdbcTemplate.query(searchChatRoomsByUserIdxQuery,
                 (rs, rowNum) -> new GetChatRoomList(
-                        rs.getInt("userIdx"),
-                        rs.getInt("RoomIdx"),
+                        rs.getInt("chatPartner"),
+                        rs.getInt("chatRoomIdx"),
                         rs.getString("profileImgUrl"),
                         rs.getString("shopDescription"),
-                        rs.getTimestamp("createDate"),
-                        rs.getTimestamp("updateDate")),
+                        rs.getTimestamp("updateAt")),
                 searchChatRoomsByUserIdxParams);
     }
 
-    public GetChat getChat(int chatIdx) {
-        String getChatQuery = "";
-        Object[] getChatParams = new Object[]{};
+    public GetChat getChat(int chatRoomIdx) {
+        String getChatQuery = "select Chat.chatIdx, Chat.chatRoomIdx, Chat.message, Chat.updateAt, Chat.status\n" +
+                "                from Chat left join ChatRoom on ChatRoom.chatRoomIdx = Chat.chatRoomIdx where ChatRoom.chatRoomIdx = ?";
+        int getChatParam = chatRoomIdx;
 
         return this.jdbcTemplate.queryForObject(getChatQuery,
-                (rs, rowNum) -> new GetMyPageRes(
+                (rs, rowNum) -> new GetChat(
                         // 유저 id, 이름, 프로필이미지Url, 상점 설명, 포인트 잔액, 팔로워 id, 팔로잉 id
                         // 상품 id, 상품이름, 상품 가격,상품판매 상태, 상품 이미지 불러오기 List
-                        rs.getInt("userIdx"),
-                        rs.getString("name"),
-                        rs.getString("profileImgUrl"),
-                        rs.getFloat("avgStar"),
-                        rs.getInt("point"),
-                        rs.getInt("followerCount"),
-                        rs.getInt("followingCount"),
-                        this.jdbcTemplate.query("select Product.productIdx, Product.price, Product.productName, ProductImg.productImgUrl\n" +
-                                        "    from Product\n" +
-                                        "        left join ProductImg on Product.productIdx = ProductImg.productIdx\n" +
-                                        "        where Product.userIdx = ? and ProductImg.status='ACTIVE' and Product.status='ACTIVE' and Product.saleStatus = 'ONSALE'\n" +
-                                        "Group by Product.productIdx;",
-                                (rs2, rowNum2) -> new GetProductList(
-                                        rs2.getInt("productIdx"),
-                                        rs2.getString("productImgUrl"),
-                                        rs2.getInt("price"),
-                                        rs2.getString("productName")),
-                                rs.getInt("userIdx"))
-                ), getChatParams);
+                        rs.getInt("chatIdx"),
+                        rs.getInt("chatRoomIdx"),
+                        rs.getString("message"),
+                        rs.getTimestamp("updateAt"),
+                        rs.getString("status")
+                ), getChatParam);
     }
 
     // post, insert into
-    public PostChatReq createChat(PostChatReq postChatReq) {
-        String getChatQuery = "";
-        Object[] getChatParams = new Object[]{};
+    public int createChat(PostChatReq postChatReq, int userIdx) {
+        String getChatQuery = "insert into Chat (userIdx, chatRoomIdx, message) values(?, ?, ?)";
 
-        return this.jdbcTemplate.queryForObject(getChatQuery,
+        Object[] getChatParams = new Object[]{
+                userIdx,
+                postChatReq.getChatRoomIdx(),
+                postChatReq.getMessage()};
 
-                ), getChatParams);
+        this.jdbcTemplate.update(getChatQuery, getChatParams);
+
+        String lastInserIdQuery = "select last_insert_id()";
+        return this.jdbcTemplate.queryForObject(lastInserIdQuery,int.class);
     }
 
-    public void patchChat(int chatIdx) {
-        String getPatchQuery = "";
-        Object[] getChatParams = new Object[]{};
 
-        return this.jdbcTemplate.queryForObject(getChatQuery,
+    public void patchChat(int chatRoomIdx) {
+        String getPatchQuery = "update ChatRoom set status = 'DELETED' where chatRoomIdx = ? ";
 
-                ), getChatParams);
+        this.jdbcTemplate.update(getPatchQuery, chatRoomIdx);
     }
 }
 

@@ -5,24 +5,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.sql.Timestamp;
-
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class PostChatReq {
-    private int userIdx;
-
-    private int chatIdx;
-
-    private int chatRoomIdx;
-
     private String message;
-
-    private Timestamp createAt;
-
-    private Timestamp updateAt;
-
-    private String status;
+    private int chatRoomIdx;
 }
