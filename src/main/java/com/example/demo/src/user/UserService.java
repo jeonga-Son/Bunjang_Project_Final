@@ -19,23 +19,21 @@ public class UserService {
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final UserDao userDao;
-    private final UserProvider userProvider;
     private final JwtService jwtService;
-
+    private final UserProvider userProvider;
 
     @Autowired
-    public UserService(UserDao userDao, UserProvider userProvider, JwtService jwtService) {
+    public UserService(UserDao userDao, JwtService jwtService, UserProvider userProvider) {
         this.userDao = userDao;
-        this.userProvider = userProvider;
         this.jwtService = jwtService;
-
+        this.userProvider = userProvider;
     }
 
     //POST
     public PostUserRes createUser(PostUserReq postUserReq) throws BaseException {
-        //중복
-        if(userProvider.checkEmail(postUserReq.getEmail()) ==1){
-            throw new BaseException(POST_USERS_EXISTS_EMAIL);
+        // 이메일 중복
+        if(userProvider.checkPhoneNo(postUserReq.getPhoneNo()) ==1){
+            throw new BaseException(POST_USERS_EXISTS_PHONENO);
         }
 
         String pwd;
@@ -51,21 +49,35 @@ public class UserService {
             int userIdx = userDao.createUser(postUserReq);
             //jwt 발급.
             String jwt = jwtService.createJwt(userIdx);
-            return new PostUserRes(jwt,userIdx);
+
+            return new PostUserRes(userIdx,jwt);
         } catch (Exception exception) {
             logger.error("App - createUser Service Error", exception);
             throw new BaseException(DATABASE_ERROR);
         }
     }
 
-    public void modifyUserName(PatchUserReq patchUserReq) throws BaseException {
-        try{
-            int result = userDao.modifyUserName(patchUserReq);
-            if(result == 0){
-                throw new BaseException(MODIFY_FAIL_USERNAME);
+    public void deleteUser(PatchDeleteUserReq patchDeleteUserReq) throws BaseException {
+        try {
+            int result = userDao.deleteUser(patchDeleteUserReq);
+
+            if(result == 0) {
+                throw new BaseException(DELETE_FAIL_USER);
             }
-        } catch(Exception exception){
-            logger.error("App - modifyUserName Service Error", exception);
+        } catch (Exception exception) {
+            logger.error("App - deleteUser Service Error", exception);
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    public void modifyShop(PatchShopInfoReq patchShopInfoReq) throws BaseException {
+        try {
+            int result = userDao.modifyShop(patchShopInfoReq);
+            if(result == 0) {
+                throw new BaseException(MODIFY_FAIL_SHOP);
+            }
+        } catch (Exception exception) {
+            logger.error("App - modifyShop Service Error", exception);
             throw new BaseException(DATABASE_ERROR);
         }
     }

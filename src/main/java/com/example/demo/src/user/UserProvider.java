@@ -2,7 +2,6 @@ package com.example.demo.src.user;
 
 
 import com.example.demo.config.BaseException;
-import com.example.demo.config.BaseResponseStatus;
 import com.example.demo.src.user.model.*;
 import com.example.demo.utils.JwtService;
 import com.example.demo.utils.SHA256;
@@ -10,8 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 import static com.example.demo.config.BaseResponseStatus.*;
 
@@ -31,28 +28,6 @@ public class UserProvider {
         this.jwtService = jwtService;
     }
 
-    public List<GetUserRes> getUsers() throws BaseException{
-        try{
-            List<GetUserRes> getUserRes = userDao.getUsers();
-            return getUserRes;
-        }
-        catch (Exception exception) {
-            logger.error("App - getUserRes Provider Error", exception);
-            throw new BaseException(DATABASE_ERROR);
-        }
-    }
-
-    public List<GetUserRes> getUsersByEmail(String email) throws BaseException {
-        try {
-            List<GetUserRes> getUsersRes = userDao.getUsersByEmail(email);
-            return getUsersRes;
-        } catch (Exception exception) {
-            logger.error("App - getUsersByEmail Provider Error", exception);
-            throw new BaseException(DATABASE_ERROR);
-        }
-    }
-
-
     public GetUserRes getUser(int userIdx) throws BaseException {
         try {
             GetUserRes getUserRes = userDao.getUser(userIdx);
@@ -63,13 +38,29 @@ public class UserProvider {
         }
     }
 
-    public int checkEmail(String email) throws BaseException{
-        try{
-            return userDao.checkEmail(email);
-        } catch (Exception exception){
-            logger.error("App - checkEmail Provider Error", exception);
+    public GetMyPageRes getMyPage(int userIdx) throws BaseException {
+        try {
+            GetMyPageRes getMyPageRes = userDao.getMyPage(userIdx);
+            return getMyPageRes;
+        } catch (Exception exception) {
+            logger.error("App - getUser Provider Error", exception);
             throw new BaseException(DATABASE_ERROR);
         }
+    }
+
+    public GetShopRes getShop(int userIdx) throws BaseException {
+
+        if (userDao.getUser(userIdx).equals(null)) {
+            throw new BaseException(POST_USERS_EXISTS_PHONENO);
+        }
+
+        try {
+            GetShopRes getShopRes = userDao.getShop(userIdx);
+            return getShopRes;
+        } catch (Exception exception) {
+            logger.error("App - getShop Provider Error", exception);
+        }
+        return null;
     }
 
     public PostLoginRes logIn(PostLoginReq postLoginReq) throws BaseException {
@@ -94,6 +85,15 @@ public class UserProvider {
             }
         } catch (Exception exception) {
             logger.error("App - logIn Provider Error", exception);
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    public int checkPhoneNo(String phoneNo) throws BaseException {
+        try{
+            return userDao.checkPhoneNo(phoneNo);
+        } catch (Exception exception) {
+            logger.error("App - checkPhoneNo Provider Error", exception);
             throw new BaseException(DATABASE_ERROR);
         }
     }

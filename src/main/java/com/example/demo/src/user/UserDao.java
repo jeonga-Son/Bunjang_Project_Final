@@ -1,13 +1,12 @@
 package com.example.demo.src.user;
 
-
+import com.example.demo.src.product.model.GetProductList;
 import com.example.demo.src.user.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
-import java.util.List;
 
 @Repository
 public class UserDao {
@@ -19,86 +18,189 @@ public class UserDao {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
-    public List<GetUserRes> getUsers(){
-        String getUsersQuery = "select * from UserInfo";
-        return this.jdbcTemplate.query(getUsersQuery,
-                (rs,rowNum) -> new GetUserRes(
-                        rs.getInt("userIdx"),
-                        rs.getString("userName"),
-                        rs.getString("ID"),
-                        rs.getString("Email"),
-                        rs.getString("password"))
-                );
-    }
-
-    public List<GetUserRes> getUsersByEmail(String email){
-        String getUsersByEmailQuery = "select * from UserInfo where email =?";
-        String getUsersByEmailParams = email;
-        return this.jdbcTemplate.query(getUsersByEmailQuery,
-                (rs, rowNum) -> new GetUserRes(
-                        rs.getInt("userIdx"),
-                        rs.getString("userName"),
-                        rs.getString("ID"),
-                        rs.getString("Email"),
-                        rs.getString("password")),
-                getUsersByEmailParams);
-    }
-
     public GetUserRes getUser(int userIdx){
-        String getUserQuery = "select * from UserInfo where userIdx = ?";
-        int getUserParams = userIdx;
+        String getUserQuery = "select userIdx, name, phoneNo, birthday, address, latitude,\n" +
+                "       longitude, createAt, updateAt, status, profileImgUrl,\n" +
+                "       password,shopDescription, deleteReasonContent,\n" +
+                "       (select count(Follow.followingUserIdx)\n" +
+                "        from User\n" +
+                "            left join Follow on User.userIdx = Follow.followingUserIdx\n" +
+                "             where userIdx = ?) AS followerCount,\n" +
+                "        (select count(Follow.followerUserIdx)\n" +
+                "        from User\n" +
+                "            left join Follow on User.userIdx = Follow.followerUserIdx\n" +
+                "            where userIdx = ?) AS followingCount\n" +
+                "from User where userIdx = ?;";
+
+        Object[] getUserParams = new Object[]{userIdx, userIdx, userIdx};
+
         return this.jdbcTemplate.queryForObject(getUserQuery,
                 (rs, rowNum) -> new GetUserRes(
                         rs.getInt("userIdx"),
-                        rs.getString("userName"),
-                        rs.getString("ID"),
-                        rs.getString("Email"),
-                        rs.getString("password")),
-                getUserParams);
+                        rs.getString("name"),
+                        rs.getString("phoneNo"),
+                        rs.getDate("birthday"),
+                        rs.getString("address"),
+                        rs.getFloat("latitude"),
+                        rs.getFloat("longitude"),
+                        rs.getInt("followerCount"),
+                        rs.getInt("followingCount"),
+                        rs.getString("status"),
+                        rs.getString("profileImgUrl"),
+                        rs.getString("shopDescription"),
+                        rs.getString("password"),
+                        rs.getString("deleteReasonContent")
+                ), getUserParams);
     }
-    
+
+    public GetMyPageRes getMyPage(int userIdx){
+        // 마이페이지 조회
+        String getUserQuery = "Select User.userIdx, User.profileImgUrl ,User.name, sum(Point.point) as point, AVG(Review.star) as avgStar,\n" +
+                "                       (select count(followerUserIdx) from Follow where Follow.followingUserIdx=? and status='ACTIVE') AS followingCount,\n" +
+                "                       (select count(followingUserIdx) from Follow where Follow.followerUserIdx=? and status = 'ACTIVE') AS followerCount,\n" +
+                "                       (select count(Product.productIdx) from Product where Product.userIdx = ? and Product.status = 'ACTIVE' and Product.saleStatus != 'SOLD') As TotalProductCount,\n" +
+                "                       (select count(Product.saleStatus) from Product where Product.userIdx = ? and Product.saleStatus = 'SOLD') AS saleResultCount\n" +
+                "                From User\n" +
+                "                    left join Point on User.userIdx = Point.userIdx\n" +
+                "                    left join Review on User.userIdx = Review.userIdx\n" +
+                "                    where User.userIdx = ?;";
+
+        Object[] getUserParams = new Object[]{userIdx, userIdx, userIdx, userIdx, userIdx};
+
+        return this.jdbcTemplate.queryForObject(getUserQuery,
+                (rs, rowNum) -> new GetMyPageRes(
+                        // 유저 id, 이름, 프로필이미지Url, 상점 설명, 포인트 잔액, 팔로워 id, 팔로잉 id
+                        // 상품 id, 상품이름, 상품 가격,상품판매 상태, 상품 이미지 불러오기 List
+                        rs.getInt("userIdx"),
+                        rs.getString("name"),
+                        rs.getString("profileImgUrl"),
+                        rs.getFloat("avgStar"),
+                        rs.getInt("point"),
+                        rs.getInt("followerCount"),
+                        rs.getInt("followingCount"),
+                        this.jdbcTemplate.query("select Product.productIdx, Product.price, Product.productName, ProductImg.productImgUrl\n" +
+                                        "    from Product\n" +
+                                        "        left join ProductImg on Product.productIdx = ProductImg.productIdx\n" +
+                                        "        where Product.userIdx = ? and ProductImg.status='ACTIVE' and Product.status='ACTIVE' and Product.saleStatus = 'ONSALE'\n" +
+                                        "Group by Product.productIdx;",
+                                (rs2, rowNum2) -> new GetProductList(
+                                        rs2.getInt("productIdx"),
+                                        rs2.getString("productImgUrl"),
+                                        rs2.getInt("price"),
+                                        rs2.getString("productName")),
+                                rs.getInt("userIdx"))
+                ), getUserParams);
+    }
+
+    public GetShopRes getShop(int userIdx) {
+        // 상점 조회
+        String getUserQuery = "select User.userIdx,User.name, AVG(Review.star) as avgStar, User.profileImgUrl, User.shopDescription,\n" +
+                "       (select count(followerUserIdx) from Follow where Follow.followingUserIdx=? and status='ACTIVE') AS followerCount,\n" +
+                "       (select count(followingUserIdx) from Follow where Follow.followerUserIdx=? and status='ACTIVE') AS followingCount,\n" +
+                "       (select count(productIdx) from Product where userIdx=? and status = 'ACTIVE') As TotalProduct\n" +
+                "from User\n" +
+                "    left join Review on User.userIdx = Review.userIdx\n" +
+                "    left join Follow on Review.status = Follow.status\n" +
+                "    left join Product on Review.productIdx = Product.productIdx\n" +
+                "    left join ProductImg on Product.productIdx = ProductImg.productIdx\n" +
+                "    where User.userIdx=? and ProductImg.status='ACTIVE';";
+        Object[] getUserParams = new Object[]{userIdx, userIdx, userIdx, userIdx};
+
+        return this.jdbcTemplate.queryForObject(getUserQuery,
+                (rs, rowNum) -> new GetShopRes(
+                        // 상호명, 후기 평점, 팔로워, 팔로잉, 판매상품 개수, 판매상품 list(최신순)
+                        // 상품 id, 상품이름, 상품 가격,상품판매 상태, 상품 이미지 불러오기 List
+                        rs.getInt("userIdx"),
+                        rs.getString("name"),
+                        rs.getString("profileImgUrl"),
+                        rs.getString("shopDescription"),
+                        rs.getInt("followerCount"),
+                        rs.getInt("followingCount"),
+                        this.jdbcTemplate.query("select Product.productIdx, Product.productName, Product.price, ProductImg.productImgUrl\n" +
+                                        "from Product\n" +
+                                        "    left join User on User.userIdx = Product.userIdx\n" +
+                                        "    left join ProductImg on Product.productIdx = ProductImg.productIdx\n" +
+                                        "    where User.userIdx = ? and Product.status='ACTIVE' and ProductImg.status='ACTIVE';",
+                                (rs2, rowNum2) -> new GetProductList(
+                                        rs2.getInt("productIdx"),
+                                        rs2.getString("productImgUrl"),
+                                        rs2.getInt("price"),
+                                        rs2.getString("productName")),
+                                rs.getInt("userIdx"))
+                ), getUserParams);
+    }
+
+    public int checkUser(PostUserReq postUserReq) {
+        String checkUserQuery = "select exists(select * from User where password = ?)";
+        String checkUserParam = postUserReq.getPassword();
+        return this.jdbcTemplate.queryForObject(checkUserQuery,
+                int.class,
+                checkUserParam);
+    }
 
     public int createUser(PostUserReq postUserReq){
-        String createUserQuery = "insert into UserInfo (userName, ID, password, email) VALUES (?,?,?,?)";
-        Object[] createUserParams = new Object[]{postUserReq.getUserName(), postUserReq.getId(), postUserReq.getPassword(), postUserReq.getEmail()};
+        String createUserQuery = "insert into User (name, phoneNo, birthday, password) VALUES (?,?,?,?)";
+        Object[] createUserParams = new Object[]{postUserReq.getName(), postUserReq.getPhoneNo(), postUserReq.getBirthday(), postUserReq.getPassword()};
         this.jdbcTemplate.update(createUserQuery, createUserParams);
 
         String lastInserIdQuery = "select last_insert_id()";
         return this.jdbcTemplate.queryForObject(lastInserIdQuery,int.class);
     }
 
-    public int checkEmail(String email){
-        String checkEmailQuery = "select exists(select email from UserInfo where email = ?)";
-        String checkEmailParams = email;
-        return this.jdbcTemplate.queryForObject(checkEmailQuery,
-                int.class,
-                checkEmailParams);
+    public int checkPhoneNo(PostUserReq postUserReq) {
+        String checkUserIdxQuery = "select exists(select name, phoneNo from User where phoneNo = ?)";
+        String checkPhoneNoParma = postUserReq.getPhoneNo();
 
+        return this.jdbcTemplate.queryForObject(checkUserIdxQuery,int.class, checkPhoneNoParma);
     }
 
-    public int modifyUserName(PatchUserReq patchUserReq){
-        String modifyUserNameQuery = "update UserInfo set userName = ? where userIdx = ? ";
-        Object[] modifyUserNameParams = new Object[]{patchUserReq.getUserName(), patchUserReq.getUserIdx()};
+    public int deleteUser(PatchDeleteUserReq patchDeleteUserReq) {
+        String deleteUserQuery = "update User set status = 'DELETED', deleteReasonContent = ? where userIdx = ? ";
+        Object[] insertDeleteReasonParams = new Object[]{ patchDeleteUserReq.getDeleteReasonContent(), patchDeleteUserReq.getUserIdx()};
 
-        return this.jdbcTemplate.update(modifyUserNameQuery,modifyUserNameParams);
+        return this.jdbcTemplate.update(deleteUserQuery,insertDeleteReasonParams);
     }
 
-    public User getPwd(PostLoginReq postLoginReq){
-        String getPwdQuery = "select userIdx, password,email,userName,ID from UserInfo where ID = ?";
-        String getPwdParams = postLoginReq.getId();
+    public int modifyShop(PatchShopInfoReq patchShopInfoReq) {
+        String modifyShopQuery = "update User set profileImgUrl = ?, shopDescription = ?  where userIdx = ? ";
+        Object[] modifyShopParams = new Object[]{patchShopInfoReq.getProfileImgUrl(), patchShopInfoReq.getShopDescription(), patchShopInfoReq.getUserIdx()};
+        return this.jdbcTemplate.update(modifyShopQuery, modifyShopParams);
+    }
+
+    public User getPwd(PostLoginReq postLoginReq) {
+        String getPwdQuery = "select userIdx, name, phoneNo, birthday, address, latitude, longitude,\n" +
+                "       createAt, updateAt, status, profileImgUrl, shopDescription, password, deleteReasonContent\n" +
+                "From User\n" +
+                "    where phoneNo = ?;";
+        String getPwdParams = postLoginReq.getPhoneNo();
 
         return this.jdbcTemplate.queryForObject(getPwdQuery,
                 (rs,rowNum)-> new User(
                         rs.getInt("userIdx"),
-                        rs.getString("ID"),
-                        rs.getString("userName"),
+                        rs.getString("name"),
+                        rs.getString("phoneNo"),
+                        rs.getDate("birthday"),
+                        rs.getString("address"),
+                        rs.getFloat("latitude"),
+                        rs.getFloat("longitude"),
+                        rs.getTimestamp("createAt"),
+                        rs.getTimestamp("updateAt"),
+                        rs.getString("status"),
+                        rs.getString("profileImgUrl"),
+                        rs.getString("shopDescription"),
                         rs.getString("password"),
-                        rs.getString("email")
+                        rs.getString("deleteReasonContent")
+
                 ),
                 getPwdParams
-                );
-
+        );
     }
 
-
+    public int checkPhoneNo(String phoneNo) {
+        String checkPhoneNoQuery = "select exists(select phoneNo from User where phoneNo = ?)";
+        String checkPhoneNoParams = phoneNo;
+        return this.jdbcTemplate.queryForObject(checkPhoneNoQuery,
+                int.class,
+                checkPhoneNoParams);
+    }
 }
