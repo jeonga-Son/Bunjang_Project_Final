@@ -14,7 +14,6 @@ import java.sql.Timestamp;
 public class GetChatRoom {
     private int chatRoomIdx;
     private int productIdx;
-    private Timestamp createAt;
     private Timestamp updateAt;
     private String status;
 }

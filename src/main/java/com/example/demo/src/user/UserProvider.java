@@ -10,6 +10,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 import static com.example.demo.config.BaseResponseStatus.*;
 
 //Provider : Read의 비즈니스 로직 처리
@@ -48,15 +50,29 @@ public class UserProvider {
         }
     }
 
-    public GetShopRes getShop(int userIdx) throws BaseException {
+    public GetStoreRes getStore(int userIdx) throws BaseException {
 
         if (userDao.getUser(userIdx).equals(null)) {
-            throw new BaseException(POST_USERS_EXISTS_PHONENO);
+            throw new BaseException(POST_USERS_EMPTY_USER);
         }
 
         try {
-            GetShopRes getShopRes = userDao.getShop(userIdx);
-            return getShopRes;
+            GetStoreRes getStoreRes = userDao.getStore(userIdx);
+            return getStoreRes;
+        } catch (Exception exception) {
+            logger.error("App - getShop Provider Error", exception);
+        }
+        return null;
+    }
+
+    public List<GetStoreProductsRes> getStoreProducts(int userIdx) throws BaseException {
+        if (userDao.getUser(userIdx).equals(null)) {
+            throw new BaseException(POST_USERS_EMPTY_USER);
+        }
+
+        try {
+            List<GetStoreProductsRes> getStoreProductsRes = userDao.getStoreProducts(userIdx);
+            return getStoreProductsRes;
         } catch (Exception exception) {
             logger.error("App - getShop Provider Error", exception);
         }

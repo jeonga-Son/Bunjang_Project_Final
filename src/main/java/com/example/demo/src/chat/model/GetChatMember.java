@@ -16,7 +16,6 @@ public class GetChatMember {
     private int chatRoomIdx;
     private int userIdx1;
     private int userIdx2;
-    private Timestamp createAt;
     private Timestamp updateAt;
     private String status;
 }

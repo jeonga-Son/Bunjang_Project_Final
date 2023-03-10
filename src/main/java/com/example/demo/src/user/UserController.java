@@ -1,13 +1,15 @@
 package com.example.demo.src.user;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponse;
 import com.example.demo.src.user.model.*;
 import com.example.demo.utils.JwtService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import static com.example.demo.config.BaseResponseStatus.*;
 
@@ -47,20 +49,35 @@ public class UserController {
     }
 
     /**
-     * 특정 상점 조회 API
-     * [GET] /users/:userIdx
+     * 상점 조회 API
+     * [GET] /users/store/:userIdx
      * @return BaseResponse<GetMyShopRes>
      */
     @ResponseBody
-    @GetMapping("/{userIdx}") // (GET) 127.0.0.1:9000/users/:userIdx
-    public BaseResponse<GetShopRes> getShop(@PathVariable("userIdx") int userIdx) {
+    @GetMapping("/store/{userIdx}") // (GET) 127.0.0.1:9000/users/store/:userIdx
+    public BaseResponse<GetStoreRes> getShop(@PathVariable("userIdx") int userIdx) {
         try {
-            GetShopRes getShopRes = userProvider.getShop(userIdx);
-            return new BaseResponse<>(getShopRes);
+            GetStoreRes getStoreRes = userProvider.getStore(userIdx);
+            return new BaseResponse<>(getStoreRes);
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
         }
+    }
 
+    /**
+     * 상점 상품 조회 API
+     * [GET] /users/store/:userIdx/products
+     * @return BaseResponse<GetMyShopRes>
+     */
+    @ResponseBody
+    @GetMapping("/store/{userIdx}/products") // (GET) 127.0.0.1:9000/users/store/:userIdx/products
+    public BaseResponse<List<GetStoreProductsRes>> getStoreProducts(@PathVariable("userIdx") int userIdx) {
+        try {
+            List<GetStoreProductsRes> getStoreProducts = userProvider.getStoreProducts(userIdx);
+            return new BaseResponse<>(getStoreProducts);
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
     }
 
     /**

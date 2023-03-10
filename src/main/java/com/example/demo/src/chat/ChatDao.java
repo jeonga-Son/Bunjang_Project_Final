@@ -30,10 +30,10 @@ public class ChatDao {
 
         return this.jdbcTemplate.query(searchChatRoomsByUserIdxQuery,
                 (rs, rowNum) -> new GetChatRoomList(
-                        rs.getInt("chatPartner"),
+                        rs.getInt("userIdx"),
                         rs.getInt("chatRoomIdx"),
                         rs.getString("profileImgUrl"),
-                        rs.getString("shopDescription"),
+                        rs.getString("message"),
                         rs.getTimestamp("updateAt")),
                 searchChatRoomsByUserIdxParams);
     }
@@ -48,7 +48,9 @@ public class ChatDao {
                         // 유저 id, 이름, 프로필이미지Url, 상점 설명, 포인트 잔액, 팔로워 id, 팔로잉 id
                         // 상품 id, 상품이름, 상품 가격,상품판매 상태, 상품 이미지 불러오기 List
                         rs.getInt("chatIdx"),
+                        rs.getInt("userIdx"),
                         rs.getInt("chatRoomIdx"),
+                        rs.getInt("chatMemberIdx"),
                         rs.getString("message"),
                         rs.getTimestamp("updateAt"),
                         rs.getString("status")

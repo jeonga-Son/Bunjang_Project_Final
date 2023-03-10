@@ -36,6 +36,7 @@ public enum BaseResponseStatus {
     DELETED_USER(false, 2021, "삭제된 사용자 입니다."),
     POST_SHOP_NOT_EXISTS(false, 2022, "존재하지 않는 가게 입니다."),
     INVALID_USER(false, 2023, "이미 탈퇴한 회원입니다."),
+    POST_USERS_EMPTY_USER(false, 2024, "존재하지 않는 회원 번호 입니다."),
 
     /**
      * 3000 : Response 오류

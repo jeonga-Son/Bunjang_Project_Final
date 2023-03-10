@@ -33,7 +33,7 @@ public class ChatController {
     }
 
 
-    /** 채팅방 조회 API => 쿼리수정
+    /** 채팅 목록 조회 API => 쿼리수정
      *
      * @return
      */
@@ -50,7 +50,7 @@ public class ChatController {
     }
 
 
-    /** 채팅방 내역 조회 API => 쿼리수정
+    /** 채팅 내역 조회 API
      *
      * @param
      * @return
@@ -72,8 +72,8 @@ public class ChatController {
      * @return
      */
     @ResponseBody
-    @PostMapping("/{userIdx}")
-    public BaseResponse<PostChatRes> createChat(@RequestBody PostChatReq postChatReq, @PathVariable("userIdx") int userIdx) throws BaseException {
+    @PostMapping("")
+    public BaseResponse<PostChatRes> createChat(@RequestBody PostChatReq postChatReq, @RequestParam("userIdx") int userIdx) throws BaseException {
         try{
             PostChatRes createChat = chatService.createChat(postChatReq, userIdx);
             return new BaseResponse<>(createChat);
@@ -82,7 +82,7 @@ public class ChatController {
         }
     }
 
-    /** 채팅방 삭제 API
+    /** 채팅 상태 변경 API (삭제)
      *
      * @param
      * @return

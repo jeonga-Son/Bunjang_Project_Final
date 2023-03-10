@@ -15,7 +15,11 @@ import java.sql.Timestamp;
 public class GetChat {
     private int chatIdx;
 
+    private int userIdx;
+
     private int chatRoomIdx;
+
+    private int chatMemberIdx;
 
     private String message;
 

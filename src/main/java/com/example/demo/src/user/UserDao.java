@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.util.List;
 
 @Repository
 public class UserDao {
@@ -92,42 +93,48 @@ public class UserDao {
                 ), getUserParams);
     }
 
-    public GetShopRes getShop(int userIdx) {
+    public GetStoreRes getStore(int userIdx) {
         // 상점 조회
         String getUserQuery = "select User.userIdx,User.name, AVG(Review.star) as avgStar, User.profileImgUrl, User.shopDescription,\n" +
-                "       (select count(followerUserIdx) from Follow where Follow.followingUserIdx=? and status='ACTIVE') AS followerCount,\n" +
-                "       (select count(followingUserIdx) from Follow where Follow.followerUserIdx=? and status='ACTIVE') AS followingCount,\n" +
-                "       (select count(productIdx) from Product where userIdx=? and status = 'ACTIVE') As TotalProduct\n" +
-                "from User\n" +
-                "    left join Review on User.userIdx = Review.userIdx\n" +
-                "    left join Follow on Review.status = Follow.status\n" +
-                "    left join Product on Review.productIdx = Product.productIdx\n" +
-                "    left join ProductImg on Product.productIdx = ProductImg.productIdx\n" +
-                "    where User.userIdx=? and ProductImg.status='ACTIVE';";
-        Object[] getUserParams = new Object[]{userIdx, userIdx, userIdx, userIdx};
+                "                       (select count(followerUserIdx) from Follow where Follow.followingUserIdx=? and status='ACTIVE') AS followerCount,\n" +
+                "                       (select count(followingUserIdx) from Follow where Follow.followerUserIdx=? and status='ACTIVE') AS followingCount\n" +
+                "                from User\n" +
+                "                    left join Review on User.userIdx = Review.userIdx\n" +
+                "                    left join Follow on Review.status = Follow.status\n" +
+                "                    left join Product on Review.productIdx = Product.productIdx\n" +
+                "                    left join ProductImg on Product.productIdx = ProductImg.productIdx\n" +
+                "                    where User.userIdx=? and ProductImg.status='ACTIVE'";
+        Object[] getUserParams = new Object[]{userIdx, userIdx, userIdx};
 
         return this.jdbcTemplate.queryForObject(getUserQuery,
-                (rs, rowNum) -> new GetShopRes(
-                        // 상호명, 후기 평점, 팔로워, 팔로잉, 판매상품 개수, 판매상품 list(최신순)
-                        // 상품 id, 상품이름, 상품 가격,상품판매 상태, 상품 이미지 불러오기 List
+                (rs, rowNum) -> new GetStoreRes(
                         rs.getInt("userIdx"),
                         rs.getString("name"),
                         rs.getString("profileImgUrl"),
                         rs.getString("shopDescription"),
                         rs.getInt("followerCount"),
-                        rs.getInt("followingCount"),
-                        this.jdbcTemplate.query("select Product.productIdx, Product.productName, Product.price, ProductImg.productImgUrl\n" +
-                                        "from Product\n" +
-                                        "    left join User on User.userIdx = Product.userIdx\n" +
-                                        "    left join ProductImg on Product.productIdx = ProductImg.productIdx\n" +
-                                        "    where User.userIdx = ? and Product.status='ACTIVE' and ProductImg.status='ACTIVE';",
-                                (rs2, rowNum2) -> new GetProductList(
-                                        rs2.getInt("productIdx"),
-                                        rs2.getString("productImgUrl"),
-                                        rs2.getInt("price"),
-                                        rs2.getString("productName")),
-                                rs.getInt("userIdx"))
+                        rs.getInt("followingCount")
                 ), getUserParams);
+    }
+
+    public List<GetStoreProductsRes> getStoreProducts(int userIdx) {
+        String getUserQuery = "select Product.productIdx, (select count(productIdx) from Product where userIdx=? and status = 'ACTIVE') As TotalProduct,\n" +
+                "       Product.productName, Product.price, ProductImg.productImgUrl\n" +
+                "                                        from Product\n" +
+                "                                            left join User on User.userIdx = Product.userIdx\n" +
+                "                                            left join ProductImg on Product.productIdx = ProductImg.productIdx\n" +
+                "                                            where User.userIdx = ? and Product.status='ACTIVE'\n" +
+                "                                            order by Product.createAt desc;";
+        Object[] getUserParams = new Object[]{userIdx, userIdx};
+
+        return this.jdbcTemplate.query(getUserQuery,
+                (rs, rowNum) -> new GetStoreProductsRes(
+                        rs.getInt("productIdx"),
+                        rs.getString("productImgUrl"),
+                        rs.getInt("price"),
+                        rs.getString("productName")),
+                getUserParams);
+
     }
 
     public int checkUser(PostUserReq postUserReq) {
@@ -203,4 +210,5 @@ public class UserDao {
                 int.class,
                 checkPhoneNoParams);
     }
+
 }
