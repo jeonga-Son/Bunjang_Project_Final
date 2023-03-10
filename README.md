@@ -118,5 +118,6 @@
 * 그러나 깃 원격저장소와 내용이 달라져서 push 안됨
 * 그래서 rich_2 로 브랜치를 새로 팠습니다.]
 * Favorite API 구현 완료
-* Product API 회원용으로 전환 및 validation 처리 작업중
-* Favorite API 회원용으로 전환 및 validation 처리 작업중
+* Product 카테고리, 서브카테고리 별 목록 조회 API (홈 화면 용) 추가
+* 모든 API 구현 및 회원용 적용 완료
+* Product API 형식적 validation 적용 완료 / 의미적 validation 작업중

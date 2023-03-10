@@ -37,7 +37,9 @@ public class ReviewDao {
                 postReviewReq.getReviewImgUrl()};
 
 
-        return this.jdbcTemplate.update(insertReviewQuery, insertReviewParams);
+        this.jdbcTemplate.update(insertReviewQuery, insertReviewParams);
+        String lastInsertIdQuery = "select last_insert_id()";
+        return this.jdbcTemplate.queryForObject(lastInsertIdQuery, int.class);
 
 
     }

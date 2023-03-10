@@ -14,9 +14,8 @@ public class PatchProductReq {
    private int userIdx;
    private List<PostProductImgs> productImgs;
    private String productName;
-   private int categoryIdx;
    private int subCategoryIdx;
-   private List<PostTags> tag;
+   private List<PostTags> tags;
    private int price;
    private String description;
 }

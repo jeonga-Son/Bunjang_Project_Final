@@ -5,7 +5,6 @@ import com.example.demo.config.BaseResponse;
 import com.example.demo.src.follow.model.GetFollowersRes;
 import com.example.demo.src.follow.model.GetFollowingsRes;
 import com.example.demo.src.follow.model.PostFollowReq;
-import com.example.demo.src.product.model.*;
 import com.example.demo.utils.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static com.example.demo.config.BaseResponseStatus.INVALID_USER_JWT;
 
 @RestController
 @RequestMapping("/users")
@@ -42,6 +43,11 @@ public class FollowController {
     @GetMapping("/{userIdx}/followings") // (GET) 127.0.0.1:9000/users/:userIdx/followings
     public BaseResponse<List<GetFollowingsRes>> getFollowingsRes(@PathVariable("userIdx") int userIdx) {
         try{
+            // 회원용 API
+            int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출
+            if (userIdx != userIdxByJwt) { // 유저가 제시한 userIdx != jwt에서 추출한 userIdx
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
             List<GetFollowingsRes> getFollowingsRes = followProvider.getFollowings(userIdx);
             return new BaseResponse<>(getFollowingsRes);
         } catch(BaseException exception){
@@ -59,6 +65,11 @@ public class FollowController {
     @PostMapping("/{userIdx}/follow") // (POST) 127.0.0.1:9000/users/:userIdx/follow
     public BaseResponse<Integer> postFollowRes(@PathVariable("userIdx") int followerIdx, @RequestBody PostFollowReq postFollowReq) {
         try{
+            // 회원용 API
+            int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출
+            if (followerIdx != userIdxByJwt) { // 유저가 제시한 userIdx != jwt에서 추출한 userIdx
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
             int followIdx = followService.followUser(followerIdx, postFollowReq.getUserIdx());
             return new BaseResponse<>(followIdx);
         } catch(BaseException exception){
@@ -76,6 +87,11 @@ public class FollowController {
     @PatchMapping("/{userIdx}/followStatus") // (PATCH) 127.0.0.1:9000/users/:userIdx/followStatus
     public BaseResponse<Integer> patchFollow(@PathVariable("userIdx") int followerIdx, @RequestBody PostFollowReq postFollowReq) {
         try{
+            // 회원용 API
+            int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출
+            if (followerIdx != userIdxByJwt) { // 유저가 제시한 userIdx != jwt에서 추출한 userIdx
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
             int followIdx = followService.unfollow(followerIdx, postFollowReq.getUserIdx());
             return new BaseResponse<>(followIdx);
         } catch(BaseException exception){
@@ -93,6 +109,11 @@ public class FollowController {
     @GetMapping("/{userIdx}/followers") // (PATCH) 127.0.0.1:9000/users/:userIdx/followers
     public BaseResponse<List<GetFollowersRes>> getFollowerRes(@PathVariable("userIdx") int userIdx) {
         try{
+            // 회원용 API
+            int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출
+            if (userIdx != userIdxByJwt) { // 유저가 제시한 userIdx != jwt에서 추출한 userIdx
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
             List<GetFollowersRes> getFollowersRes = followProvider.getFollowers(userIdx);
             return new BaseResponse<>(getFollowersRes);
         } catch(BaseException exception){

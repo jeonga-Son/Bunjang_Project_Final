@@ -2,8 +2,6 @@ package com.example.demo.src.follow;
 
 
 import com.example.demo.config.BaseException;
-import com.example.demo.src.follow.*;
-import com.example.demo.src.follow.model.*;
 import com.example.demo.utils.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +50,7 @@ public class FollowService {
             if (result == 1) return followIdx;
             else throw new BaseException(DATABASE_ERROR);
         } catch (Exception exception) {
-            logger.error("App - followUser Service Error", exception);
+            logger.error("App - unfollow Service Error", exception);
             throw new BaseException(DATABASE_ERROR);
         }
     }

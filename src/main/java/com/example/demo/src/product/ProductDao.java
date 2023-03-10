@@ -63,7 +63,7 @@ public class ProductDao {
         return this.jdbcTemplate.query(getReviewsQuery,
                 (rs, rowNum) -> new GetReviewList (
                         // 후기 List (2개까지 출력, 리뷰id, 후기 별점, 후기 내용, 후기 사진, 후기 작성자 이름, 작성일자)
-                        rs.getInt("reviewidx"),
+                        rs.getInt("reviewIdx"),
                         rs.getInt("star"),
                         rs.getString("content"),
                         rs.getString("reviewImgUrl"),
@@ -130,6 +130,45 @@ public class ProductDao {
                         rs.getString("productImgUrl"),
                         rs.getInt("price"),
                         rs.getString("productName"))
+        );
+    }
+
+    public List<GetProductList> getProductsByCat(int categoryIdx) {
+        String getProductsQuery = "select Product.productIdx,productImgUrl, price, productName\n" +
+                "from User\n" +
+                "    left join Product on User.userIdx = Product.userIdx\n" +
+                "    left join ProductImg on Product.productIdx=ProductImg.productIdx\n" +
+                "where Product.status='ACTIVE' and Product.saleStatus='ONSALE' and categoryIdx=?\n" +
+                "group by Product.productIdx\n";
+        int getProductsByCatParams = categoryIdx;
+
+        return this.jdbcTemplate.query(getProductsQuery,
+                (rs, rowNum) -> new GetProductList(
+                        // 상품 id, 대표사진, 금액, 상품 이름
+                        rs.getInt("productIdx"),
+                        rs.getString("productImgUrl"),
+                        rs.getInt("price"),
+                        rs.getString("productName")), getProductsByCatParams
+        );
+    }
+
+
+    public List<GetProductList> getProductsBySubCat(int subCategoryIdx) {
+        String getProductsQuery = "select Product.productIdx,productImgUrl, price, productName\n" +
+                "from User\n" +
+                "    left join Product on User.userIdx = Product.userIdx\n" +
+                "    left join ProductImg on Product.productIdx=ProductImg.productIdx\n" +
+                "where Product.status='ACTIVE' and Product.saleStatus='ONSALE' and subCategoryIdx=?\n" +
+                "group by Product.productIdx\n";
+        int getProductsBySubCatParams = subCategoryIdx;
+
+        return this.jdbcTemplate.query(getProductsQuery,
+                (rs, rowNum) -> new GetProductList(
+                        // 상품 id, 대표사진, 금액, 상품 이름
+                        rs.getInt("productIdx"),
+                        rs.getString("productImgUrl"),
+                        rs.getInt("price"),
+                        rs.getString("productName")), getProductsBySubCatParams
         );
     }
 
@@ -206,7 +245,7 @@ public class ProductDao {
     public int insertProducts(int userIdx, PostProductReq postProductReq){
         String insertProductsQuery = "insert into Product(categoryIdx, subCategoryidx, userIdx, productName, price, description) values(?,?,?,?,?,?)";
         Object [] insertProductsParams = new Object[] {
-                postProductReq.getCategoryIdx(),
+                getCategoryIdx(postProductReq.getSubCategoryIdx()),
                 postProductReq.getSubCategoryIdx(),
                 userIdx,
                 postProductReq.getProductName(),
@@ -235,13 +274,12 @@ public class ProductDao {
     }
 
     public int updateProduct(int productIdx, PatchProductReq patchProductReq) {
-        // Product Table은 update만
         String updatePruductQuery = "update Product\n" +
                 "set categoryIdx = ?, subCategoryIdx = ?, productName =?, price=?,description=?\n" +
                 "where productIdx=?";
 
         Object[] updatePruductParams = new Object[] {
-                patchProductReq.getCategoryIdx(),
+                getCategoryIdx(patchProductReq.getSubCategoryIdx()),
                 patchProductReq.getSubCategoryIdx(),
                 patchProductReq.getProductName(),
                 patchProductReq.getPrice(),
@@ -300,5 +338,39 @@ public class ProductDao {
                         rs.getString("productName")),
                 searchByTagParams
         );
+
     }
+
+    public int getCategoryIdx (int subCategoryIdx) {
+        String getCategoryIdxQuery = "select categoryIdx from SubCategory where subCategoryIdx=? and status='ACTIVE'";
+
+        int getCategoryIdxParams = subCategoryIdx;
+
+        return this.jdbcTemplate.queryForObject(getCategoryIdxQuery, int.class, getCategoryIdxParams);
+    }
+
+
+    // 존재하는 상품인지?
+    public int checkProductExists(int productIdx){
+        String checkProductExistsQuery = "select exists(select productIdx from Product where productIdx = ? and status='ACTIVE');";
+        int checkProductExistsParams = productIdx;
+        return this.jdbcTemplate.queryForObject(checkProductExistsQuery, int.class, checkProductExistsParams);
+    }
+
+    // 존재하는 서브카테고리인지?
+    public int checkSubCategoryExists(int subCategoryIdx){
+        String checkSubCategoryExistsQuery = "select exists(select subCategoryIdx from SubCategory where subCategoryIdx = ? and status='ACTIVE');";
+        int checkSubCategoryExistsParams = subCategoryIdx;
+        return this.jdbcTemplate.queryForObject(checkSubCategoryExistsQuery, int.class, checkSubCategoryExistsParams);
+    }
+
+    // 판매상태 반환 함수
+    public String getSaleStatus(int productIdx){
+        String checkSaleStatusQuery = "select saleStatus from Product where productIdx=?";
+        int checkSaleStatusParams = productIdx;
+        return this.jdbcTemplate.queryForObject(checkSaleStatusQuery, String.class, checkSaleStatusParams);
+    }
+
+
+
 }

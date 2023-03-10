@@ -1,7 +1,10 @@
 package com.example.demo.src.product;
 
 import com.example.demo.config.BaseException;
-import com.example.demo.src.product.model.*;
+import com.example.demo.src.product.model.GetProductInfoRes;
+import com.example.demo.src.product.model.GetProductList;
+import com.example.demo.src.product.model.GetReviewList;
+import com.example.demo.src.product.model.GetShopInfo;
 import com.example.demo.utils.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,7 +13,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.example.demo.config.BaseResponseStatus.*;
+import static com.example.demo.config.BaseResponseStatus.DATABASE_ERROR;
+import static com.example.demo.config.BaseResponseStatus.PRODUCT_NOT_EXISTS;
 @Service
 public class ProductProvider {
 
@@ -40,6 +44,9 @@ public class ProductProvider {
 
     // 이 상점의 상품 목록 불러오기
     public List<GetProductList> getProducts(int productIdx) throws BaseException {
+        // validation : 존재하는 상품인지?
+        if(checkProductExists(productIdx) == 0)
+            throw new BaseException(PRODUCT_NOT_EXISTS);
         try {
             int userIdx = productDao.getUserIdxByProductIdx(productIdx);
             List<GetProductList> getProductList = productDao.getProducts(userIdx);
@@ -61,6 +68,26 @@ public class ProductProvider {
         }
     }
 
+    // 카테고리 별 상품 목록 뽑아내기
+    public List<GetProductList> getProductsByCat(int categoryIdx) throws BaseException {
+        try {
+            List<GetProductList> getProductList = productDao.getProductsByCat(categoryIdx);
+            return getProductList;
+        } catch (Exception exception) {
+            logger.error("App - getProducts Provider Error", exception);
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    public List<GetProductList> getProductsBySubCat(int subCategoryIdx) throws BaseException {
+        try {
+            List<GetProductList> getProductList = productDao.getProductsBySubCat(subCategoryIdx);
+            return getProductList;
+        } catch (Exception exception) {
+            logger.error("App - getProducts Provider Error", exception);
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 
 
 
@@ -97,6 +124,26 @@ public class ProductProvider {
         }
     }
 
+
+    // 존재하는 상품인지?
+    public int checkProductExists(int productIdx) throws BaseException{
+        try{
+            return productDao.checkProductExists(productIdx);
+        } catch (Exception exception){
+            logger.error("App - checkProductExists Provider Error", exception);
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    // 존재하는 서브 카테고리인지?
+    public int checkSubCategoryExists(int subCategoryIdx) throws BaseException{
+        try{
+            return productDao.checkSubCategoryExists(subCategoryIdx);
+        } catch (Exception exception){
+            logger.error("App - checkSubCategoryExists Provider Error", exception);
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 
 
 
