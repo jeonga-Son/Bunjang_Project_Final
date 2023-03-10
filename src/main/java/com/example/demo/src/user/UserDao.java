@@ -56,7 +56,7 @@ public class UserDao {
 
     public GetMyPageRes getMyPage(int userIdx){
         // 마이페이지 조회
-        String getUserQuery = "Select User.userIdx, User.profileImgUrl ,User.name, sum(Point.point) as point, AVG(Review.star) as avgStar,\n" +
+        String getUserQuery = "Select User.userIdx, User.profileImgUrl, User.shopDescription, User.name, sum(Point.point) as point, AVG(Review.star) as avgStar,\n" +
                 "                       (select count(followerUserIdx) from Follow where Follow.followingUserIdx=? and status='ACTIVE') AS followingCount,\n" +
                 "                       (select count(followingUserIdx) from Follow where Follow.followerUserIdx=? and status = 'ACTIVE') AS followerCount,\n" +
                 "                       (select count(Product.productIdx) from Product where Product.userIdx = ? and Product.status = 'ACTIVE' and Product.saleStatus != 'SOLD') As TotalProductCount,\n" +
@@ -75,6 +75,7 @@ public class UserDao {
                         rs.getInt("userIdx"),
                         rs.getString("name"),
                         rs.getString("profileImgUrl"),
+                        rs.getString("shopDescription"),
                         rs.getFloat("avgStar"),
                         rs.getInt("point"),
                         rs.getInt("followerCount"),

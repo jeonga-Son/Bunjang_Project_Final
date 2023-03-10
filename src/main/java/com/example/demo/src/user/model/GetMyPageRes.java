@@ -2,15 +2,11 @@ package com.example.demo.src.user.model;
 
 
 import com.example.demo.src.product.model.GetProductList;
-import com.example.demo.src.product.model.PostProductImgs;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.sql.Timestamp;
-import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -24,6 +20,8 @@ public class GetMyPageRes {
     private String name;
 
     private String profileImgUrl;
+
+    private String shopDescription;
 
     private float avgStar;
 
