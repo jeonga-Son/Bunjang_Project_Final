@@ -1,6 +1,7 @@
 package com.example.demo.src.product;
 
 import com.example.demo.config.BaseException;
+import com.example.demo.config.RichException;
 import com.example.demo.src.product.model.GetProductInfoRes;
 import com.example.demo.src.product.model.GetProductList;
 import com.example.demo.src.product.model.GetReviewList;
@@ -79,6 +80,8 @@ public class ProductProvider {
         }
     }
 
+
+    // 서브 카테고리 상품 목록 뽑아내
     public List<GetProductList> getProductsBySubCat(int subCategoryIdx) throws BaseException {
         try {
             List<GetProductList> getProductList = productDao.getProductsBySubCat(subCategoryIdx);
@@ -103,11 +106,18 @@ public class ProductProvider {
     }
 
     // 상품 정보 불러오기
-    public GetProductInfoRes getProductInfoRes(int productIdx) throws BaseException {
+    public GetProductInfoRes getProductInfoRes(int productIdx) throws BaseException, RichException {
         try {
+            // validation : 존재하는 상품인지?
+            if(productDao.checkProductExists(productIdx) == 0)
+                throw new RichException(PRODUCT_NOT_EXISTS);
+
             GetProductInfoRes getProductInfoRes = productDao.getProductInfoRes(productIdx);
             return getProductInfoRes;
-        } catch (Exception exception) {
+        } catch (RichException richException) {
+            logger.error("App - patchProduct Service Error", richException);
+            throw new RichException(richException.getStatus());
+        }catch (Exception exception) {
             logger.error("App - getProductRes Provider Error", exception);
             throw new BaseException(DATABASE_ERROR);
         }
