@@ -1307,7 +1307,7 @@ sys|schema||mysql.sys|localhost|TRIGGER|G</Grants>
       <NotNull>1</NotNull>
       <Position>2</Position>
     </column>
-    <column id="346" parent="303" name="useridx2">
+    <column id="346" parent="303" name="userIdx2">
       <DasType>int|0s</DasType>
       <NotNull>1</NotNull>
       <Position>3</Position>
