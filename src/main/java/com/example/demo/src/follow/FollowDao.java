@@ -1,13 +1,14 @@
 package com.example.demo.src.follow;
-import com.example.demo.src.follow.model.*;
+
+import com.example.demo.src.follow.model.GetFollowersRes;
+import com.example.demo.src.follow.model.GetFollowingsProducts;
+import com.example.demo.src.follow.model.GetFollowingsRes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
-import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.Locale;
 
 @Repository
 public class FollowDao {
@@ -76,10 +77,25 @@ public class FollowDao {
     public int getFollowIdx (int followerIdx, int followingUserIdx) {
         String updateFollowStatusQuery = "select followIdx\n" +
                 "from Follow\n" +
-                "where followerUserIdx=? and followingUserIdx=? and followStatus = 'ACTIVE'";
+                "where followerUserIdx=? and followingUserIdx=?";
         Object[] updateFollowStatusParams = new Object[] {followerIdx, followingUserIdx};
+        try {
+            return this.jdbcTemplate.queryForObject(updateFollowStatusQuery, int.class, updateFollowStatusParams);
+        } catch (Exception exception) {
+            return 0;
+        }
+    }
 
-        return this.jdbcTemplate.queryForObject(updateFollowStatusQuery, int.class, updateFollowStatusParams);
+    public int getFollowIdx (int followerIdx, int followingUserIdx, String status) {
+        String updateFollowStatusQuery = "select followIdx\n" +
+                "from Follow\n" +
+                "where followerUserIdx=? and followingUserIdx=? and followStatus = ?";
+        Object[] updateFollowStatusParams = new Object[] {followerIdx, followingUserIdx, status};
+        try {
+            return this.jdbcTemplate.queryForObject(updateFollowStatusQuery, int.class, updateFollowStatusParams);
+        } catch (Exception exception) {
+            return 0;
+        }
     }
 
     public int updateFollowStatus (int followIdx) {
@@ -92,6 +108,7 @@ public class FollowDao {
 
     public List<GetFollowersRes> getFollowers(int userIdx) {
         String getFollowersQuery = "SELECT\n" +
+                "    Follow.followIdx,\n" +
                 "    user_list.userIdx,\n" +
                 "    user_list.name,\n" +
                 "    user_list.profileImgUrl,\n" +
@@ -112,12 +129,31 @@ public class FollowDao {
 
         return this.jdbcTemplate.query(getFollowersQuery,
                 (rs, rownum) -> new GetFollowersRes(
-                        // 팔로워 유저 id, 유저 이름, 유저 프로필 사진, 팔로워 수, 상품 수
+                        // 팔로우 id, 팔로워 유저 id, 유저 이름, 유저 프로필 사진, 팔로워 수, 상품 수
+                        rs.getInt("followIdx"),
                         rs.getInt("userIdx"),
                         rs.getString("name"),
                         rs.getString("profileImgUrl"),
                         rs.getInt("followerCount"),
                         rs.getInt("productCount")), getFollowersParams);
+    }
+
+    public void reFollow (int followIdx) {
+        String reFollowQuery = "update Follow set followStatus='ACTIVE' where followIdx=?";
+        int reFollowParams = followIdx;
+
+        this.jdbcTemplate.update(reFollowQuery, reFollowParams);
+    }
+
+    public int getUserIdxOfFollow(int followIdx) {
+        String getUserIdxOfFollowQuery = "select followerUserIdx from Follow where followIdx=?";
+        int getUserIdxOfFollowParams = followIdx;
+
+        try {
+            return this.jdbcTemplate.queryForObject(getUserIdxOfFollowQuery, int.class, getUserIdxOfFollowParams);
+        } catch (Exception exception) {
+            return 0;
+        }
     }
 
 

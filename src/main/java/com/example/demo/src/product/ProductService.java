@@ -73,6 +73,10 @@ public class ProductService {
     public PatchProductRes patchProduct(int productIdx, PatchProductReq patchProductReq) throws BaseException, RichException {
         try {
 
+            // validation : 존재하는 상품인지?
+            if(productDao.checkProductExists(productIdx) == 0)
+                throw new RichException(PRODUCT_NOT_EXISTS);
+
             // 회원용 API : 권한이 있는 유저인가? (이 상품의 작성자인가?)
             int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출
             if (getUserIdxOfProduct(productIdx) != userIdxByJwt)
@@ -81,10 +85,6 @@ public class ProductService {
             // validation : 존재하는 서브 카테고리인지?
             if(checkSubCategoryExists(patchProductReq.getSubCategoryIdx()) == 0)
                 throw new RichException(SUBCATEGORY_NOT_EXISTS);
-
-            // validation : 존재하는 상품인지?
-            if(productDao.checkProductExists(productIdx) == 0)
-                throw new RichException(PRODUCT_NOT_EXISTS);
 
 
             // 상품 수정
@@ -107,12 +107,12 @@ public class ProductService {
                         productDao.insertTags(productIdx, patchProductReq.getTags().get(j));
                     }
                 }
-            }
+                return new PatchProductRes(productIdx);
 
-            return new PatchProductRes(productIdx);
+            } else throw new BaseException(DATABASE_ERROR);
 
-        }
-        catch (RichException richException) {
+
+        } catch (RichException richException) {
             logger.error("App - patchProduct Service Error", richException);
             throw new RichException(richException.getStatus());
         } catch (Exception exception) {
@@ -128,9 +128,14 @@ public class ProductService {
             if(checkProductExists(productIdx) == 0)
                 throw new RichException(PRODUCT_NOT_EXISTS);
 
+            // 회원용 API : 권한이 있는 유저인가? (이 상품의 작성자인가?)
+            int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출
+            if (getUserIdxOfProduct(productIdx) != userIdxByJwt)
+                throw new RichException(INVALID_USER_JWT);
+
             // validation : 요청값의 saleStatus값이 올바른지?
             List<String> saleStatusList = Arrays.asList("ONSALE", "ORDERED", "SOLD");
-            if(saleStatusList.contains(saleStatus))
+            if(!saleStatusList.contains(saleStatus))
                 throw new RichException(PATCH_INVALID_PRODUCT_STATUS);
 
             // validation : 요청하는 판매 상태와 기존 판매상태가 같은지?
@@ -154,6 +159,12 @@ public class ProductService {
     // 상품 삭제 메서드
     public PatchProductRes deleteProduct(int productIdx) throws BaseException, RichException {
         try {
+
+            // 회원용 API : 권한이 있는 유저인가? (이 상품의 작성자인가?)
+            int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출
+            if (getUserIdxOfProduct(productIdx) != userIdxByJwt)
+                throw new RichException(INVALID_USER_JWT);
+
             // validation : 존재하는 상품인지?
             if(productDao.checkProductExists(productIdx) == 0)
                 throw new RichException(PRODUCT_NOT_EXISTS);

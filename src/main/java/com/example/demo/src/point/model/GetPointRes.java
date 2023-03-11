@@ -1,4 +1,4 @@
-package com.example.demo.src.follow.model;
+package com.example.demo.src.point.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostFollowReq {
-    private int followerIdx;
+public class GetPointRes {
+    private int totalPoint;
 
+    private long thirtyDayExpireDate;
 }

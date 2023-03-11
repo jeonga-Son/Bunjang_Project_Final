@@ -11,10 +11,11 @@ import java.sql.Timestamp;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChatRoom {
+public class GetChatMember {
+    private int chatMemberIdx;
     private int chatRoomIdx;
-    private int productIdx;
-    private Timestamp createAt;
+    private int userIdx1;
+    private int userIdx2;
     private Timestamp updateAt;
     private String status;
 }

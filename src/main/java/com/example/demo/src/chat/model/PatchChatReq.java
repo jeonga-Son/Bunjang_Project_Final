@@ -5,22 +5,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.sql.Timestamp;
-
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Chat {
-    private int chatIdx;
-
+public class PatchChatReq {
     private int chatRoomIdx;
-
-    private String message;
-
-    private Timestamp createAt;
-
-    private Timestamp updateAt;
-
-    private String status;
 }
