@@ -5,18 +5,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
-
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class GetPointRes {
-    private int PointIdx;
+    private int totalPoint;
 
-    private int point;
-
-    private String pointName;
-
-    private Date expireDate;
+    private long thirtyDayExpireDate;
 }
