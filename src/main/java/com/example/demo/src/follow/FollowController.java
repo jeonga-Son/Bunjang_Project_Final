@@ -62,15 +62,15 @@ public class FollowController {
      * @return
      */
     @ResponseBody
-    @PostMapping("/{userIdx}/follow") // (POST) 127.0.0.1:9000/users/:userIdx/follow
-    public BaseResponse<Integer> postFollowRes(@PathVariable("userIdx") int followerIdx, @RequestBody PostFollowReq postFollowReq) {
+    @PostMapping("/{followerIdx}/follow") // (POST) 127.0.0.1:9000/users/:followerIdx/follow
+    public BaseResponse<Integer> postFollowRes(@PathVariable("followerIdx") int followerIdx, @RequestBody PostFollowReq postFollowReq) {
         try{
             // 회원용 API
             int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출
             if (followerIdx != userIdxByJwt) { // 유저가 제시한 userIdx != jwt에서 추출한 userIdx
                 return new BaseResponse<>(INVALID_USER_JWT);
             }
-            int followIdx = followService.followUser(followerIdx, postFollowReq.getUserIdx());
+            int followIdx = followService.followUser(followerIdx, postFollowReq.getFollowingUserIdx());
             return new BaseResponse<>(followIdx);
         } catch(BaseException exception){
             return new BaseResponse<>((exception.getStatus()));
@@ -84,15 +84,15 @@ public class FollowController {
      * @return
      */
     @ResponseBody
-    @PatchMapping("/{userIdx}/followStatus") // (PATCH) 127.0.0.1:9000/users/:userIdx/followStatus
-    public BaseResponse<Integer> patchFollow(@PathVariable("userIdx") int followerIdx, @RequestBody PostFollowReq postFollowReq) {
+    @PatchMapping("/{followerIdx}/followStatus") // (PATCH) 127.0.0.1:9000/users/:userIdx/followStatus
+    public BaseResponse<Integer> patchFollow(@PathVariable("followerIdx") int followerIdx, @RequestBody PostFollowReq postFollowReq) {
         try{
             // 회원용 API
             int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출
             if (followerIdx != userIdxByJwt) { // 유저가 제시한 userIdx != jwt에서 추출한 userIdx
                 return new BaseResponse<>(INVALID_USER_JWT);
             }
-            int followIdx = followService.unfollow(followerIdx, postFollowReq.getUserIdx());
+            int followIdx = followService.unfollow(followerIdx, postFollowReq.getFollowingUserIdx());
             return new BaseResponse<>(followIdx);
         } catch(BaseException exception){
             return new BaseResponse<>((exception.getStatus()));

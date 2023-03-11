@@ -21,7 +21,7 @@ public class FavoriteDao {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
-    public int insertFavorite(int productIdx, int userIdx) {
+    public int insertFavorite(int userIdx, int productIdx) {
         String insertFavoriteQuery = "insert into Favorite(productIdx, userIdx) values(?,?)";
         Object[] insertFavoriteParams = new Object[] {productIdx, userIdx};
 
@@ -63,6 +63,48 @@ public class FavoriteDao {
 
         return this.jdbcTemplate.update(updateFavoriteStatusQuery, updateFavoriteStatusParams);
     }
+
+    public void reFavorite(int favoriteIdx) {
+        String reFavoriteQuery = "update Favorite set favoriteStatus='ACTIVE' where favoriteIdx=?";
+        int reFavoriteParams = favoriteIdx;
+
+        this.jdbcTemplate.update(reFavoriteQuery, reFavoriteParams);
+    }
+
+    public int getFavoriteIdx(int favoriteIdx, String status) {
+        String getFavoriteIdxQuery = "select favoriteIdx from Favorite where favoriteIdx=? and favoriteStatus = ?";
+        Object[] getFavoriteIdxParams = new Object[] {favoriteIdx, status};
+
+        try {
+            return this.jdbcTemplate.queryForObject(getFavoriteIdxQuery, int.class, getFavoriteIdxParams);
+        } catch (Exception exception) {
+            return 0;
+        }
+    }
+
+    public int getFavoriteIdx(int favoriteIdx) { //
+        String getFavoriteIdxQuery = "select favoriteIdx from Favorite where favoriteIdx=?";
+        int getFavoriteIdxParams = favoriteIdx;
+
+        try {
+            return this.jdbcTemplate.queryForObject(getFavoriteIdxQuery, int.class, getFavoriteIdxParams);
+        } catch (Exception exception) {
+            return 0;
+        }
+    }
+
+    public int getUserIdxOfFavorite(int favoriteIdx) {
+        String getUserIdxOfFavoriteQuery = "select favoriteIdx from Favorite where userIdx=?";
+        int getUserIdxOfFavoriteParams = favoriteIdx;
+
+        try {
+            return this.jdbcTemplate.queryForObject(getUserIdxOfFavoriteQuery, int.class, getUserIdxOfFavoriteParams);
+        } catch (Exception exception) {
+            return 0;
+        }
+    }
+
+
 
 }
 

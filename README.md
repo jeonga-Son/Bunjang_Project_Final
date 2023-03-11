@@ -154,3 +154,7 @@
 ## 2023-03-10
 * 형식적 Validation의 대부분은 클라이언트 단에서 구현하기로 하여 형식적 validation 일부 삭제
 * [모든 도메인] 의미적 validation 구현중
+
+## 2023-03-11
+* Product Validation 완료!! (눈물)
+* 

@@ -54,6 +54,14 @@ public enum BaseResponseStatus {
     INVALID_PRODUCT_IMG(false, 2041, "이미지 사이즈는 640X640 이하여야 합니다."),
 
 
+    // Follow
+    EMPTY_FOLLOW(false, 2060, "존재하지 않는 팔로우 입니다."),
+
+    // Favorite
+    EMPTY_FAVORITE(false, 2070, "존재하지 않는 찜 입니다."),
+
+
+
 
     /**
      * 3000 : Response 오류

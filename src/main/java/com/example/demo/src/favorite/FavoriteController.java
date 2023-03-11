@@ -83,8 +83,7 @@ public class FavoriteController {
      */
     @ResponseBody
     @PatchMapping("/{favoriteIdx}/status") // (PATCH) 127.0.0.1:9000/favorites/:favoriteIdx/status
-    public BaseResponse<String>patchFavoriteStatus(@PathVariable("favoriteIdx") int favoriteIdx ,
-                                                   @RequestBody ProductUserIdx productUserIdx) {
+    public BaseResponse<String>patchFavoriteStatus(@PathVariable("favoriteIdx") int favoriteIdx , @RequestBody ProductUserIdx productUserIdx) {
         try{
             // 회원용 API
             int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출
