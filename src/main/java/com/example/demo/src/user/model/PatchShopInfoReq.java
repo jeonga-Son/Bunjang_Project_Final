@@ -16,4 +16,6 @@ public class PatchShopInfoReq {
 
     private String shopDescription;
 
+    private String name;
+
 }

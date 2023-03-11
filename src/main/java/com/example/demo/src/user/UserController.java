@@ -132,7 +132,7 @@ public class UserController {
                 return new BaseResponse<>(INVALID_USER_JWT);
             }
 
-            PatchShopInfoReq patchShopInfoReq = new PatchShopInfoReq(userIdx, user.getProfileImgUrl(), user.getShopDescription());
+            PatchShopInfoReq patchShopInfoReq = new PatchShopInfoReq(userIdx, user.getProfileImgUrl(), user.getShopDescription(), user.getName());
             userService.modifyShop(patchShopInfoReq);
 
             String result = "상점 소개가 수정되었습니다.";

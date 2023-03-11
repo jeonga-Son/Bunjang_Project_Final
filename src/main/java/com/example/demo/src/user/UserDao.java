@@ -162,8 +162,8 @@ public class UserDao {
     }
 
     public int modifyShop(PatchShopInfoReq patchShopInfoReq) {
-        String modifyShopQuery = "update User set profileImgUrl = ?, shopDescription = ?  where userIdx = ? ";
-        Object[] modifyShopParams = new Object[]{patchShopInfoReq.getProfileImgUrl(), patchShopInfoReq.getShopDescription(), patchShopInfoReq.getUserIdx()};
+        String modifyShopQuery = "update User set profileImgUrl = ?, shopDescription = ?, name = ? where userIdx = ? ";
+        Object[] modifyShopParams = new Object[]{patchShopInfoReq.getProfileImgUrl(), patchShopInfoReq.getShopDescription(), patchShopInfoReq.getName() , patchShopInfoReq.getUserIdx()};
         return this.jdbcTemplate.update(modifyShopQuery, modifyShopParams);
     }
 
