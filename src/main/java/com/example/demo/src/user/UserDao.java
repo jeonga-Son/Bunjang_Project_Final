@@ -118,13 +118,14 @@ public class UserDao {
                 ), getUserParams);
     }
 
+    // 상점 상품 조회
     public List<GetStoreProductsRes> getStoreProducts(int userIdx) {
         String getUserQuery = "select Product.productIdx, (select count(productIdx) from Product where userIdx=? and status = 'ACTIVE') As TotalProduct,\n" +
                 "       Product.productName, Product.price, ProductImg.productImgUrl\n" +
                 "                                        from Product\n" +
                 "                                            left join User on User.userIdx = Product.userIdx\n" +
                 "                                            left join ProductImg on Product.productIdx = ProductImg.productIdx\n" +
-                "                                            where User.userIdx = ? and Product.status='ACTIVE'\n" +
+                "                                            where User.userIdx = ? and Product.status='ACTIVE' and ProductImg.status='ACTIVE'\n" +
                 "                                            order by Product.createAt desc;";
         Object[] getUserParams = new Object[]{userIdx, userIdx};
 

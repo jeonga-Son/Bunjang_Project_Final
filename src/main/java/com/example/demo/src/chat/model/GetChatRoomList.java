@@ -15,9 +15,13 @@ import java.sql.Timestamp;
 public class GetChatRoomList {
     // 채팅방 목록 가져오기
     // 유저 id, 채팅방 id, 프로필이미지url, 마지막 메시지, 수정일
-    private int userIdx;
+    private int userIdx1;
 
-    private int chatRoomIdx;
+    private int userIdx2;
+
+    private String chatRoomIdx;
+
+    private String name;
 
     private String profileImgUrl;
 

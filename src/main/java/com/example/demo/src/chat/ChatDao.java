@@ -22,16 +22,34 @@ public class ChatDao {
 
     public List<GetChatRoomList> getChatList(int userIdx) {
         // 프로필 이미지 url, 이름, 상점 소개
-        String searchChatRoomsByUserIdxQuery = "select User.userIdx as chatPartner, Chat.chatRoomIdx, " +
-                "User.profileImgUrl, User.shopDescription, Chat.updateAt from User " +
-                "left join Chat on User.userIdx = Chat.chatIdx where Chat.userIdx = ?";
+        String searchChatRoomsByUserIdxQuery = "(SELECT *\n" +
+                "FROM (select Chat.chatRoomIdx, userIdx1, userIdx2, profileImgUrl, name, Chat.updateAt, message\n" +
+                "      from ChatRoom\n" +
+                "               left join User on ChatRoom.userIdx2=User.userIdx\n" +
+                "               left join Chat on Chat.chatRoomIdx=ChatRoom.chatRoomIdx\n" +
+                "      where ChatRoom.userIdx1=?\n" +
+                "      order by Chat.updateAt desc\n" +
+                "     ) as ordered_chat\n" +
+                "GROUP BY ordered_chat.chatRoomIdx)\n" +
+                "UNION\n" +
+                "(SELECT *\n" +
+                "FROM (select Chat.chatRoomIdx, userIdx1, userIdx2, profileImgUrl, name, Chat.updateAt, message\n" +
+                "      from ChatRoom\n" +
+                "               left join User on ChatRoom.userIdx1=User.userIdx\n" +
+                "               left join Chat on Chat.chatRoomIdx=ChatRoom.chatRoomIdx\n" +
+                "      where ChatRoom.userIdx2=?\n" +
+                "      order by Chat.updateAt desc\n" +
+                "     ) as ordered_chat\n" +
+                "GROUP BY ordered_chat.chatRoomIdx)";
 
-        int searchChatRoomsByUserIdxParams = userIdx;
+        Object[] searchChatRoomsByUserIdxParams = new Object[]{userIdx, userIdx};
 
         return this.jdbcTemplate.query(searchChatRoomsByUserIdxQuery,
                 (rs, rowNum) -> new GetChatRoomList(
-                        rs.getInt("userIdx"),
-                        rs.getInt("chatRoomIdx"),
+                        rs.getInt("userIdx1"),
+                        rs.getInt("userIdx2"),
+                        rs.getString("chatRoomIdx"),
+                        rs.getString("name"),
                         rs.getString("profileImgUrl"),
                         rs.getString("message"),
                         rs.getTimestamp("updateAt")),
