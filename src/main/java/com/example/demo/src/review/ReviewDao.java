@@ -86,6 +86,46 @@ public class ReviewDao {
 
     }
 
+    public int checkReviewExists(int reviewIdx) {
+        String checkReviewExistsQuery = "select exists(select reviewIdx from Review where reviewIdx = ? and status='ACTIVE')";
+        int checkReviewExistsParams = reviewIdx;
+
+        return this.jdbcTemplate.queryForObject(checkReviewExistsQuery, int.class, checkReviewExistsParams);
+    }
+
+    public int getUserIdxOfReview(int reviewIdx) {
+        String getUserIdxOfReviewQuery = "select userIdx from Review where reviewIdx = ? and status='ACTIVE'";
+        int getUserIdxOfReviewParams = reviewIdx;
+
+        return this.jdbcTemplate.queryForObject(getUserIdxOfReviewQuery, int.class, getUserIdxOfReviewParams);
+    }
+
+    public String getProductStatus(int productIdx) {
+        String getProductStatusQuery = "select saleStatus from Product where productIdx = ? and status='ACTIVE'";
+        int getProductStatusParams = productIdx;
+
+        return this.jdbcTemplate.queryForObject(getProductStatusQuery, String.class, getProductStatusParams);
+
+    }
+
+    public int isReviewWritten(int productIdx) {
+        String isReviewWrittenQuery = "select EXISTS(select reviewIdx from Review where productIdx = ? and status='ACTIVE')";
+        int isReviewWrittenParams = productIdx;
+        try {
+            return this.jdbcTemplate.queryForObject(isReviewWrittenQuery, int.class, isReviewWrittenParams);
+        } catch (Exception exception) {
+            return 0;
+        }
+    }
+
+    // 존재하는 상품인지?
+    public int checkProductExists(int productIdx){
+        String checkProductExistsQuery = "select exists(select productIdx from Product where productIdx = ? and status='ACTIVE');";
+        int checkProductExistsParams = productIdx;
+        return this.jdbcTemplate.queryForObject(checkProductExistsQuery, int.class, checkProductExistsParams);
+    }
+
+
 }
 
 

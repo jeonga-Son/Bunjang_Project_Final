@@ -65,7 +65,7 @@ public class FollowService {
             // validation : 존재하는 팔로우인가?
             int followIdx = getFollowIdx(followerIdx, followingUserIdx, "ACTIVE");
             if(followerIdx == 0)
-                throw new RichException(EMPTY_FOLLOW);
+                throw new RichException(FOLLOW_NOT_EXISTS);
 
 //            // validation : 권한이 있는 유저인가?
 //            int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출
