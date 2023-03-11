@@ -1,6 +1,7 @@
 package com.example.demo.src.chat;
 
 import com.example.demo.config.BaseException;
+import com.example.demo.src.chat.model.GetChat;
 import com.example.demo.src.chat.model.GetChatRoomList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,10 +24,20 @@ public class ChatProvider {
         this.chatDao = chatDao;
     }
 
-    public List<GetChatRoomList> getChatRoomsByUserIdx(int userIdx) throws BaseException {
+    public List<GetChatRoomList> getChatList(int userIdx) throws BaseException {
         try {
-            List<GetChatRoomList> getProductLists = chatDao.searchChatRoomByUserIdx(userIdx);
-            return getProductLists;
+            List<GetChatRoomList> getChatList = chatDao.getChatList(userIdx);
+            return getChatList;
+        } catch (Exception exception) {
+            logger.error("App - getProductLists Provider Error", exception);
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    public List<GetChat> getChat(int chatRoomIdx) throws BaseException {
+        try {
+            List<GetChat> getChat = chatDao.getChat(chatRoomIdx);
+            return getChat;
         } catch (Exception exception) {
             logger.error("App - getProductLists Provider Error", exception);
             throw new BaseException(DATABASE_ERROR);
