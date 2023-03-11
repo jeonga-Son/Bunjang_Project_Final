@@ -91,7 +91,7 @@ public class ChatController {
     @PatchMapping("/{chatRoomIdx}/status")
     public BaseResponse<String> deleteChat(@PathVariable("chatRoomIdx") int chatRoomIdx) {
         chatService.patchChat(chatRoomIdx);
-        String result = "채팅방을 나가기를 완료하였습니다..";
+        String result = "대화 내용이 모두 삭제됩니다.";
         return new BaseResponse<>(result);
 
     }
