@@ -31,22 +31,26 @@ public class FavoriteService {
     }
 
     // 찜 하기 메서드
-    public int createFavorite(int productIdx, PostFavoriteReq postFavoriteReq) throws BaseException {
+    public int createFavorite(int productIdx, PostFavoriteReq postFavoriteReq) throws BaseException, RichException {
         try {
             int userIdx = postFavoriteReq.getUserIdx();
-            int favoriteIdx = 0;
 
-            // 이전에 찜했던 상품이면, 새로 추가하지 않고 favoriteStatus 변경
-            int getFavoriteIdxResult = getFavoriteIdx(favoriteIdx, "INACTIVE");
-            if (getFavoriteIdxResult != 0) {
-                favoriteIdx = getFavoriteIdxResult;
+            // validation : 이미 찜하고 있는지?
+            if (getFavoriteIdx(userIdx, productIdx, "ACTIVE") != 0)
+                throw new RichException(DUPLICATED_FAVORITE);
+
+            // 이전에 찜했다가 취소한 상품이면, 새로 추가하지 않고 favoriteStatus 변경
+            int favoriteIdx = getFavoriteIdx(userIdx, productIdx, "INACTIVE");
+            if (favoriteIdx != 0)
                 favoriteDao.reFavorite(favoriteIdx);
-            } else {
+            else
                 favoriteIdx = favoriteDao.insertFavorite(userIdx, productIdx);
-            }
+
 
             return favoriteIdx;
-
+        } catch (RichException richException) {
+            logger.error("App - createFavorite Service Error", richException);
+            throw new RichException(richException.getStatus());
         } catch (Exception exception) {
             logger.error("App - createFavorite Service Error", exception);
             throw new BaseException(DATABASE_ERROR);
@@ -54,37 +58,39 @@ public class FavoriteService {
     }
 
     // 찜 취소 메서드
-    public String cancelFavorite(int favoriteIdx) throws BaseException {
+    public String cancelFavorite(int userIdx, int productIdx) throws BaseException, RichException {
         try {
-
             // validation : 존재하는 찜인가?
-            if(getFavoriteIdx(favoriteIdx, "ACTIVE") == 0)
+            int favoriteIdx = getFavoriteIdx(userIdx, productIdx, "ACTIVE");
+            if(favoriteIdx == 0) // 존재 안하면 ( 찜을 한 적이 없거나 / 취소했거나 )
                 throw new RichException(EMPTY_FAVORITE);
 
-            // 회원용 API : 권한이 있는 유저인가? (이 찜을 한 유저인가?)
-            int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출
-            if (getUserIdxOfFavorite(favoriteIdx) != userIdxByJwt)
-                throw new RichException(INVALID_USER_JWT);
+//            // 회원용 API : 권한이 있는 유저인가? (이 찜을 한 유저인가?)
+//            int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출
+//            if (getUserIdxOfFavorite(favoriteIdx) != userIdxByJwt)
+//                throw new RichException(INVALID_USER_JWT);
 
 
             String resultMessage = "찜 해제 완료";
             int result = favoriteDao.updateFavoriteStatus(favoriteIdx);
 
-            if (result == 1)  return resultMessage;
-            else throw new BaseException(DATABASE_ERROR);
+            if (result == 1)
+                return resultMessage;
+            else
+                throw new BaseException(DATABASE_ERROR);
 
         } catch (RichException richException) {
             logger.error("App - cancelFavorite Service Error", richException);
-            throw new BaseException(DATABASE_ERROR);
+            throw new RichException(richException.getStatus());
         } catch (Exception exception) {
             logger.error("App - cancelFavorite Service Error", exception);
             throw new BaseException(DATABASE_ERROR);
         }
     }
 
-    public int getFavoriteIdx (int favoriteIdx, String status) throws BaseException { // 존재하면 favoriteIdx 출력, 없으면 0 출력
+    public int getFavoriteIdx (int userIdx, int productIdx, String status) throws BaseException { // 존재하면 favoriteIdx 출력, 없으면 0 출력
         try {
-            int result = favoriteDao.getFavoriteIdx(favoriteIdx, status);
+            int result = favoriteDao.getFavoriteIdx(userIdx, productIdx, status);
 
             return result;
         } catch (Exception exception) {
@@ -93,10 +99,10 @@ public class FavoriteService {
         }
     }
 
-    public int getFavoriteIdx(int favoriteIdx) throws BaseException { // 존재하면 favoriteIdx 출력, 없으면 0 출력
+    public int getFavoriteIdx (int userIdx, int productIdx) throws BaseException { // 존재하면 favoriteIdx 출력, 없으면 0 출력
         try {
 
-            int result = favoriteDao.getFavoriteIdx(favoriteIdx);
+            int result = favoriteDao.getFavoriteIdx(userIdx, productIdx);
 
             return result;
         } catch (Exception exception) {

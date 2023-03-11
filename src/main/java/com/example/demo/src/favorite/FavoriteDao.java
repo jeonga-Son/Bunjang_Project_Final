@@ -71,9 +71,9 @@ public class FavoriteDao {
         this.jdbcTemplate.update(reFavoriteQuery, reFavoriteParams);
     }
 
-    public int getFavoriteIdx(int favoriteIdx, String status) {
-        String getFavoriteIdxQuery = "select favoriteIdx from Favorite where favoriteIdx=? and favoriteStatus = ?";
-        Object[] getFavoriteIdxParams = new Object[] {favoriteIdx, status};
+    public int getFavoriteIdx(int userIdx, int productIdx, String status) {
+        String getFavoriteIdxQuery = "select favoriteIdx from Favorite where userIdx=? and productIdx=? and favoriteStatus = ?";
+        Object[] getFavoriteIdxParams = new Object[] {userIdx, productIdx, status};
 
         try {
             return this.jdbcTemplate.queryForObject(getFavoriteIdxQuery, int.class, getFavoriteIdxParams);
@@ -82,9 +82,9 @@ public class FavoriteDao {
         }
     }
 
-    public int getFavoriteIdx(int favoriteIdx) { //
-        String getFavoriteIdxQuery = "select favoriteIdx from Favorite where favoriteIdx=?";
-        int getFavoriteIdxParams = favoriteIdx;
+    public int getFavoriteIdx(int userIdx, int productIdx) { //
+        String getFavoriteIdxQuery = "select favoriteIdx from Favorite where userIdx=? and productIdx=?";
+        Object[] getFavoriteIdxParams = new Object[] {userIdx, productIdx};
 
         try {
             return this.jdbcTemplate.queryForObject(getFavoriteIdxQuery, int.class, getFavoriteIdxParams);
@@ -94,7 +94,7 @@ public class FavoriteDao {
     }
 
     public int getUserIdxOfFavorite(int favoriteIdx) {
-        String getUserIdxOfFavoriteQuery = "select favoriteIdx from Favorite where userIdx=?";
+        String getUserIdxOfFavoriteQuery = "select userIdx from Favorite where favoriteIdx=? and favoriteStatus = 'ACTIVE'";
         int getUserIdxOfFavoriteParams = favoriteIdx;
 
         try {

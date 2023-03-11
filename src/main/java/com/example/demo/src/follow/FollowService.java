@@ -30,12 +30,16 @@ public class FollowService {
     }
 
     // 팔로우 하기 메서드
-    public int followUser(int followerIdx, int followingUserIdx) throws BaseException {
+    public int followUser(int followerIdx, int followingUserIdx) throws BaseException, RichException {
         try {
 
             int followIdx = 0;
 
-            // 이전에 팔로우 했던 사람이면, 새로 추가하지 않고 followStatus 변경
+            // validation : 이미 팔로우하고 있는지?
+            if (getFollowIdx(followerIdx, followingUserIdx, "ACTIVE") != 0)
+                throw new RichException(DUPLICATED_FOLLOW);
+
+            // 이전에 팔로우 했다가 취소한 사람이면, 새로 추가하지 않고 followStatus 변경
             int getFollowIdxResult = getFollowIdx(followerIdx, followingUserIdx, "INACTIVE");
             if (getFollowIdxResult != 0) {
                 followIdx = getFollowIdxResult;
@@ -46,26 +50,27 @@ public class FollowService {
 
             return followIdx;
 
-        } catch (Exception exception) {
+        } catch (RichException richException) {
+            logger.error("App - followUser Service Error", richException);
+            throw new RichException(richException.getStatus());
+        }catch (Exception exception) {
             logger.error("App - followUser Service Error", exception);
             throw new BaseException(DATABASE_ERROR);
         }
     }
 
     // 팔로우 취소 메서드
-    public int unfollow(int followerIdx, int followingUserIdx) throws BaseException {
+    public int unfollow(int followerIdx, int followingUserIdx) throws BaseException, RichException {
         try {
             // validation : 존재하는 팔로우인가?
-            if(getFollowIdx(followerIdx, followingUserIdx, "ACTIVE") == 0)
+            int followIdx = getFollowIdx(followerIdx, followingUserIdx, "ACTIVE");
+            if(followerIdx == 0)
                 throw new RichException(EMPTY_FOLLOW);
 
-            int followIdx = getFollowIdx(followerIdx, followingUserIdx, "INACTIVE");
-
-            // validation : 권한이 있는 유저인가?
-            int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출
-            if (getUserIdxOfFollow(followIdx) != userIdxByJwt)
-                throw new RichException(INVALID_USER_JWT);
-
+//            // validation : 권한이 있는 유저인가?
+//            int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출
+//            if (getUserIdxOfFollow(followIdx) != userIdxByJwt)
+//                throw new RichException(INVALID_USER_JWT);
 
             int result = followDao.updateFollowStatus(followIdx);
 
@@ -73,6 +78,9 @@ public class FollowService {
                 return followIdx;
             else
                 throw new BaseException(DATABASE_ERROR);
+        } catch (RichException richException) {
+            logger.error("App - unfollow Service Error", richException);
+            throw new RichException(richException.getStatus());
         } catch (Exception exception) {
             logger.error("App - unfollow Service Error", exception);
             throw new BaseException(DATABASE_ERROR);

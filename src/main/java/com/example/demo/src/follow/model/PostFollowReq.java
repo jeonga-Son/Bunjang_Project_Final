@@ -10,6 +10,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PostFollowReq {
-    private int followingUserIdx;
+    private int followerIdx;
 
 }
