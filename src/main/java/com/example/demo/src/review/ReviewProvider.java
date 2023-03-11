@@ -28,6 +28,8 @@ public class ReviewProvider {
 
     public GetReviewsRes getReviewsRes(int userIdx) throws BaseException {
         try {
+            // validation : 존재하는 상점인가?
+
             GetReviewsRes getReviewsRes = reviewDao.getReviews(userIdx);
             return getReviewsRes;
         } catch (Exception exception) {
