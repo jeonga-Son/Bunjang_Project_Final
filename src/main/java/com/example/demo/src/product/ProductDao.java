@@ -78,7 +78,7 @@ public class ProductDao {
                 "    left join Product on User.userIdx = Product.userIdx\n" +
                 "    left join ProductImg on Product.productIdx=ProductImg.productIdx\n" +
                 "where User.userIdx=?\n" +
-                "group by Product.productIdx;" +
+                "group by Product.productIdx\n" +
                 "limit 6";
         int getProductsParams = userIdx;
 
@@ -197,7 +197,7 @@ public class ProductDao {
         String getProductQuery = "select Product.productIdx, price, productName, Product.createAt as date, saleStatus,\n" +
                 "       SubCategory.subCategoryIdx, SubCategory.subCategoryName, Product.userIdx,\n" +
                 "       (select count(chatRoomIdx)\n" +
-                "        from Product left join ChatRoom on Product.productIdx=ChatRoom.productIdx\n" +
+                "        from Product left join ChatProduct on Product.productIdx=ChatProduct.productIdx\n" +
                 "        where Product.productIdx=?) as chatCount,\n" +
                 "       (select count(favoriteIdx)\n" +
                 "        from Product left join Favorite on Product.productIdx=Favorite.productIdx\n" +
@@ -228,13 +228,13 @@ public class ProductDao {
                         this.jdbcTemplate.query("select productImgUrl\n" +
                                         "from Product\n" +
                                         "    left join ProductImg on Product.productIdx=ProductImg.productIdx\n" +
-                                        "where Product.productIdx = ? and ProductImgUrl.status='ACTIVE';",
+                                        "where Product.productIdx = ? and ProductImg.status='ACTIVE';",
                                 (rs1, rowNum) -> new PostProductImgs(
                                         rs1.getString("productImgUrl")),
                                 rs.getInt("productIdx")),
                         this.jdbcTemplate.query("select tag\n" +
                                 "from Tag\n" +
-                                "where productIdx = ? and tag.status='ACTIVE';",
+                                "where productIdx = ? and Tag.status='ACTIVE';",
                                 (rs2,rowNum1) -> new PostTags(
                                         rs2.getString("tag")
                                 ), rs.getInt("productIdx"))
@@ -274,11 +274,11 @@ public class ProductDao {
     }
 
     public int updateProduct(int productIdx, PatchProductReq patchProductReq) {
-        String updatePruductQuery = "update Product\n" +
+        String updateProductQuery = "update Product\n" +
                 "set categoryIdx = ?, subCategoryIdx = ?, productName =?, price=?,description=?\n" +
                 "where productIdx=?";
 
-        Object[] updatePruductParams = new Object[] {
+        Object[] updateProductParams = new Object[] {
                 getCategoryIdx(patchProductReq.getSubCategoryIdx()),
                 patchProductReq.getSubCategoryIdx(),
                 patchProductReq.getProductName(),
@@ -286,23 +286,23 @@ public class ProductDao {
                 patchProductReq.getDescription(),
                 productIdx};
 
-        return this.jdbcTemplate.update(updatePruductQuery, updatePruductParams);
+        return this.jdbcTemplate.update(updateProductQuery, updateProductParams);
 
     }
 
     public void deleteProductImgs (int productIdx) {
         String updateProductImgQuery="update ProductImg set status = 'DELETED' where productIdx =?";
 
-        int deletePruductImgsParams = productIdx;
-        this.jdbcTemplate.update(updateProductImgQuery, deletePruductImgsParams);
+        int deleteProductImgsParams = productIdx;
+        this.jdbcTemplate.update(updateProductImgQuery, deleteProductImgsParams);
 
     }
 
     public void deleteProductTags (int productIdx) {
         String updateProductImgQuery="update Tag set status = 'DELETED' where productIdx =?";
 
-        int deletePruductTagsParams = productIdx;
-        this.jdbcTemplate.update(updateProductImgQuery, deletePruductTagsParams);
+        int deleteProductTagsParams = productIdx;
+        this.jdbcTemplate.update(updateProductImgQuery, deleteProductTagsParams);
 
     }
 
@@ -347,6 +347,7 @@ public class ProductDao {
         int getCategoryIdxParams = subCategoryIdx;
 
         return this.jdbcTemplate.queryForObject(getCategoryIdxQuery, int.class, getCategoryIdxParams);
+
     }
 
 
@@ -357,7 +358,7 @@ public class ProductDao {
         return this.jdbcTemplate.queryForObject(checkProductExistsQuery, int.class, checkProductExistsParams);
     }
 
-    // 존재하는 서브카테고리인지?
+    // 존재하는 서브 카테고리인지?
     public int checkSubCategoryExists(int subCategoryIdx){
         String checkSubCategoryExistsQuery = "select exists(select subCategoryIdx from SubCategory where subCategoryIdx = ? and status='ACTIVE');";
         int checkSubCategoryExistsParams = subCategoryIdx;
@@ -369,6 +370,13 @@ public class ProductDao {
         String checkSaleStatusQuery = "select saleStatus from Product where productIdx=?";
         int checkSaleStatusParams = productIdx;
         return this.jdbcTemplate.queryForObject(checkSaleStatusQuery, String.class, checkSaleStatusParams);
+    }
+
+    // 해당 상품을 등록한 유저 id 반환 함수
+    public int getUserIdxOfProduct(int productIdx) {
+        String getUserIdxOfProductQuery = "select userIdx from Product where productIdx=?";
+        int getUserIdxOfProductParams = productIdx;
+        return this.jdbcTemplate.queryForObject(getUserIdxOfProductQuery, int.class, getUserIdxOfProductParams);
     }
 
 
