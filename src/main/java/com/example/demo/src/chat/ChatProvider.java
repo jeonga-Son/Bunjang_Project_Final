@@ -34,9 +34,9 @@ public class ChatProvider {
         }
     }
 
-    public GetChat getChat(int chatRoomIdx) throws BaseException {
+    public List<GetChat> getChat(int chatRoomIdx) throws BaseException {
         try {
-            GetChat getChat = chatDao.getChat(chatRoomIdx);
+            List<GetChat> getChat = chatDao.getChat(chatRoomIdx);
             return getChat;
         } catch (Exception exception) {
             logger.error("App - getProductLists Provider Error", exception);

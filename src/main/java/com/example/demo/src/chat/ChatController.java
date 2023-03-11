@@ -57,9 +57,9 @@ public class ChatController {
 //     */
     @ResponseBody
     @GetMapping("/{chatRoomIdx}")
-    public BaseResponse<GetChat> getChat(@PathVariable("chatRoomIdx") int chatRoomIdx) {
+    public BaseResponse<List<GetChat>> getChat(@PathVariable("chatRoomIdx") int chatRoomIdx) {
         try{
-            GetChat getChat = chatProvider.getChat(chatRoomIdx);
+            List<GetChat> getChat = chatProvider.getChat(chatRoomIdx);
             return new BaseResponse<>(getChat);
 
         } catch(BaseException exception) {

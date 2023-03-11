@@ -13,18 +13,17 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GetChat {
-    private int chatIdx;
+    private String name;
+
+    private Float avgStar;
+
+    private int saleCount;
 
     private int userIdx;
 
-    private int chatRoomIdx;
-
-    private int chatMemberIdx;
-
     private String message;
 
-    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
+    @JsonFormat(pattern = "yyyy-MM-dd hh:mm", timezone = "Asia/Seoul")
     private Timestamp updateAt;
 
-    private String status;
 }
