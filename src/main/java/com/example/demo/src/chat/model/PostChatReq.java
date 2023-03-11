@@ -5,11 +5,17 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class PostChatReq {
-    private String message;
     private int chatRoomIdx;
+
+    private String message;
+
+    private Timestamp updateAt = Timestamp.valueOf(LocalDateTime.now());
 }

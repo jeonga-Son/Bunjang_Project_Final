@@ -63,8 +63,6 @@ public class ChatDao {
 
         return this.jdbcTemplate.queryForObject(getChatQuery,
                 (rs, rowNum) -> new GetChat(
-                        // 유저 id, 이름, 프로필이미지Url, 상점 설명, 포인트 잔액, 팔로워 id, 팔로잉 id
-                        // 상품 id, 상품이름, 상품 가격,상품판매 상태, 상품 이미지 불러오기 List
                         rs.getInt("chatIdx"),
                         rs.getInt("userIdx"),
                         rs.getInt("chatRoomIdx"),
@@ -77,12 +75,13 @@ public class ChatDao {
 
     // post, insert into
     public int createChat(PostChatReq postChatReq, int userIdx) {
-        String getChatQuery = "insert into Chat (userIdx, chatRoomIdx, message) values(?, ?, ?)";
+        String getChatQuery = "insert into Chat (userIdx, chatRoomIdx, message, updateAt) values(?, ?, ?, ?)";
 
         Object[] getChatParams = new Object[]{
                 userIdx,
                 postChatReq.getChatRoomIdx(),
-                postChatReq.getMessage()};
+                postChatReq.getMessage(),
+                postChatReq.getUpdateAt()};
 
         this.jdbcTemplate.update(getChatQuery, getChatParams);
 

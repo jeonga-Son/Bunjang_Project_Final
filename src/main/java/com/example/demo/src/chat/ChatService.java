@@ -8,6 +8,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+
 import static com.example.demo.config.BaseResponseStatus.DATABASE_ERROR;
 import static com.example.demo.config.BaseResponseStatus.FAILED_TO_CREATE_CHAT;
 
@@ -33,7 +35,9 @@ public class ChatService {
          try{
              int chatRoomIdx = postChatReq.getChatRoomIdx();
              String message = postChatReq.getMessage();
-             return new PostChatRes(message, chatRoomIdx) ;
+             Timestamp updateAt = postChatReq.getUpdateAt();
+
+             return new PostChatRes(chatRoomIdx, message, updateAt) ;
 
          }catch (Exception exception) {
              logger.error("App - createChat Service Error", exception);
