@@ -23,7 +23,7 @@ public class ChatDao {
     public List<GetChatRoomList> getChatList(int userIdx) {
         // 프로필 이미지 url, 이름, 상점 소개
         String searchChatRoomsByUserIdxQuery = "(SELECT *\n" +
-                "FROM (select Chat.chatRoomIdx, userIdx1, userIdx2, profileImgUrl, name, Chat.updateAt, message\n" +
+                "FROM (select Chat.chatRoomIdx, userIdx1, userIdx2, profileImgUrl, name, Chat.updateAt, message as lastMessage\n" +
                 "      from ChatRoom\n" +
                 "               left join User on ChatRoom.userIdx2=User.userIdx\n" +
                 "               left join Chat on Chat.chatRoomIdx=ChatRoom.chatRoomIdx\n" +
@@ -33,7 +33,7 @@ public class ChatDao {
                 "GROUP BY ordered_chat.chatRoomIdx)\n" +
                 "UNION\n" +
                 "(SELECT *\n" +
-                "FROM (select Chat.chatRoomIdx, userIdx1, userIdx2, profileImgUrl, name, Chat.updateAt, message\n" +
+                "FROM (select Chat.chatRoomIdx, userIdx1, userIdx2, profileImgUrl, name, Chat.updateAt, message as lastMessage\n" +
                 "      from ChatRoom\n" +
                 "               left join User on ChatRoom.userIdx1=User.userIdx\n" +
                 "               left join Chat on Chat.chatRoomIdx=ChatRoom.chatRoomIdx\n" +
@@ -51,7 +51,7 @@ public class ChatDao {
                         rs.getString("chatRoomIdx"),
                         rs.getString("name"),
                         rs.getString("profileImgUrl"),
-                        rs.getString("message"),
+                        rs.getString("lastMessage"),
                         rs.getTimestamp("updateAt")),
                 searchChatRoomsByUserIdxParams);
     }

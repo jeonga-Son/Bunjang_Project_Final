@@ -25,7 +25,7 @@ public class GetChatRoomList {
 
     private String profileImgUrl;
 
-    private String message;
+    private String lastMessage;
 
     @JsonFormat(pattern = "yyyy-MM-dd hh:mm", timezone = "Asia/Seoul")
     private Timestamp updateDate;
