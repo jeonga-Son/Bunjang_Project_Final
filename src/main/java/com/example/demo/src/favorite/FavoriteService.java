@@ -63,7 +63,7 @@ public class FavoriteService {
             // validation : 존재하는 찜인가?
             int favoriteIdx = getFavoriteIdx(userIdx, productIdx, "ACTIVE");
             if(favoriteIdx == 0) // 존재 안하면 ( 찜을 한 적이 없거나 / 취소했거나 )
-                throw new RichException(EMPTY_FAVORITE);
+                throw new RichException(FAVORITE_NOT_EXISTS);
 
 //            // 회원용 API : 권한이 있는 유저인가? (이 찜을 한 유저인가?)
 //            int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출
