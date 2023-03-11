@@ -121,3 +121,7 @@
 * Product 카테고리, 서브카테고리 별 목록 조회 API (홈 화면 용) 추가
 * 모든 API 구현 및 회원용 적용 완료
 * Product API 형식적 validation 적용 완료 / 의미적 validation 작업중
+
+## 2023-03-10
+* 형식적 Validation의 대부분은 클라이언트 단에서 구현하기로 하여 형식적 validation 일부 삭제
+* [모든 도메인] 의미적 validation 구현중
