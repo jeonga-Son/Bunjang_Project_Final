@@ -64,7 +64,7 @@ public class FollowService {
         try {
             // validation : 존재하는 팔로우인가?
             int followIdx = getFollowIdx(followerIdx, followingUserIdx, "ACTIVE");
-            if(followerIdx == 0)
+            if(followIdx == 0)
                 throw new RichException(FOLLOW_NOT_EXISTS);
 
 //            // validation : 권한이 있는 유저인가?
