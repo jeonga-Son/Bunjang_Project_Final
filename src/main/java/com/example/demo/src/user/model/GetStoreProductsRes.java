@@ -1,21 +1,20 @@
 package com.example.demo.src.user.model;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
-
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostLoginReq {
-    private String name;
+public class GetStoreProductsRes {
 
-    private String phoneNo;
-
-//    private String password;
+    private int productIdx;
+    private String productImgUrl;
+    private int price;
+    private String productName;
 
 }

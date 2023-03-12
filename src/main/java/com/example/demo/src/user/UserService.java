@@ -49,20 +49,20 @@ public class UserService {
 
     //POST
     public PostUserRes createUser(PostUserReq postUserReq) throws BaseException {
-        // 이메일 중복
+        // 휴대폰번호 중복
         if(userProvider.checkPhoneNo(postUserReq.getPhoneNo()) ==1){
             throw new BaseException(POST_USERS_EXISTS_PHONENO);
         }
 
-        String pwd;
-        try{
-            //암호화
-            pwd = new SHA256().encrypt(postUserReq.getPassword());
-            postUserReq.setPassword(pwd);
-
-        } catch (Exception ignored) {
-            throw new BaseException(PASSWORD_ENCRYPTION_ERROR);
-        }
+//        String pwd;
+//        try{
+//            //암호화
+//            pwd = new SHA256().encrypt(postUserReq.getPassword());
+//            postUserReq.setPassword(pwd);
+//
+//        } catch (Exception ignored) {
+//            throw new BaseException(PASSWORD_ENCRYPTION_ERROR);
+//        }
         try{
             int userIdx = userDao.createUser(postUserReq);
             //jwt 발급.
@@ -191,7 +191,7 @@ public class UserService {
         postUserReq.setName(String.valueOf(kakaoProfile.getId()));
         postUserReq.setPhoneNo(empty);
         postUserReq.setBirthday(emptyDate);
-        postUserReq.setPassword(String.valueOf(garbagePassword));
+//        postUserReq.setPassword(String.valueOf(garbagePassword));
 
         User user = new User();
         int findIdx = userProvider.checkKakaoUserName(postUserReq.getName());

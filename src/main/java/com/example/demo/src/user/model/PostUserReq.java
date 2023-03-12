@@ -20,6 +20,6 @@ public class PostUserReq {
 
     private Date birthday;
 
-    private String password;
+//    private String password;
 
 }

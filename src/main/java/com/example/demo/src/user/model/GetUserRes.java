@@ -39,7 +39,7 @@ public class GetUserRes {
 
     private String shopDescription;
 
-    private String password;
+//    private String password;
 
     private String deleteReasonContent;
 }
