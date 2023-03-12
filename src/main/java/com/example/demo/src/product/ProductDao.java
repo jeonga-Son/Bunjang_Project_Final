@@ -194,7 +194,7 @@ public class ProductDao {
     }
 
     public GetProductInfoRes getProductInfoRes(int productIdx) {
-        String getProductQuery = "select Product.productIdx, price, productName, Product.createAt as date, saleStatus,\n" +
+        String getProductQuery = "select Product.description, Product.productIdx, price, productName, Product.createAt as date, saleStatus,\n" +
                 "       SubCategory.subCategoryIdx, SubCategory.subCategoryName, Product.userIdx,\n" +
                 "       (select count(chatRoomIdx)\n" +
                 "        from Product left join ChatProduct on Product.productIdx=ChatProduct.productIdx\n" +
@@ -218,6 +218,7 @@ public class ProductDao {
                         rs.getInt("productIdx"),
                         rs.getInt("price"),
                         rs.getString("productName"),
+                        rs.getString("description"),
                         sdf.format(rs.getTimestamp("date")),
                         rs.getString("saleStatus"),
                         rs.getInt("subCategoryIdx"),
