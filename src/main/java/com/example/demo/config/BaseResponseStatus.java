@@ -54,6 +54,21 @@ public enum BaseResponseStatus {
     INVALID_PRODUCT_IMG(false, 2041, "이미지 사이즈는 640X640 이하여야 합니다."),
 
 
+    // Review
+    REVIEW_NOT_EXISTS(false, 2050, "존재하지 않는 리뷰 입니다."),
+    DUPLICATED_PRODUCT_REVIEW(false, 2051, "이미 리뷰가 작성된 상품입니다."),
+
+
+    // Follow
+    FOLLOW_NOT_EXISTS(false, 2060, "존재하지 않는 팔로우 입니다."),
+    DUPLICATED_FOLLOW(false, 2061, "이미 팔로우하고 있습니다."),
+
+    // Favorite
+    FAVORITE_NOT_EXISTS(false, 2070, "존재하지 않는 찜 입니다."),
+    DUPLICATED_FAVORITE(false, 2071, "이미 찜한 상품입니다."),
+
+
+
 
     /**
      * 3000 : Response 오류

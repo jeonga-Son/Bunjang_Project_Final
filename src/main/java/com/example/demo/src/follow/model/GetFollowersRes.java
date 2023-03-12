@@ -10,7 +10,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GetFollowersRes {
-    // 유저 id, 유저 이름, 유저 프로필 이미지, 팔로워 수, 상품 수
+    // 팔로우 id, 유저 id, 유저 이름, 유저 프로필 이미지, 팔로워 수, 상품 수
+    private int followIdx;
     private int userIdx;
     private String name;
     private String profileImgUrl;
