@@ -1,4 +1,7 @@
-# jelly
+# 🟣 Jelly
+## jelly 브랜치
+* https://github.com/mock-rc14/bunjang_server_jelly_rich/tree/jelly
+* https://github.com/mock-rc14/bunjang_server_jelly_rich/tree/jelly2
 ## 2023-03-04 진행상황
 
 * 노션 기획서 작성
@@ -86,11 +89,14 @@
 * 명세서 작성
   * 카카오 로그인 명세서 작성 완료
 * 👉🏻 2주차에 진행할 것
-  * validation 처리 및 코드 정리
+  * validation 처리 및 코드 정리 예정
 
 ---
 
-# Rich
+# 🟠 Rich
+## rich 브랜치
+* https://github.com/mock-rc14/bunjang_server_jelly_rich/tree/rich
+* https://github.com/mock-rc14/bunjang_server_jelly_rich/tree/rich_2
 ## 2023-03-04 진행상황
 
 * 노션 기획서 작성
