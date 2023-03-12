@@ -3,37 +3,45 @@ package com.example.demo.src.login.kakao;
 import com.example.demo.config.BaseResponse;
 import com.example.demo.src.login.kakao.model.KakaoProfile;
 import com.example.demo.src.login.kakao.model.KakaoUser;
+import com.example.demo.src.login.kakao.model.OAuthToken;
 import com.example.demo.src.login.kakao.model.PostKakaoUser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@RestController
-@RequestMapping("")
-public class KakaoLoginController {
+@Service
+public class KakaoService {
+    final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final KakaoDao kakaoDao;
+    private final KakaoProvider kakaoProvider;
 
     @Autowired
-    private final KakaoLoginService kakaoLoginservice;
-
-    public KakaoLoginController(KakaoLoginService kakaoLoginservice) {
-        this.kakaoLoginservice = kakaoLoginservice;
+    public KakaoService(KakaoDao kakaoDao, KakaoProvider kakaoProvider) {
+        this.kakaoDao = kakaoDao;
+        this.kakaoProvider = kakaoProvider;
     }
 
-    @ResponseBody
-    @GetMapping("/oauth/kakao")
-    public BaseResponse<String> kakaoCallback(String code){
+
+    public void createUser(PostKakaoUser postKakaoUser) {
+        kakaoDao.createUser(postKakaoUser);
+    }
+
+
+    public String getToken(String code) {
         //POST 방식으로 key=value 데이터를 요청(카카오 쪽으로)
         RestTemplate rt = new RestTemplate(); //http 요청을 간단하게 해줄 수 있는 클래스
 
@@ -71,8 +79,6 @@ public class KakaoLoginController {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-
-        // 2.
 
         RestTemplate rt2 = new RestTemplate(); //http 요청을 간단하게 해줄 수 있는 클래스
 
@@ -115,21 +121,20 @@ public class KakaoLoginController {
         System.out.println("서버 패스워드 " + garbagePassword);
 
         PostKakaoUser postKakaoUser = new PostKakaoUser();
-        postKakaoUser.setKakaoUserName(kakaoProfile.getKakao_account().getEmail()+"_"+kakaoProfile.getId());
-        postKakaoUser.setKakaoUserBirthday(kakaoProfile.getKakao_account().getBirthday());
-        postKakaoUser.setCreateAt(Timestamp.valueOf(LocalDateTime.now()));
+        postKakaoUser.setName(kakaoProfile.getKakao_account().getEmail()+"_"+kakaoProfile.getId());
+        postKakaoUser.setBirthday(kakaoProfile.getKakao_account().getBirthday());
 
         KakaoUser kakaoUser = new KakaoUser();
-        int findIdx = kakaoLoginservice.checkUser(postKakaoUser.getKakaoUserName());
+        int findIdx = kakaoProvider.checkUser(postKakaoUser.getName());
 
         String result ="";
         if(findIdx == 1) {
             result = "기존 회원입니다.";
-            return new BaseResponse<String>(result);
         } else {
-            kakaoLoginservice.createUser(postKakaoUser);
+            createUser(postKakaoUser);
             result = "카카오 로그인 요청에 성공하였습니다.";
-            return new BaseResponse<String>(result);
         }
+
+        return result;
     }
 }

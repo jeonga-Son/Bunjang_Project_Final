@@ -12,10 +12,8 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PostKakaoUser {
-    private String kakaoUserName;
+    private String name;
 
-    private String kakaoUserBirthday;
-
-    private Timestamp createAt;
+    private String birthday;
 
 }

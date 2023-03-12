@@ -1,5 +1,6 @@
 package com.example.demo.src.user;
 
+import com.example.demo.src.login.kakao.model.GetKakaoMyPageRes;
 import com.example.demo.src.product.model.GetProductList;
 import com.example.demo.src.user.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,6 +92,45 @@ public class UserDao {
                                 rs.getInt("userIdx"))
                 ), getUserParams);
     }
+
+//    public GetKakaoMyPageRes getKakaoMyPage(int kakaoUserIdx) {
+//        // 마이페이지 조회
+//        String getUserQuery = "Select User.userIdx, User.profileImgUrl ,User.name, sum(Point.point) as point, AVG(Review.star) as avgStar,\n" +
+//                "                       (select count(followerUserIdx) from Follow where Follow.followingUserIdx=? and status='ACTIVE') AS followingCount,\n" +
+//                "                       (select count(followingUserIdx) from Follow where Follow.followerUserIdx=? and status = 'ACTIVE') AS followerCount,\n" +
+//                "                       (select count(Product.productIdx) from Product where Product.userIdx = ? and Product.status = 'ACTIVE' and Product.saleStatus != 'SOLD') As TotalProductCount,\n" +
+//                "                       (select count(Product.saleStatus) from Product where Product.userIdx = ? and Product.saleStatus = 'SOLD') AS saleResultCount\n" +
+//                "                From User\n" +
+//                "                    left join Point on User.userIdx = Point.userIdx\n" +
+//                "                    left join Review on User.userIdx = Review.userIdx\n" +
+//                "                    where User.userIdx = ?;";
+//
+//        Object[] getUserParams = new Object[]{userIdx, userIdx, userIdx, userIdx, userIdx};
+//
+//        return this.jdbcTemplate.queryForObject(getUserQuery,
+//                (rs, rowNum) -> new GetMyPageRes(
+//                        // 유저 id, 이름, 프로필이미지Url, 상점 설명, 포인트 잔액, 팔로워 id, 팔로잉 id
+//                        // 상품 id, 상품이름, 상품 가격,상품판매 상태, 상품 이미지 불러오기 List
+//                        rs.getInt("userIdx"),
+//                        rs.getString("name"),
+//                        rs.getString("profileImgUrl"),
+//                        rs.getFloat("avgStar"),
+//                        rs.getInt("point"),
+//                        rs.getInt("followerCount"),
+//                        rs.getInt("followingCount"),
+//                        this.jdbcTemplate.query("select Product.productIdx, Product.price, Product.productName, ProductImg.productImgUrl\n" +
+//                                        "    from Product\n" +
+//                                        "        left join ProductImg on Product.productIdx = ProductImg.productIdx\n" +
+//                                        "        where Product.userIdx = ? and ProductImg.status='ACTIVE' and Product.status='ACTIVE' and Product.saleStatus = 'ONSALE'\n" +
+//                                        "Group by Product.productIdx;",
+//                                (rs2, rowNum2) -> new GetProductList(
+//                                        rs2.getInt("productIdx"),
+//                                        rs2.getString("productImgUrl"),
+//                                        rs2.getInt("price"),
+//                                        rs2.getString("productName")),
+//                                rs.getInt("userIdx"))
+//                ), getUserParams);
+//    }
 
     public GetShopRes getShop(int userIdx) {
         // 상점 조회
@@ -203,4 +243,5 @@ public class UserDao {
                 int.class,
                 checkPhoneNoParams);
     }
+
 }

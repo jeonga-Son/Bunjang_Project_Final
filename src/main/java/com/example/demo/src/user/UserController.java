@@ -1,5 +1,6 @@
 package com.example.demo.src.user;
 
+import com.example.demo.src.login.kakao.model.GetKakaoMyPageRes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.example.demo.config.BaseException;
@@ -45,6 +46,23 @@ public class UserController {
         }
 
     }
+
+    /**
+     * 소셜로그인 유저 조회(마이페이지) API
+     * [GET] /users/kakao/:kakaoUserIdx
+     * @return BaseResponse<GetMyPageRes>
+     */
+//    @ResponseBody
+//    @GetMapping("/kakao/{kakaoUserIdx}") // (GET) 127.0.0.1:9000/users/kakao/:kakaoUserIdx
+//    public BaseResponse<GetKakaoMyPageRes> getKakaoMyPage(@PathVariable("kakaoUserIdx") int kakaoUserIdx) {
+//        try {
+//            GetKakaoMyPageRes getKakaoMyPageRes = userProvider.getKakaoMyPage(kakaoUserIdx);
+//            return new BaseResponse<>(getKakaoMyPageRes);
+//        } catch (BaseException exception) {
+//            return new BaseResponse<>((exception.getStatus()));
+//        }
+//
+//    }
 
     /**
      * 특정 상점 조회 API

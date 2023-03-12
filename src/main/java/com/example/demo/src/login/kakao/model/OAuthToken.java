@@ -1,4 +1,4 @@
-package com.example.demo.src.login.kakao;
+package com.example.demo.src.login.kakao.model;
 
 import lombok.Data;
 import lombok.Getter;
