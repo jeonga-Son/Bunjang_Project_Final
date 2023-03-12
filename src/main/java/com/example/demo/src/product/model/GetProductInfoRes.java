@@ -1,4 +1,5 @@
 package com.example.demo.src.product.model;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,6 +18,7 @@ public class GetProductInfoRes {
     private int productIdx;
     private int price;
     private String productName;
+    private String description;
     private String date;
     private String saleStatus;
     private int subCategoryIdx;

@@ -161,3 +161,8 @@
 * Product Validation 완료!! (눈물)
 * Follow, Favorite Validation 완료 / 팔로우 취소 api 오류 (수정 예정)
 * Review validation 완료
+
+## 2023-03-12
+* 상품 조회 API에 description 누락되어 있어서 추가
+
+
