@@ -160,8 +160,8 @@ public class UserDao {
     }
 
     public int deleteUser(PatchDeleteUserReq patchDeleteUserReq) {
-        String deleteUserQuery = "update User set status = 'DELETED', deleteReasonContent = ? where userIdx = ? ";
-        Object[] insertDeleteReasonParams = new Object[]{ patchDeleteUserReq.getDeleteReasonContent(), patchDeleteUserReq.getUserIdx()};
+        String deleteUserQuery = "update User set status = 'DELETED', deleteReasonContent = ?, updateAt = ? where userIdx = ? ";
+        Object[] insertDeleteReasonParams = new Object[]{ patchDeleteUserReq.getDeleteReasonContent(),patchDeleteUserReq.getUpdateAt(), patchDeleteUserReq.getUserIdx()};
 
         return this.jdbcTemplate.update(deleteUserQuery,insertDeleteReasonParams);
     }

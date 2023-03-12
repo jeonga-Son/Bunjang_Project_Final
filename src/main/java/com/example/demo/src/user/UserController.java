@@ -181,7 +181,7 @@ public class UserController {
             //접근한 유저가 같고, 유저의 상태가 'Deleted'가 아닐 경우 회원 탈퇴 상태로 변경
             String status = getUser.getStatus();
             if (!status.equals("DELETED")) {
-            PatchDeleteUserReq patchDeleteUserReq = new PatchDeleteUserReq(userIdx, user.getDeleteReasonContent());
+            PatchDeleteUserReq patchDeleteUserReq = new PatchDeleteUserReq(userIdx, user.getDeleteReasonContent(), user.getUpdateAt());
             userService.deleteUser(patchDeleteUserReq);
 
             String result = "회원탈퇴가 완료되었습니다.";
