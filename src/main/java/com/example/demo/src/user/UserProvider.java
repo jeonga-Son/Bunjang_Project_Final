@@ -80,17 +80,9 @@ public class UserProvider {
 
     public PostLoginRes logIn(PostLoginReq postLoginReq) throws BaseException {
         try {
-            User user = userDao.getPwd(postLoginReq);
+            User user = userDao.checkUser(postLoginReq);
 
-//            String encryptPwd;
-//            try {
-//                encryptPwd = new SHA256().encrypt(postLoginReq.getPassword());
-//            } catch (Exception exception) {
-//                logger.error("App - logIn Provider Encrypt Error", exception);
-//                throw new BaseException(PASSWORD_DECRYPTION_ERROR);
-//            }
-
-            if(user.getPhoneNo().isEmpty()){
+            if(!user.getPhoneNo().isEmpty()){
                 int userIdx = user.getUserIdx();
                 String jwt = jwtService.createJwt(userIdx);
                 return new PostLoginRes(userIdx,jwt);

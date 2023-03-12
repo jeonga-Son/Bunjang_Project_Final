@@ -169,24 +169,26 @@ public class UserController {
     @PatchMapping("/{userIdx}/status")
     public BaseResponse<String> deleteUser(@PathVariable("userIdx") int userIdx, @RequestBody User user) {
         try {
+
             //jwt에서 idx 추출.
             int userIdxByJwt = jwtService.getUserIdx();
             //userIdx와 접근한 유저가 같은지 확인
             if (userIdx != userIdxByJwt) {
                 return new BaseResponse<>(INVALID_USER_JWT);
             }
+
+            GetUserRes getUser = userProvider.getUser(userIdx);
             //접근한 유저가 같고, 유저의 상태가 'Deleted'가 아닐 경우 회원 탈퇴 상태로 변경
-            // 예외처리 다시 구현하기.!!!
-//            String status = user.getStatus();
-//            if (!status.equals("Deleted")) {
+            String status = getUser.getStatus();
+            if (!status.equals("DELETED")) {
             PatchDeleteUserReq patchDeleteUserReq = new PatchDeleteUserReq(userIdx, user.getDeleteReasonContent());
             userService.deleteUser(patchDeleteUserReq);
 
             String result = "회원탈퇴가 완료되었습니다.";
             return new BaseResponse<>(result);
-//            } else {
-//                return new BaseResponse<>(INVALID_USER);
-//            }
+            } else {
+                return new BaseResponse<>(INVALID_USER);
+            }
 
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());

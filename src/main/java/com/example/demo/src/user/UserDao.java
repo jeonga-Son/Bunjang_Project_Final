@@ -137,14 +137,6 @@ public class UserDao {
 
     }
 
-//    public int checkUser(PostUserReq postUserReq) {
-//        String checkUserQuery = "select exists(select * from User where password = ?)";
-//        String checkUserParam = postUserReq.getPassword();
-//        return this.jdbcTemplate.queryForObject(checkUserQuery,
-//                int.class,
-//                checkUserParam);
-//    }
-
     public int checkKakaoUserName(String kakaoUserName) {
         String checkUserIdxQuery = "select exists(select name from User where name = ?)";
         String checkUserParam = kakaoUserName;
@@ -180,7 +172,7 @@ public class UserDao {
         return this.jdbcTemplate.update(modifyShopQuery, modifyShopParams);
     }
 
-    public User getPwd(PostLoginReq postLoginReq) {
+    public User checkUser(PostLoginReq postLoginReq) {
         String getPwdQuery = "select userIdx, name, phoneNo, birthday, address, latitude, longitude,\n" +
                 "       createAt, updateAt, status, profileImgUrl, shopDescription, deleteReasonContent\n" +
                 "From User\n" +

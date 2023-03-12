@@ -16,6 +16,4 @@ public class PostLoginReq {
 
     private String phoneNo;
 
-//    private String password;
-
 }

@@ -49,20 +49,11 @@ public class UserService {
 
     //POST
     public PostUserRes createUser(PostUserReq postUserReq) throws BaseException {
-        // 휴대폰번호 중복
+        // 휴대폰번호 중복 체크
         if(userProvider.checkPhoneNo(postUserReq.getPhoneNo()) ==1){
             throw new BaseException(POST_USERS_EXISTS_PHONENO);
         }
 
-//        String pwd;
-//        try{
-//            //암호화
-//            pwd = new SHA256().encrypt(postUserReq.getPassword());
-//            postUserReq.setPassword(pwd);
-//
-//        } catch (Exception ignored) {
-//            throw new BaseException(PASSWORD_ENCRYPTION_ERROR);
-//        }
         try{
             int userIdx = userDao.createUser(postUserReq);
             //jwt 발급.
@@ -101,8 +92,8 @@ public class UserService {
     }
 
     public String getToken(String code) throws ParseException {
-        //POST 방식으로 key=value 데이터를 요청(카카오 쪽으로)
-        RestTemplate rt = new RestTemplate(); //http 요청을 간단하게 해줄 수 있는 클래스
+        //POST 방식으로 key=value 데이터를 요청
+        RestTemplate rt = new RestTemplate();
 
         //HttpHeader 오브젝트 생성
         HttpHeaders headers = new HttpHeaders();
@@ -119,8 +110,8 @@ public class UserService {
         HttpEntity<MultiValueMap<String, String>> kakaoTokenRequest =
                 new HttpEntity<>(params, headers);
 
-        //실제로 요청하기
-        //Http 요청하기 - POST 방식으로 - 그리고 response 변수의 응답을 받음.
+
+        //Http 요청하기
         ResponseEntity<String> response = rt.exchange(
                 "https://kauth.kakao.com/oauth/token",
                 HttpMethod.POST,
@@ -131,7 +122,7 @@ public class UserService {
         //Gson Library, JSON SIMPLE LIBRARY, OBJECT MAPPER(Check)
         ObjectMapper objectMapper = new ObjectMapper();
         OAuthToken oauthToken = null;
-        //Model과 다르게 되있으면 그리고 getter setter가 없으면 오류가 날 것이다.
+
         try {
             oauthToken = objectMapper.readValue(response.getBody(), OAuthToken.class);
             System.out.println("카카오 엑세스 토큰:" + oauthToken.getAccess_token());
@@ -149,8 +140,7 @@ public class UserService {
         HttpEntity<MultiValueMap<String, String>> kakaoProfileRequest =
                 new HttpEntity<>(headers2);
 
-        //실제로 요청하기
-        //Http 요청하기 - POST 방식으로 - 그리고 response 변수의 응답을 받음.
+        //Http 요청하기
         ResponseEntity<String> response2 = rt2.exchange(
                 "https://kapi.kakao.com/v2/user/me",
                 HttpMethod.POST,
@@ -160,14 +150,13 @@ public class UserService {
 
         ObjectMapper objectMapper2 = new ObjectMapper();
         KakaoProfile kakaoProfile = null;
-        //Model과 다르게 되있으면 그리고 getter setter가 없으면 오류가 날 것이다.
+
         try {
             kakaoProfile = objectMapper2.readValue(response2.getBody(), KakaoProfile.class);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
 
-        //
         System.out.println("카카오 아이디(번호) : " + kakaoProfile.getId());
         System.out.println("카카오 이메일 : " + kakaoProfile.getKakao_account().getEmail());
         System.out.println("카카오 닉네임 : " + kakaoProfile.getProperties().getNickname());
@@ -191,7 +180,6 @@ public class UserService {
         postUserReq.setName(String.valueOf(kakaoProfile.getId()));
         postUserReq.setPhoneNo(empty);
         postUserReq.setBirthday(emptyDate);
-//        postUserReq.setPassword(String.valueOf(garbagePassword));
 
         User user = new User();
         int findIdx = userProvider.checkKakaoUserName(postUserReq.getName());
