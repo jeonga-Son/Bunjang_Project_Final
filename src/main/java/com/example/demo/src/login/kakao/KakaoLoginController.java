@@ -1,5 +1,6 @@
 package com.example.demo.src.login.kakao;
 
+import com.example.demo.config.BaseResponse;
 import com.example.demo.src.login.kakao.model.KakaoProfile;
 import com.example.demo.src.login.kakao.model.KakaoUser;
 import com.example.demo.src.login.kakao.model.PostKakaoUser;
@@ -30,8 +31,9 @@ public class KakaoLoginController {
         this.kakaoLoginservice = kakaoLoginservice;
     }
 
+    @ResponseBody
     @GetMapping("/oauth/kakao")
-    public @ResponseBody String kakaoCallback(String code){
+    public BaseResponse<String> kakaoCallback(String code){
         //POST 방식으로 key=value 데이터를 요청(카카오 쪽으로)
         RestTemplate rt = new RestTemplate(); //http 요청을 간단하게 해줄 수 있는 클래스
 
@@ -120,12 +122,14 @@ public class KakaoLoginController {
         KakaoUser kakaoUser = new KakaoUser();
         int findIdx = kakaoLoginservice.checkUser(postKakaoUser.getKakaoUserName());
 
+        String result ="";
         if(findIdx == 1) {
-            System.out.println("기존 회원입니다.");
+            result = "기존 회원입니다.";
+            return new BaseResponse<String>(result);
         } else {
             kakaoLoginservice.createUser(postKakaoUser);
+            result = "카카오 로그인 요청에 성공하였습니다.";
+            return new BaseResponse<String>(result);
         }
-
-        return response2.getBody();
     }
 }
