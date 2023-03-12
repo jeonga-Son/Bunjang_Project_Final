@@ -144,14 +144,14 @@ public class ProductController {
          */
         @ResponseBody
         @PatchMapping("/{productIdx}/status") // (PATCH) 127.0.0.1:9000/products/:productIdx/status
-        public BaseResponse<PatchProductRes> deleteProduct ( @PathVariable("productIdx") int productIdx,
-        @RequestBody ProductUserIdx productUserIdx){
+        public BaseResponse<PatchProductRes> deleteProduct ( @PathVariable("productIdx") int productIdx, @RequestBody ProductUserIdx productUserIdx){
             try {
                 // 회원용 API
                 int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출
                 if (productUserIdx.getUserIdx() != userIdxByJwt) { // 유저가 제시한 userIdx != jwt에서 추출한 userIdx
                     return new BaseResponse<>(INVALID_USER_JWT);
                 }
+
                 PatchProductRes patchProductRes = productService.deleteProduct(productIdx);
                 return new BaseResponse<>(patchProductRes);
 
