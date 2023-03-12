@@ -126,7 +126,6 @@ public class KakaoLoginController {
             kakaoLoginservice.createUser(postKakaoUser);
         }
 
-
         return response2.getBody();
     }
 }
