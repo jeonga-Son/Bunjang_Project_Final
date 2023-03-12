@@ -2,7 +2,6 @@ package com.example.demo.src.user;
 
 
 import com.example.demo.config.BaseException;
-import com.example.demo.src.login.kakao.model.GetKakaoMyPageRes;
 import com.example.demo.src.user.model.*;
 import com.example.demo.utils.JwtService;
 import com.example.demo.utils.SHA256;
@@ -49,15 +48,6 @@ public class UserProvider {
         }
     }
 
-//    public GetKakaoMyPageRes getKakaoMyPage(int kakaoUserIdx) throws BaseException {
-//        try {
-//            GetKakaoMyPageRes getKakaoMyPageRes = userDao.getKakaoMyPage(kakaoUserIdx);
-//            return getKakaoMyPageRes;
-//        } catch (Exception exception) {
-//            logger.error("App - getKakaoMyPage Provider Error", exception);
-//            throw new BaseException(DATABASE_ERROR);
-//        }
-//    }
 
     public GetShopRes getShop(int userIdx) throws BaseException {
 
@@ -107,6 +97,11 @@ public class UserProvider {
             logger.error("App - checkPhoneNo Provider Error", exception);
             throw new BaseException(DATABASE_ERROR);
         }
+    }
+
+    public int checkKakaoUserName(String kakaoUserName) {
+        int idx = userDao.checkKakaoUserName(kakaoUserName);
+        return idx;
     }
 
 }

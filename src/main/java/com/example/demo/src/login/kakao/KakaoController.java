@@ -1,26 +1,25 @@
 package com.example.demo.src.login.kakao;
 
 import com.example.demo.config.BaseResponse;
-import com.example.demo.src.login.kakao.model.KakaoUser;
-import com.example.demo.src.login.kakao.model.PostKakaoUser;
+import com.example.demo.src.user.UserProvider;
+import com.example.demo.src.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
+import java.text.ParseException;
 
 @RestController
 @RequestMapping("/oauth")
 public class KakaoController {
 
     @Autowired
-    private final KakaoService kakaoService;
+    private final UserService userService;
     @Autowired
-    private final KakaoProvider kakaoProvider;
+    private final UserProvider userProvider;
 
-    public KakaoController(KakaoService kakaoLoginservice, KakaoProvider kakaoProvider) {
-        this.kakaoService = kakaoLoginservice;
-        this.kakaoProvider = kakaoProvider;
+    public KakaoController(UserService userService, UserProvider userProvider) {
+        this.userService = userService;
+        this.userProvider = userProvider;
     }
 
     /**
@@ -30,8 +29,8 @@ public class KakaoController {
      */
     @ResponseBody
     @GetMapping("/kakao")
-    public BaseResponse<String> kakaoCallback(String code){
-        String result = kakaoService.getToken(code);
+    public BaseResponse<String> kakaoCallback(String code) throws ParseException {
+        String result = userService.getToken(code);
 
         return new BaseResponse<String>(result);
 
