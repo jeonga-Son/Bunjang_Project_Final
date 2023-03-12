@@ -84,8 +84,10 @@ public class UserProvider {
 
             if(!user.getPhoneNo().isEmpty()){
                 int userIdx = user.getUserIdx();
+                String name = user.getName();
                 String jwt = jwtService.createJwt(userIdx);
-                return new PostLoginRes(userIdx,jwt);
+                String resultMessage = "'" + name + "'" + "님 로그인에 성공하였습니다.";
+                return new PostLoginRes(userIdx, name, jwt, resultMessage);
             }
             else{
                 throw new BaseException(FAILED_TO_LOGIN);

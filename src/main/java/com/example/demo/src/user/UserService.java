@@ -58,8 +58,11 @@ public class UserService {
             int userIdx = userDao.createUser(postUserReq);
             //jwt 발급.
             String jwt = jwtService.createJwt(userIdx);
-
-            return new PostUserRes(userIdx,jwt);
+            String name = postUserReq.getName();
+            String phoneNo = postUserReq.getPhoneNo();
+            Date birthday = postUserReq.getBirthday();
+            String resultMessage = "'" + name + "'" + "님 회원가입을 환영합니다.";
+            return new PostUserRes(userIdx, name, phoneNo, birthday, jwt, resultMessage);
         } catch (Exception exception) {
             logger.error("App - createUser Service Error", exception);
             throw new BaseException(DATABASE_ERROR);

@@ -14,6 +14,14 @@ import java.util.Date;
 public class PostUserRes {
     private int userIdx;
 
+    private String name;
+
+    private String phoneNo;
+
+    private Date birthday;
+
     private String jwt;
+
+    private String resultMessage;
 
 }
