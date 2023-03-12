@@ -4,15 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cb757ae0-b819-4594-9695-66627a6806fa" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/config/BaseResponseStatus.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/config/BaseResponseStatus.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/src/favorite/FavoriteService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/src/favorite/FavoriteService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/src/follow/FollowService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/src/follow/FollowService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/src/review/ReviewController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/src/review/ReviewController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/src/review/ReviewDao.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/src/review/ReviewDao.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/src/review/ReviewService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/src/review/ReviewService.java" afterDir="false" />
-    </list>
+    <list default="true" id="cb757ae0-b819-4594-9695-66627a6806fa" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />

@@ -25,7 +25,7 @@ public class PointDao {
                 "        where DATEDIFF(date(Point.expireDate), now()) < 30 and\n" +
                 "            DATEDIFF(date(Point.expireDate), now()) > 0 and\n" +
                 "            User.userIdx = ? and Point.pointName = '포인트적립'\n" +
-                "           or Point.pointName LIKE '%리워드%' and Point.point > 0) as thirtyDayExpireDate\n" +
+                "           or Point.pointName LIKE '%리워드%' and Point.point > 0) as countExpireDate\n" +
                 "from Point\n" +
                 "    right join User on User.userIdx = Point.userIdx\n" +
                 "    where User.userIdx = ? ;";
@@ -35,7 +35,7 @@ public class PointDao {
         return this.jdbcTemplate.query(getMyPointQuery,
                 (rs, rowNum) -> new GetPointRes(
                         rs.getInt("totalPoint"),
-                        rs.getLong("thirtyDayExpireDate")
+                        rs.getLong("countExpireDate")
                 ), getMyPointParams);
     }
 

@@ -12,5 +12,5 @@ import lombok.Setter;
 public class GetPointRes {
     private int totalPoint;
 
-    private long thirtyDayExpireDate;
+    private long countExpireDate;
 }

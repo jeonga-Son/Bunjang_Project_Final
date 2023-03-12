@@ -9,6 +9,8 @@ import com.example.demo.utils.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 import static com.example.demo.config.BaseResponseStatus.*;
 
 @RestController
@@ -47,20 +49,35 @@ public class UserController {
     }
 
     /**
-     * 특정 상점 조회 API
-     * [GET] /users/:userIdx
+     * 상점 조회 API
+     * [GET] /users/store/:userIdx
      * @return BaseResponse<GetMyShopRes>
      */
     @ResponseBody
-    @GetMapping("/{userIdx}") // (GET) 127.0.0.1:9000/users/:userIdx
-    public BaseResponse<GetShopRes> getShop(@PathVariable("userIdx") int userIdx) {
+    @GetMapping("/store/{userIdx}") // (GET) 127.0.0.1:9000/users/store/:userIdx
+    public BaseResponse<GetStoreRes> getShop(@PathVariable("userIdx") int userIdx) {
         try {
-            GetShopRes getShopRes = userProvider.getShop(userIdx);
-            return new BaseResponse<>(getShopRes);
+            GetStoreRes getStoreRes = userProvider.getStore(userIdx);
+            return new BaseResponse<>(getStoreRes);
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
         }
+    }
 
+    /**
+     * 상점 상품 조회 API
+     * [GET] /users/store/:userIdx/products
+     * @return BaseResponse<GetMyShopRes>
+     */
+    @ResponseBody
+    @GetMapping("/store/{userIdx}/products") // (GET) 127.0.0.1:9000/users/store/:userIdx/products
+    public BaseResponse<List<GetStoreProductsRes>> getStoreProducts(@PathVariable("userIdx") int userIdx) {
+        try {
+            List<GetStoreProductsRes> getStoreProducts = userProvider.getStoreProducts(userIdx);
+            return new BaseResponse<>(getStoreProducts);
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
     }
 
     /**
@@ -132,7 +149,7 @@ public class UserController {
                 return new BaseResponse<>(INVALID_USER_JWT);
             }
 
-            PatchShopInfoReq patchShopInfoReq = new PatchShopInfoReq(userIdx, user.getProfileImgUrl(), user.getShopDescription());
+            PatchShopInfoReq patchShopInfoReq = new PatchShopInfoReq(userIdx, user.getProfileImgUrl(), user.getShopDescription(), user.getName());
             userService.modifyShop(patchShopInfoReq);
 
             String result = "상점 소개가 수정되었습니다.";
@@ -152,24 +169,26 @@ public class UserController {
     @PatchMapping("/{userIdx}/status")
     public BaseResponse<String> deleteUser(@PathVariable("userIdx") int userIdx, @RequestBody User user) {
         try {
+
             //jwt에서 idx 추출.
             int userIdxByJwt = jwtService.getUserIdx();
             //userIdx와 접근한 유저가 같은지 확인
             if (userIdx != userIdxByJwt) {
                 return new BaseResponse<>(INVALID_USER_JWT);
             }
+
+            GetUserRes getUser = userProvider.getUser(userIdx);
             //접근한 유저가 같고, 유저의 상태가 'Deleted'가 아닐 경우 회원 탈퇴 상태로 변경
-            // 예외처리 다시 구현하기.!!!
-//            String status = user.getStatus();
-//            if (!status.equals("Deleted")) {
-            PatchDeleteUserReq patchDeleteUserReq = new PatchDeleteUserReq(userIdx, user.getDeleteReasonContent());
+            String status = getUser.getStatus();
+            if (!status.equals("DELETED")) {
+            PatchDeleteUserReq patchDeleteUserReq = new PatchDeleteUserReq(userIdx, user.getDeleteReasonContent(), user.getUpdateAt());
             userService.deleteUser(patchDeleteUserReq);
 
             String result = "회원탈퇴가 완료되었습니다.";
             return new BaseResponse<>(result);
-//            } else {
-//                return new BaseResponse<>(INVALID_USER);
-//            }
+            } else {
+                return new BaseResponse<>(INVALID_USER);
+            }
 
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());

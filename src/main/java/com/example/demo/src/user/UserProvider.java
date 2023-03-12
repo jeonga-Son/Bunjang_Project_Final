@@ -4,11 +4,12 @@ package com.example.demo.src.user;
 import com.example.demo.config.BaseException;
 import com.example.demo.src.user.model.*;
 import com.example.demo.utils.JwtService;
-import com.example.demo.utils.SHA256;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 import static com.example.demo.config.BaseResponseStatus.*;
 
@@ -48,15 +49,29 @@ public class UserProvider {
         }
     }
 
-    public GetShopRes getShop(int userIdx) throws BaseException {
+    public GetStoreRes getStore(int userIdx) throws BaseException {
 
-        if (userDao.getUser(userIdx).equals(null)) {
-            throw new BaseException(POST_USERS_EXISTS_PHONENO);
-        }
+//        if (userDao.getUser(userIdx).equals(null)) {
+//            throw new BaseException(POST_USERS_EMPTY_USER);
+//        }
 
         try {
-            GetShopRes getShopRes = userDao.getShop(userIdx);
-            return getShopRes;
+            GetStoreRes getStoreRes = userDao.getStore(userIdx);
+            return getStoreRes;
+        } catch (Exception exception) {
+            logger.error("App - getShop Provider Error", exception);
+        }
+        return null;
+    }
+
+    public List<GetStoreProductsRes> getStoreProducts(int userIdx) throws BaseException {
+//        if (userDao.getUser(userIdx).equals(null)) {
+//            throw new BaseException(POST_USERS_EMPTY_USER);
+//        }
+
+        try {
+            List<GetStoreProductsRes> getStoreProductsRes = userDao.getStoreProducts(userIdx);
+            return getStoreProductsRes;
         } catch (Exception exception) {
             logger.error("App - getShop Provider Error", exception);
         }
@@ -65,17 +80,9 @@ public class UserProvider {
 
     public PostLoginRes logIn(PostLoginReq postLoginReq) throws BaseException {
         try {
-            User user = userDao.getPwd(postLoginReq);
+            User user = userDao.checkUser(postLoginReq);
 
-            String encryptPwd;
-            try {
-                encryptPwd = new SHA256().encrypt(postLoginReq.getPassword());
-            } catch (Exception exception) {
-                logger.error("App - logIn Provider Encrypt Error", exception);
-                throw new BaseException(PASSWORD_DECRYPTION_ERROR);
-            }
-
-            if(user.getPassword().equals(encryptPwd)){
+            if(!user.getPhoneNo().isEmpty()){
                 int userIdx = user.getUserIdx();
                 String jwt = jwtService.createJwt(userIdx);
                 return new PostLoginRes(userIdx,jwt);
@@ -97,4 +104,10 @@ public class UserProvider {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
+    public int checkKakaoUserName(String kakaoUserName) {
+        int idx = userDao.checkKakaoUserName(kakaoUserName);
+        return idx;
+    }
+
 }
