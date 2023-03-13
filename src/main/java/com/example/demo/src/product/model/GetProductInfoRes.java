@@ -27,6 +27,6 @@ public class GetProductInfoRes {
     private int chatCount;
     private int favoriteCount;
     private List<PostProductImgs> productImgs;
-    private List<PostTags> keywords;
+    private List<PostTags> tags;
 
 }

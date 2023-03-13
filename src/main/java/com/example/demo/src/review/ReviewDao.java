@@ -76,7 +76,7 @@ public class ReviewDao {
                 (rs,rownum) -> new GetReviews(
                         // 작성자 id, 별점, 작성자 이름, 리뷰 내용, 리뷰 이미지, 리뷰 작성일, 거래 상품 id, 상품 이름
                         rs.getInt("Review.userIdx"),
-                        rs.getInt("star"),
+                        rs.getFloat("star"),
                         rs.getString("name"),
                         rs.getString("content"),
                         rs.getString("reviewImgUrl"),
