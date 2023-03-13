@@ -53,7 +53,7 @@ public class ProductDao {
 //    }
 
     public List<GetReviewList> getReviews(int userIdx, int limit){
-        String getReviewsQuery = "select reviewIdx, round(Review.star,1) as star, content, reviewImgUrl, Review.userIdx, Review.createAt\n" +
+        String getReviewsQuery = "select reviewIdx, round(Review.star,1) as star, content, reviewImgUrl, Review.userIdx, Review.createAt, name\n" +
                 "from Review left join User on Review.sellerIdx=User.userIdx\n" +
                 "where Review.sellerIdx=?\n" +
                 "limit ?;";
@@ -68,12 +68,13 @@ public class ProductDao {
                         rs.getFloat("star"),
                         rs.getString("content"),
                         rs.getString("reviewImgUrl"),
-                        rs.getString("userName"),
-                        sdf.format(rs.getString("createAt"))),
+                        rs.getString("name"),
+                        sdf.format(rs.getTimestamp("createAt"))),
                 getReviewsParams);
     }
 
-    public List<GetProductList> getProducts(int userIdx, int limit) {
+    // 회원용 상품 목록 조회
+    public List<GetProductList> getProducts_auth(int sellerIdx, int userIdx, int limit) {
         String getProductsQuery = "select prod_list.productIdx, productImgUrl, price, productName, if(isnull(fav_list.productIdx), 0, 1) as isFavorite\n" +
                 "from\n" +
                 "    (select Product.productIdx,productImgUrl, price, productName\n" +
@@ -81,15 +82,15 @@ public class ProductDao {
                 "        left join Product on User.userIdx = Product.userIdx\n" +
                 "        left join ProductImg on Product.productIdx=ProductImg.productIdx\n" +
                 "        left join Favorite on Product.productIdx=Favorite.productIdx\n" +
-                "    where User.userIdx=? and Product.status = 'ACTIVE' # 어떤 유저의 상품 목록인지?\n" +
-                "    group by Product.productIdx\n" +
-                "    limit ?) prod_list\n" +
-                "left join\n" +
-                "    (select productIdx, userIdx\n" +
-                "    from Favorite\n" +
-                "    where userIdx=? and favoriteStatus = 'ACTIVE' and status = 'ACTIVE') fav_list\n" +
-                "on prod_list.productIdx=fav_list.productIdx";
-        Object[] getProductsParams = new Object[] {limit, userIdx};
+                "where User.userIdx=? and Product.status = 'ACTIVE' # 어떤 유저의 상품 목록인지?\n" +
+                "group by Product.productIdx\n" +
+                "limit ?) prod_list\n" +
+                "    left join\n" +
+                "        (select productIdx, userIdx\n" +
+                "        from Favorite\n" +
+                "        where userIdx=? and favoriteStatus = 'ACTIVE' and status = 'ACTIVE') fav_list\n" +
+                "    on prod_list.productIdx=fav_list.productIdx";
+        Object[] getProductsParams = new Object[] {sellerIdx, limit, userIdx};
 
         return this.jdbcTemplate.query(getProductsQuery,
                 (rs, rowNum) -> new GetProductList(
@@ -101,6 +102,86 @@ public class ProductDao {
                         rs.getInt("isFavorite")),
                 getProductsParams
                 );
+    }
+
+
+    // 비회원용 상품 목록 조회
+    public List<GetProductList> getProducts(int userIdx, int limit) {
+        String getProductsQuery = "select Product.productIdx,productImgUrl, price, productName, (0) as isFavorite\n" +
+                "    from User\n" +
+                "        left join Product on User.userIdx = Product.userIdx\n" +
+                "        left join ProductImg on Product.productIdx=ProductImg.productIdx\n" +
+                "        left join Favorite on Product.productIdx=Favorite.productIdx\n" +
+                "where User.userIdx=? and Product.status = 'ACTIVE' # 어떤 유저의 상품 목록인지?\n" +
+                "group by Product.productIdx\n" +
+                "limit ?";
+        Object[] getProductsParams = new Object[] {userIdx, limit};
+
+        return this.jdbcTemplate.query(getProductsQuery,
+                (rs, rowNum) -> new GetProductList(
+                        // 이 상점의 상품 list (상품 id, 대표사진, 금액, 상품 이름, 찜 여부)
+                        rs.getInt("productIdx"),
+                        rs.getString("productImgUrl"),
+                        rs.getInt("price"),
+                        rs.getString("productName"),
+                        rs.getInt("isFavorite")),
+                getProductsParams
+        );
+    }
+
+    // 홈화면용 랜덤 상품 출력
+    public List<GetProductList> getHomeProducts(int limit) {
+        String getProductsQuery = "select Product.productIdx,productImgUrl, price, productName, (0) as isFavorite\n" +
+                "    from User\n" +
+                "        left join Product on User.userIdx = Product.userIdx\n" +
+                "        left join ProductImg on Product.productIdx=ProductImg.productIdx\n" +
+                "        left join Favorite on Product.productIdx=Favorite.productIdx\n" +
+                "where Product.status = 'ACTIVE' and Product.saleStatus = 'ONSALE'\n" +
+                "group by Product.productIdx\n" +
+                "limit ?";
+        Object[] getProductsParams = new Object[] {limit};
+
+        return this.jdbcTemplate.query(getProductsQuery,
+                (rs, rowNum) -> new GetProductList(
+                        // 이 상점의 상품 list (상품 id, 대표사진, 금액, 상품 이름, 찜 여부)
+                        rs.getInt("productIdx"),
+                        rs.getString("productImgUrl"),
+                        rs.getInt("price"),
+                        rs.getString("productName"),
+                        rs.getInt("isFavorite")),
+                getProductsParams
+        );
+    }
+
+    public List<GetProductList> getHomeProducts_auth(int userIdx, int limit) {
+        String getProductsQuery = "select prod_list.productIdx, productImgUrl, price, productName, if(isnull(fav_list.productIdx), 0, 1) as isFavorite\n" +
+                "from\n" +
+                "    (select Product.productIdx,productImgUrl, price, productName" +
+                "    from User\n" +
+                "        left join Product on User.userIdx = Product.userIdx\n" +
+                "        left join ProductImg on Product.productIdx=ProductImg.productIdx\n" +
+                "        left join Favorite on Product.productIdx=Favorite.productIdx\n" +
+                "where Product.status = 'ACTIVE' and Product.saleStatus = 'ONSALE'\n" +
+                "group by Product.productIdx\n" +
+                "limit ?\n" +
+                ") prod_list\n" +
+                "    left join\n" +
+                "        (select productIdx, userIdx\n" +
+                "        from Favorite\n" +
+                "        where userIdx=? and favoriteStatus = 'ACTIVE' and status = 'ACTIVE') fav_list\n" +
+                "    on prod_list.productIdx=fav_list.productIdx";
+        Object[] getProductsParams = new Object[] {limit, userIdx};
+
+        return this.jdbcTemplate.query(getProductsQuery,
+                (rs, rowNum) -> new GetProductList(
+                        // 이 상점의 상품 list (상품 id, 대표사진, 금액, 상품 이름, 찜 여부)
+                        rs.getInt("productIdx"),
+                        rs.getString("productImgUrl"),
+                        rs.getInt("price"),
+                        rs.getString("productName"),
+                        rs.getInt("isFavorite")),
+                getProductsParams
+        );
     }
 
 //    public List<GetProductList> getProducts(int userIdx, int limit) {
@@ -146,9 +227,30 @@ public class ProductDao {
 //        );
 //    }
 
-    public List<GetProductList> getProductsByCat(int categoryIdx, int userIdx) {
+    public List<GetProductList> getProductsByCat(int categoryIdx) {
+        String getProductsQuery = "select Product.productIdx,productImgUrl, price, productName, (0) as isFavorite\n" +
+                "from User\n" +
+                "    left join Product on User.userIdx = Product.userIdx\n" +
+                "    left join ProductImg on Product.productIdx=ProductImg.productIdx\n" +
+                "where Product.status='ACTIVE' and Product.saleStatus !='SOLD' and categoryIdx=? \n" +
+                "group by Product.productIdx\n";
+        Object[] getProductsByCatParams = new Object[] {categoryIdx};
+
+        return this.jdbcTemplate.query(getProductsQuery,
+                (rs, rowNum) -> new GetProductList(
+                        // 상품 id, 대표사진, 금액, 상품 이름
+                        rs.getInt("productIdx"),
+                        rs.getString("productImgUrl"),
+                        rs.getInt("price"),
+                        rs.getString("productName"),
+                        rs.getInt("isFavorite")), getProductsByCatParams
+        );
+    }
+
+
+    public List<GetProductList> getProductsByCat_auth(int categoryIdx, int userIdx) {
         String getProductsQuery = "select prod_list.productIdx, productImgUrl, price, productName, if(isnull(fav_list.productIdx), 0, 1) as isFavorite\n" +
-                "from\n" +
+        "from\n" +
                 "    (select Product.productIdx,productImgUrl, price, productName\n" +
                 "from User\n" +
                 "    left join Product on User.userIdx = Product.userIdx\n" +
@@ -175,7 +277,9 @@ public class ProductDao {
     }
 
 
-    public List<GetProductList> getProductsBySubCat(int subCategoryIdx, int userIdx) {
+
+
+    public List<GetProductList> getProductsBySubCat_auth(int subCategoryIdx, int userIdx) {
         String getProductsQuery = "select prod_list.productIdx, productImgUrl, price, productName, if(isnull(fav_list.productIdx), 0, 1) as isFavorite\n" +
                 "from\n" +
                 "    (select Product.productIdx,productImgUrl, price, productName\n" +
@@ -203,14 +307,35 @@ public class ProductDao {
         );
     }
 
-    public GetShopInfo getShopInfo(int userIdx) {
-        String getShopInfo = "select User.userIdx, name, round(avg(Review.star),1) as avgStar,\n" +
-                "    (select count(Follow.followIdx) from User left join Follow on User.userIdx=Follow.followingUserIdx where User.userIdx=?) as followerCount,\n" +
-                "    (select count(Product.productIdx) from User left join Product on User.userIdx=Product.userIdx where User.userIdx=? and saleStatus='ONSALE') as productCount,\n" +
-                "    (select count(Review.reviewIdx) from User left join Review on User.userIdx=Review.sellerIdx where User.userIdx=?) as reviewCount\n" +
+    public List<GetProductList> getProductsBySubCat(int subCategoryIdx) {
+        String getProductsQuery = "select Product.productIdx,productImgUrl, price, productName, (0) as isFavorite\n" +
                 "from User\n" +
-                "    left join Review on User.userIdx=Review.sellerIdx\n" +
-                "where User.userIdx=?;";
+                "    left join Product on User.userIdx = Product.userIdx\n" +
+                "    left join ProductImg on Product.productIdx=ProductImg.productIdx\n" +
+                "where Product.status='ACTIVE' and Product.saleStatus != 'SOLD' and subCategoryIdx=? \n" +
+                "group by Product.productIdx;";
+
+        Object[] getProductsBySubCatParams = new Object[] {subCategoryIdx};
+
+        return this.jdbcTemplate.query(getProductsQuery,
+                (rs, rowNum) -> new GetProductList(
+                        // 상품 id, 대표사진, 금액, 상품 이름
+                        rs.getInt("productIdx"),
+                        rs.getString("productImgUrl"),
+                        rs.getInt("price"),
+                        rs.getString("productName"),
+                        rs.getInt("isFavorite")), getProductsBySubCatParams
+        );
+    }
+
+    public GetShopInfo getShopInfo(int userIdx) {
+        String getShopInfo = "select User.userIdx, name, round(avg(Review.star),1) as avgStar, (0) as isFollowing,\n" +
+                "        (select count(Follow.followIdx) from User left join Follow on User.userIdx=Follow.followingUserIdx where User.userIdx=?) as followerCount,\n" +
+                "        (select count(Product.productIdx) from User left join Product on User.userIdx=Product.userIdx where User.userIdx=? and saleStatus='ONSALE') as productCount,\n" +
+                "        (select count(Review.reviewIdx) from User left join Review on User.userIdx=Review.sellerIdx where User.userIdx=?) as reviewCount\n" +
+                "from User\n" +
+                "        left join Review on User.userIdx=Review.sellerIdx\n" +
+                "where User.userIdx=?";
         Object[] getShopInfoParams = new Object[] {userIdx, userIdx, userIdx, userIdx};
 
         return this.jdbcTemplate.queryForObject(getShopInfo,
@@ -220,19 +345,53 @@ public class ProductDao {
                         rs.getFloat("avgStar"),
                         rs.getInt("followerCount"),
                         rs.getInt("productCount"),
-                        rs.getInt("reviewCount")
+                        rs.getInt("reviewCount"),
+                        rs.getInt("isFollowing")
+                ), getShopInfoParams);
+    }
+
+
+    public GetShopInfo getShopInfo_auth(int userIdx, int userIdxByJwt) {
+        String getShopInfo = "select shop.userIdx, shop.name, shop.avgStar, shop.followerCount, shop.productCount, shop.reviewCount,\n" +
+                "       if(isnull(fol_list.followIdx), 0, 1) as isFollowing\n" +
+                "from\n" +
+                "    (\n" +
+                "select User.userIdx, name, round(avg(Review.star),1) as avgStar,\n" +
+                "    (select count(Follow.followIdx) from User left join Follow on User.userIdx=Follow.followingUserIdx where User.userIdx=?) as followerCount,\n" +
+                "    (select count(Product.productIdx) from User left join Product on User.userIdx=Product.userIdx where User.userIdx=? and saleStatus='ONSALE') as productCount,\n" +
+                "    (select count(Review.reviewIdx) from User left join Review on User.userIdx=Review.sellerIdx where User.userIdx=?) as reviewCount\n" +
+                "from User\n" +
+                "    left join Review on User.userIdx=Review.sellerIdx\n" +
+                "where User.userIdx=?\n" +
+                "    ) shop\n" +
+                "left join\n" +
+                "    (select followIdx, followingUserIdx\n" +
+                "    from Follow\n" +
+                "    where followerUserIdx=? and followStatus = 'ACTIVE' and status = 'ACTIVE') fol_list\n" +
+                "on shop.userIdx=fol_list.followingUserIdx";
+        Object[] getShopInfoParams = new Object[] {userIdx, userIdx, userIdx, userIdx, userIdxByJwt};
+
+        return this.jdbcTemplate.queryForObject(getShopInfo,
+                (rs, rownum) -> new GetShopInfo(
+                        rs.getInt("userIdx"),
+                        rs.getString("name"),
+                        rs.getFloat("avgStar"),
+                        rs.getInt("followerCount"),
+                        rs.getInt("productCount"),
+                        rs.getInt("reviewCount"),
+                        rs.getInt("isFollowing")
                 ), getShopInfoParams);
     }
 
     public GetProductInfoRes getProductInfoRes(int productIdx) {
         String getProductQuery = "select Product.description, Product.productIdx, price, productName, Product.createAt as date, saleStatus,\n" +
-                "       SubCategory.subCategoryIdx, SubCategory.subCategoryName, Product.userIdx,\n" +
+                "       SubCategory.subCategoryIdx, SubCategory.subCategoryName, Product.userIdx, (0) as isFavorite,\n" +
                 "       (select count(chatRoomIdx)\n" +
                 "        from Product left join ChatProduct on Product.productIdx=ChatProduct.productIdx\n" +
                 "        where Product.productIdx=?) as chatCount,\n" +
                 "       (select count(favoriteIdx)\n" +
                 "        from Product left join Favorite on Product.productIdx=Favorite.productIdx\n" +
-                "        where Product.productIdx=?) as favoriteCount\n" +
+                "       where Product.productIdx=?) as favoriteCount\n" +
                 "from Product\n" +
                 "    left join User on Product.userIdx=User.userIdx\n" +
                 "    left join SubCategory on Product.subCategoryIdx=SubCategory.subCategoryIdx\n" +
@@ -268,6 +427,68 @@ public class ProductDao {
                         this.jdbcTemplate.query("select tag\n" +
                                 "from Tag\n" +
                                 "where productIdx = ? and Tag.status='ACTIVE';",
+                                (rs2,rowNum1) -> new PostTags(
+                                        rs2.getString("tag")
+                                ), rs.getInt("productIdx"))
+                ), getProductParams);
+
+    }
+
+    public GetProductInfoRes getProductInfoRes_auth(int productIdx, int userIdx) {
+        String getProductQuery = "select prod_list.description, prod_list.productIdx, price, productName, prod_list.date as date, saleStatus,\n" +
+                "       prod_list.subCategoryIdx, prod_list.subCategoryName, prod_list.userIdx, if(isnull(fav_list.productIdx), 0, 1) as isFavorite,\n" +
+                "       prod_list.chatCount, prod_list.favoriteCount\n" +
+                "from\n" +
+                "    (\n" +
+                "    select Product.description, Product.productIdx, price, productName, Product.createAt as date, saleStatus,\n" +
+                "       SubCategory.subCategoryIdx, SubCategory.subCategoryName, Product.userIdx,\n" +
+                "       (select count(chatRoomIdx)\n" +
+                "        from Product left join ChatProduct on Product.productIdx=ChatProduct.productIdx\n" +
+                "        where Product.productIdx=?) as chatCount,\n" +
+                "       (select count(favoriteIdx)\n" +
+                "        from Product left join Favorite on Product.productIdx=Favorite.productIdx\n" +
+                "        where Product.productIdx=?) as favoriteCount\n" +
+                "from Product\n" +
+                "    left join User on Product.userIdx=User.userIdx\n" +
+                "    left join SubCategory on Product.subCategoryIdx=SubCategory.subCategoryIdx\n" +
+                "where Product.productIdx = ?\n" +
+                "group by Product.productIdx\n" +
+                ") prod_list\n" +
+                "    left join\n" +
+                "        (select productIdx, userIdx\n" +
+                "        from Favorite\n" +
+                "        where userIdx=? and favoriteStatus = 'ACTIVE' and status = 'ACTIVE') fav_list\n" +
+                "    on prod_list.productIdx=fav_list.productIdx;";
+        Object[] getProductParams = new Object[] {productIdx, productIdx, productIdx, userIdx};
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.KOREA);
+
+        return this.jdbcTemplate.queryForObject(getProductQuery,
+                (rs, rownum) -> new GetProductInfoRes(
+                        // 상품 id, 금액, 상품 이름, 게시일, 판매상태, 서브 카테고리 id, 서브 카테고리 이름, 작성자 id, 채팅 수, 찜 수
+                        // 상품 이미지 불러오기 List
+                        // 키워드 불러오기 List
+                        rs.getInt("productIdx"),
+                        rs.getInt("isFavorite"), // 쿼리에 추가해야 함
+                        rs.getInt("price"),
+                        rs.getString("productName"),
+                        rs.getString("description"),
+                        sdf.format(rs.getTimestamp("date")),
+                        rs.getString("saleStatus"),
+                        rs.getInt("subCategoryIdx"),
+                        rs.getString("subCategoryName"),
+                        rs.getInt("userIdx"),
+                        rs.getInt("chatCount"),
+                        rs.getInt("favoriteCount"),
+                        this.jdbcTemplate.query("select productImgUrl\n" +
+                                        "from Product\n" +
+                                        "    left join ProductImg on Product.productIdx=ProductImg.productIdx\n" +
+                                        "where Product.productIdx = ? and ProductImg.status='ACTIVE';",
+                                (rs1, rowNum) -> new PostProductImgs(
+                                        rs1.getString("productImgUrl")),
+                                rs.getInt("productIdx")),
+                        this.jdbcTemplate.query("select tag\n" +
+                                        "from Tag\n" +
+                                        "where productIdx = ? and Tag.status='ACTIVE';",
                                 (rs2,rowNum1) -> new PostTags(
                                         rs2.getString("tag")
                                 ), rs.getInt("productIdx"))
@@ -353,7 +574,7 @@ public class ProductDao {
         return this.jdbcTemplate.update(updateProductStatusQuery, updateProductStatusParams);
     }
 
-    public List<GetProductList> searchByTag(String tag, int userIdx) {
+    public List<GetProductList> searchByTag_auth(String tag, int userIdx) {
         String searchByTag = "select prod_list.productIdx, productName, productImgUrl, price, if(isnull(fav_list.productIdx), 0, 1) as isFavorite\n" +
                 "from\n" +
                 "    (select Tag.productIdx, productImgUrl, price, productName\n" +
@@ -368,6 +589,27 @@ public class ProductDao {
                 "    where userIdx=? and favoriteStatus = 'ACTIVE' and status = 'ACTIVE') fav_list\n" +
                 "on prod_list.productIdx=fav_list.productIdx\n";
         Object[] searchByTagParams = new Object[] {tag, userIdx};
+
+        return this.jdbcTemplate.query(searchByTag,
+                (rs, rowNum) -> new GetProductList(
+                        // 상품 list (상품 id, 대표사진, 금액, 상품 이름)
+                        rs.getInt("productIdx"),
+                        rs.getString("productImgUrl"),
+                        rs.getInt("price"),
+                        rs.getString("productName"),
+                        rs.getInt("isFavorite")),
+                searchByTagParams
+        );
+
+    }
+
+    public List<GetProductList> searchByTag(String tag) {
+        String searchByTag = "select Tag.productIdx, productImgUrl, price, productName, (0) as isFavorite\n" +
+                "from Product\n" +
+                "    left join Tag on Tag.productIdx=Product.productIdx\n" +
+                "    left join ProductImg on Product.productIdx=ProductImg.productIdx\n" +
+                "where Tag.status='ACTIVE' and ProductImg.status='ACTIVE' and Product.saleStatus != 'SOLD' and Product.status='ACTIVE' and tag=?\n";
+        Object[] searchByTagParams = new Object[] {tag};
 
         return this.jdbcTemplate.query(searchByTag,
                 (rs, rowNum) -> new GetProductList(

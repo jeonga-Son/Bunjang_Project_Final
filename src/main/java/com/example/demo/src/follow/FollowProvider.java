@@ -1,9 +1,8 @@
 package com.example.demo.src.follow;
 
 import com.example.demo.config.BaseException;
-import com.example.demo.src.follow.*;
-import com.example.demo.src.follow.model.*;
-import com.example.demo.src.product.model.GetProductList;
+import com.example.demo.src.follow.model.GetFollowersRes;
+import com.example.demo.src.follow.model.GetFollowingsRes;
 import com.example.demo.utils.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,8 +31,9 @@ public class FollowProvider {
 
     // 팔로잉 조회 메서드
     public List<GetFollowingsRes> getFollowings(int userIdx) throws BaseException {
+        int userIdxByJwt = jwtService.getUserIdx();
         try {
-            List<GetFollowingsRes> getFollowingsRes = followDao.getFollowings(userIdx);
+            List<GetFollowingsRes> getFollowingsRes = followDao.getFollowings(userIdx, userIdxByJwt);
             return getFollowingsRes;
         } catch (Exception exception) {
             logger.error("App - getFollowings Provider Error", exception);

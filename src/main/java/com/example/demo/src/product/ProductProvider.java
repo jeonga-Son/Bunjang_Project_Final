@@ -33,7 +33,7 @@ public class ProductProvider {
 
     // 리뷰 목록 불러오기
     public List<GetReviewList> getReviews(int productIdx) throws BaseException {
-        int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출
+        // int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출
         try {
             int userIdx = productDao.getUserIdxByProductIdx(productIdx);
             List<GetReviewList> getReviewList = productDao.getReviews(userIdx, 2);
@@ -46,101 +46,175 @@ public class ProductProvider {
 
     // 이 상점의 상품 목록 불러오기
     public List<GetProductList> getProducts(int productIdx) throws BaseException {
-        int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출
-
         // validation : 존재하는 상품인지?
-        if(checkProductExists(productIdx) == 0)
+        if (checkProductExists(productIdx) == 0)
             throw new BaseException(PRODUCT_NOT_EXISTS);
 
-        try {
-            int sellerIdx = productDao.getUserIdxByProductIdx(productIdx);
-            List<GetProductList> getProductList = productDao.getProducts(sellerIdx, userIdxByJwt); // jwt에서 추출한 userIdx 넣어줘야함
-            return getProductList;
-        } catch (Exception exception) {
-            logger.error("App - getProducts Provider Error", exception);
-            throw new BaseException(DATABASE_ERROR);
+        try { // 회원이 접속했을 때
+            int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출
+            try {
+                int sellerIdx = productDao.getUserIdxByProductIdx(productIdx);
+                List<GetProductList> getProductList = productDao.getProducts_auth(sellerIdx, userIdxByJwt, 3); // jwt에서 추출한 userIdx 넣어줘야함
+                return getProductList;
+            } catch (Exception exception) {
+                logger.error("App - getProducts Provider Error", exception);
+                throw new BaseException(DATABASE_ERROR);
+
+            }
+        } catch (BaseException e) { // 비회원
+            try { // 비회원
+                int sellerIdx = productDao.getUserIdxByProductIdx(productIdx);
+                List<GetProductList> getProductList = productDao.getProducts(sellerIdx, 3);
+                return getProductList;
+            } catch (Exception exception) {
+                logger.error("App - getProducts Provider Error", exception);
+                throw new BaseException(DATABASE_ERROR);
+            }
         }
     }
 
+
+
     // 랜덤으로 상품 목록 뽑아내기 (홈 화면 용)
-    public List<GetProductList> getProducts() throws BaseException {
-        int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출
-        try {
-            List<GetProductList> getProductList = productDao.getProducts(userIdxByJwt, 500);
-            return getProductList;
-        } catch (Exception exception) {
-            logger.error("App - getProducts Provider Error", exception);
-            throw new BaseException(DATABASE_ERROR);
+    public List<GetProductList> getHomeProducts() throws BaseException {
+        try { // 회원이 접속했을 때
+            int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출
+            try {
+                List<GetProductList> getProductList = productDao.getHomeProducts_auth(userIdxByJwt, 500);
+                return getProductList;
+            } catch (Exception exception) {
+                logger.error("App - getProducts Provider Error", exception);
+                throw new BaseException(DATABASE_ERROR);
+            }
+        } catch (Exception e) { // 비회원이 접속했을 때
+            try {
+                List<GetProductList> getProductList = productDao.getHomeProducts(500);
+                return getProductList;
+            } catch (Exception exception) {
+                logger.error("App - getProducts Provider Error", exception);
+                throw new BaseException(DATABASE_ERROR);
+            }
+
         }
     }
 
     // 카테고리 별 상품 목록 뽑아내기
     public List<GetProductList> getProductsByCat(int categoryIdx) throws BaseException {
-        int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출
-        try {
-            List<GetProductList> getProductList = productDao.getProductsByCat(categoryIdx, userIdxByJwt);
-            return getProductList;
-        } catch (Exception exception) {
-            logger.error("App - getProducts Provider Error", exception);
-            throw new BaseException(DATABASE_ERROR);
+        try { // 회원이 접속했을 때
+            int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출
+            try {
+                List<GetProductList> getProductList = productDao.getProductsByCat_auth(categoryIdx, userIdxByJwt);
+                return getProductList;
+            } catch (Exception exception) {
+                logger.error("App - getProducts Provider Error", exception);
+                throw new BaseException(DATABASE_ERROR);
+            }
+        } catch (Exception e) { // 비회원
+            try {
+                List<GetProductList> getProductList = productDao.getProductsByCat(categoryIdx);
+                return getProductList;
+            } catch (Exception exception) {
+                logger.error("App - getProducts Provider Error", exception);
+                throw new BaseException(DATABASE_ERROR);
+            }
         }
+
     }
 
 
     // 서브 카테고리 상품 목록 뽑아내기
     public List<GetProductList> getProductsBySubCat(int subCategoryIdx) throws BaseException {
-        int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출
-        try {
-            List<GetProductList> getProductList = productDao.getProductsBySubCat(subCategoryIdx, userIdxByJwt);
-            return getProductList;
-        } catch (Exception exception) {
-            logger.error("App - getProducts Provider Error", exception);
-            throw new BaseException(DATABASE_ERROR);
+        try { // 회원용
+            int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출
+            try {
+                List<GetProductList> getProductList = productDao.getProductsBySubCat_auth(subCategoryIdx, userIdxByJwt);
+                return getProductList;
+            } catch (Exception exception) {
+                logger.error("App - getProducts Provider Error", exception);
+                throw new BaseException(DATABASE_ERROR);
+            }
+        } catch (Exception e) {
+            try { // 비회원용
+                List<GetProductList> getProductList = productDao.getProductsBySubCat(subCategoryIdx);
+                return getProductList;
+            } catch (Exception exception) {
+                logger.error("App - getProducts Provider Error", exception);
+                throw new BaseException(DATABASE_ERROR);
+            }
         }
     }
 
 
 
     // 상점 정보 불러오기
-    public GetShopInfo getShopInfo(int userIdx) throws BaseException {
-        int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출
+    public GetShopInfo getShopInfo(int productIdx) throws BaseException {
+
         try {
-            GetShopInfo getShopInfo = productDao.getShopInfo(userIdx);
-            return getShopInfo;
-        } catch (Exception exception) {
-            logger.error("App - getShopInfo Provider Error", exception);
-            throw new BaseException(DATABASE_ERROR);
+            int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출
+            try {
+                int userIdx = productDao.getUserIdxByProductIdx(productIdx);
+                GetShopInfo getShopInfo = productDao.getShopInfo_auth(userIdx, userIdxByJwt);
+                return getShopInfo;
+            } catch (Exception exception) {
+                logger.error("App - getShopInfo Provider Error", exception);
+                throw new BaseException(DATABASE_ERROR);
+            }
+        } catch (Exception e) {
+            try {
+                int userIdx = productDao.getUserIdxByProductIdx(productIdx);
+                GetShopInfo getShopInfo = productDao.getShopInfo(userIdx);
+                return getShopInfo;
+            } catch (Exception exception) {
+                logger.error("App - getShopInfo Provider Error", exception);
+                throw new BaseException(DATABASE_ERROR);
+            }
         }
     }
 
     // 상품 정보 불러오기
     public GetProductInfoRes getProductInfoRes(int productIdx) throws BaseException, RichException {
-        int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출
+        // validation : 존재하는 상품인지?
+        if (productDao.checkProductExists(productIdx) == 0)
+            throw new BaseException(PRODUCT_NOT_EXISTS);
         try {
-            // validation : 존재하는 상품인지?
-            if(productDao.checkProductExists(productIdx) == 0)
-                throw new RichException(PRODUCT_NOT_EXISTS);
-
-            GetProductInfoRes getProductInfoRes = productDao.getProductInfoRes(productIdx);
-            return getProductInfoRes;
-        } catch (RichException richException) {
-            logger.error("App - patchProduct Service Error", richException);
-            throw new RichException(richException.getStatus());
-        }catch (Exception exception) {
-            logger.error("App - getProductRes Provider Error", exception);
-            throw new BaseException(DATABASE_ERROR);
+            int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출
+            try {
+                GetProductInfoRes getProductInfoRes = productDao.getProductInfoRes_auth(productIdx, userIdxByJwt);
+                return getProductInfoRes;
+            } catch (Exception exception) {
+                logger.error("App - getProductRes Provider Error", exception);
+                throw new BaseException(DATABASE_ERROR);
+            }
+        } catch (BaseException be) {
+            try {
+                GetProductInfoRes getProductInfoRes = productDao.getProductInfoRes(productIdx);
+                return getProductInfoRes;
+            } catch (Exception exception) {
+                logger.error("App - getProductRes Provider Error", exception);
+                throw new BaseException(DATABASE_ERROR);
+            }
         }
     }
 
     // 태그 검색 메서드
     public List<GetProductList> getProductsByTag(String tag) throws BaseException {
-        int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출
         try {
-            List<GetProductList> getProductLists = productDao.searchByTag(tag, userIdxByJwt);
-            return getProductLists;
-        } catch (Exception exception) {
-            logger.error("App - getProductsByTag Provider Error", exception);
-            throw new BaseException(DATABASE_ERROR);
+            int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출
+            try {
+                List<GetProductList> getProductLists = productDao.searchByTag_auth(tag, userIdxByJwt);
+                return getProductLists;
+            } catch (Exception exception) {
+                logger.error("App - getProductsByTag Provider Error", exception);
+                throw new BaseException(DATABASE_ERROR);
+            }
+        } catch (Exception e) {
+            try {
+                List<GetProductList> getProductLists = productDao.searchByTag(tag);
+                return getProductLists;
+            } catch (Exception exception) {
+                logger.error("App - getProductsByTag Provider Error", exception);
+                throw new BaseException(DATABASE_ERROR);
+            }
         }
     }
 

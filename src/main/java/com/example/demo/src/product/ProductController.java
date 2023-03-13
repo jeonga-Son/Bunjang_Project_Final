@@ -179,7 +179,7 @@ public class ProductController {
             }
         }
 
-        /** 상품 리스트 뽑아내기 api (홈화면 용)
+        /** 상품 리스트 뽑아내기 api (홈화면 용)면
          *
          * @return
          */
@@ -187,7 +187,7 @@ public class ProductController {
         @GetMapping("/home") // (GET) 127.0.0.1:9000/products/home
         public BaseResponse<List<GetProductList>> getProducts () {
             try {
-                List<GetProductList> getProductList = productProvider.getProducts();
+                List<GetProductList> getProductList = productProvider.getHomeProducts();
                 return new BaseResponse<>(getProductList);
 
             } catch (BaseException exception) {

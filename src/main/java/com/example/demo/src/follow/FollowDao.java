@@ -20,7 +20,7 @@ public class FollowDao {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
-    public List<GetFollowingsRes> getFollowings(int userIdx) {
+    public List<GetFollowingsRes> getFollowings(int userIdx, int userIdxByJwt) {
         String getFollowingsQuery = "SELECT\n" +
                 "    user_list.userIdx,\n" +
                 "    user_list.name,\n" +

@@ -93,8 +93,6 @@ public class FollowController {
             }
             int followIdx = followService.followUser(postFollowReq.getFollowerIdx(), followingUserIdx);
             return new BaseResponse<>(followIdx);
-        } catch (RichException richException) {
-            return new BaseResponse<>((richException.getStatus()));
         } catch(BaseException exception){
             return new BaseResponse<>((exception.getStatus()));
         }
