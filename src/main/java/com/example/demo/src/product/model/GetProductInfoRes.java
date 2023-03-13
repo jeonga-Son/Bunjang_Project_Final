@@ -12,10 +12,11 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GetProductInfoRes {
-    // 상품 id, 금액, 상품 이름, 게시일, 판매상태, 서브 카테고리 id, 서브 카테고리 이름, 작성자 id, 채팅 수, 찜 수
+    // 상품 id, 찜 여부, 금액, 상품 이름, 게시일, 판매상태, 서브 카테고리 id, 서브 카테고리 이름, 작성자 id, 채팅 수, 찜 수
     // 상품 이미지 불러오기 List
     // 키워드 불러오기 List
     private int productIdx;
+    private int isFavorite;
     private int price;
     private String productName;
     private String description;
@@ -28,5 +29,6 @@ public class GetProductInfoRes {
     private int favoriteCount;
     private List<PostProductImgs> productImgs;
     private List<PostTags> tags;
+
 
 }
