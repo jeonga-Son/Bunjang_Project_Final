@@ -247,6 +247,7 @@ public class ProductDao {
                         // 상품 이미지 불러오기 List
                         // 키워드 불러오기 List
                         rs.getInt("productIdx"),
+                        rs.getInt("isFavorite"), // 쿼리에 추가해야 함
                         rs.getInt("price"),
                         rs.getString("productName"),
                         rs.getString("description"),

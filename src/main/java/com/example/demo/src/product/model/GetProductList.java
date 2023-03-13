@@ -10,7 +10,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GetProductList {
-    // 이 상점의 상품 list (상품 id, 대표사진, 금액, 상품 이름)
+    // 이 상점의 상품 list (상품 id, 대표사진, 금액, 상품 이름, 찜 여부)
     private int productIdx;
     private String productImgUrl;
     private int price;

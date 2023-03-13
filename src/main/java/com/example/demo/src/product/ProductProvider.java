@@ -47,9 +47,11 @@ public class ProductProvider {
     // 이 상점의 상품 목록 불러오기
     public List<GetProductList> getProducts(int productIdx) throws BaseException {
         int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출
+
         // validation : 존재하는 상품인지?
         if(checkProductExists(productIdx) == 0)
             throw new BaseException(PRODUCT_NOT_EXISTS);
+
         try {
             int sellerIdx = productDao.getUserIdxByProductIdx(productIdx);
             List<GetProductList> getProductList = productDao.getProducts(sellerIdx, userIdxByJwt); // jwt에서 추출한 userIdx 넣어줘야함
