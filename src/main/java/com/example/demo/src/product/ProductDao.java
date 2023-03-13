@@ -384,7 +384,7 @@ public class ProductDao {
     }
 
     public GetProductInfoRes getProductInfoRes(int productIdx) {
-        String getProductQuery = "select Product.description, Product.productIdx, price, productName, Product.createAt as date, saleStatus,\n" +
+        String getProductQuery = "select Product.description, Product.productIdx, price, productName, count, productStatus, isExchange, Product.createAt as date, saleStatus,\n" +
                 "       SubCategory.subCategoryIdx, SubCategory.subCategoryName, Product.userIdx, (0) as isFavorite,\n" +
                 "       (select count(chatRoomIdx)\n" +
                 "        from Product left join ChatProduct on Product.productIdx=ChatProduct.productIdx\n" +
@@ -409,6 +409,9 @@ public class ProductDao {
                         rs.getInt("isFavorite"), // 쿼리에 추가해야 함
                         rs.getInt("price"),
                         rs.getString("productName"),
+                        rs.getInt("count"),
+                        rs.getString("productStatus"),
+                        rs.getString("isExchange"),
                         rs.getString("description"),
                         sdf.format(rs.getTimestamp("date")),
                         rs.getString("saleStatus"),
@@ -439,15 +442,14 @@ public class ProductDao {
                 "       prod_list.subCategoryIdx, prod_list.subCategoryName, prod_list.userIdx, if(isnull(fav_list.productIdx), 0, 1) as isFavorite,\n" +
                 "       prod_list.chatCount, prod_list.favoriteCount\n" +
                 "from\n" +
-                "    (\n" +
-                "    select Product.description, Product.productIdx, price, productName, Product.createAt as date, saleStatus,\n" +
-                "       SubCategory.subCategoryIdx, SubCategory.subCategoryName, Product.userIdx,\n" +
+                "    (select Product.description, Product.productIdx, price, productName, count, productStatus, isExchange, Product.createAt as date, saleStatus,\n" +
+                "       SubCategory.subCategoryIdx, SubCategory.subCategoryName, Product.userIdx, (0) as isFavorite,\n" +
                 "       (select count(chatRoomIdx)\n" +
                 "        from Product left join ChatProduct on Product.productIdx=ChatProduct.productIdx\n" +
                 "        where Product.productIdx=?) as chatCount,\n" +
                 "       (select count(favoriteIdx)\n" +
                 "        from Product left join Favorite on Product.productIdx=Favorite.productIdx\n" +
-                "        where Product.productIdx=?) as favoriteCount\n" +
+                "       where Product.productIdx=?) as favoriteCount\n" +
                 "from Product\n" +
                 "    left join User on Product.userIdx=User.userIdx\n" +
                 "    left join SubCategory on Product.subCategoryIdx=SubCategory.subCategoryIdx\n" +
@@ -468,9 +470,12 @@ public class ProductDao {
                         // 상품 이미지 불러오기 List
                         // 키워드 불러오기 List
                         rs.getInt("productIdx"),
-                        rs.getInt("isFavorite"), // 쿼리에 추가해야 함
+                        rs.getInt("isFavorite"),
                         rs.getInt("price"),
                         rs.getString("productName"),
+                        rs.getInt("count"),
+                        rs.getString("productStatus"),
+                        rs.getString("isExchange"),
                         rs.getString("description"),
                         sdf.format(rs.getTimestamp("date")),
                         rs.getString("saleStatus"),
@@ -497,14 +502,17 @@ public class ProductDao {
     }
 
     public int insertProducts(int userIdx, PostProductReq postProductReq){
-        String insertProductsQuery = "insert into Product(categoryIdx, subCategoryidx, userIdx, productName, price, description) values(?,?,?,?,?,?)";
+        String insertProductsQuery = "insert into Product(categoryIdx, subCategoryidx, userIdx, productName, price, description, count, productStatus, isExchange) values(?,?,?,?,?,?)";
         Object [] insertProductsParams = new Object[] {
                 getCategoryIdx(postProductReq.getSubCategoryIdx()),
                 postProductReq.getSubCategoryIdx(),
                 userIdx,
                 postProductReq.getProductName(),
                 postProductReq.getPrice(),
-                postProductReq.getDescription()
+                postProductReq.getDescription(),
+                postProductReq.getCount(),
+                postProductReq.getProductStatus(),
+                postProductReq.getIsExchange()
         };
 
         this.jdbcTemplate.update(insertProductsQuery, insertProductsParams);
@@ -529,7 +537,7 @@ public class ProductDao {
 
     public int updateProduct(int productIdx, PatchProductReq patchProductReq) {
         String updateProductQuery = "update Product\n" +
-                "set categoryIdx = ?, subCategoryIdx = ?, productName =?, price=?,description=?\n" +
+                "set categoryIdx = ?, subCategoryIdx = ?, productName =?, price=?,description=?, count=?, productStatus=?, isExchange=?\n" +
                 "where productIdx=?";
 
         Object[] updateProductParams = new Object[] {
@@ -538,6 +546,9 @@ public class ProductDao {
                 patchProductReq.getProductName(),
                 patchProductReq.getPrice(),
                 patchProductReq.getDescription(),
+                patchProductReq.getCount(),
+                patchProductReq.getProductStatus(),
+                patchProductReq.getIsExchange(),
                 productIdx};
 
         return this.jdbcTemplate.update(updateProductQuery, updateProductParams);

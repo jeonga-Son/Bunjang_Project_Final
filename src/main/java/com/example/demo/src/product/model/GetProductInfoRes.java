@@ -19,6 +19,9 @@ public class GetProductInfoRes {
     private int isFavorite;
     private int price;
     private String productName;
+    private int count;
+    private String productStatus;
+    private String isExchange;
     private String description;
     private String date;
     private String saleStatus;
