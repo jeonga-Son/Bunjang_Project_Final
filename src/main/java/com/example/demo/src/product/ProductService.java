@@ -2,7 +2,6 @@ package com.example.demo.src.product;
 
 
 import com.example.demo.config.BaseException;
-import com.example.demo.config.RichException;
 import com.example.demo.src.product.model.PatchProductReq;
 import com.example.demo.src.product.model.PatchProductRes;
 import com.example.demo.src.product.model.PostProductReq;
@@ -37,13 +36,12 @@ public class ProductService {
     }
 
     // 상품 등록 메서드 (상품 정보 + 이미지 + 키워드)
-    public PostProductRes postProducts(int userId, PostProductReq postProductReq) throws BaseException, RichException {
+    public PostProductRes postProducts(int userId, PostProductReq postProductReq) throws BaseException {
+        // validation : 존재하는 서브 카테고리인지?
+        if(checkSubCategoryExists(postProductReq.getSubCategoryIdx()) == 0)
+            throw new BaseException(SUBCATEGORY_NOT_EXISTS);
+
         try {
-            // validation : 존재하는 서브 카테고리인지?
-            if(checkSubCategoryExists(postProductReq.getSubCategoryIdx()) == 0)
-                throw new RichException(SUBCATEGORY_NOT_EXISTS);
-
-
             int productIdx = productDao.insertProducts(userId, postProductReq);
 
             if(postProductReq.getProductImgs().size() > 0) {
@@ -57,11 +55,7 @@ public class ProductService {
                 }
             }
             return new PostProductRes(productIdx);
-        } catch (RichException richException) {
-            logger.error("App - postProducts Service Error", richException);
-            throw new RichException(richException.getStatus());
-        }
-        catch (Exception exception) {
+        } catch (Exception exception) {
             logger.error("App - postProducts Service Error", exception);
             throw new BaseException(DATABASE_ERROR);
         }
@@ -70,23 +64,21 @@ public class ProductService {
     }
 
     // 상품 수정 메서드
-    public PatchProductRes patchProduct(int productIdx, PatchProductReq patchProductReq) throws BaseException, RichException {
+    public PatchProductRes patchProduct(int productIdx, PatchProductReq patchProductReq) throws BaseException {
+        // validation : 존재하는 상품인지?
+        if(productDao.checkProductExists(productIdx) == 0)
+            throw new BaseException(PRODUCT_NOT_EXISTS);
+
+        // 회원용 API : 권한이 있는 유저인가? (이 상품의 작성자인가?)
+        int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출
+        if (getUserIdxOfProduct(productIdx) != userIdxByJwt)
+            throw new BaseException(INVALID_USER_JWT);
+
+        // validation : 존재하는 서브 카테고리인지?
+        if(checkSubCategoryExists(patchProductReq.getSubCategoryIdx()) == 0)
+            throw new BaseException(SUBCATEGORY_NOT_EXISTS);
+
         try {
-
-            // validation : 존재하는 상품인지?
-            if(productDao.checkProductExists(productIdx) == 0)
-                throw new RichException(PRODUCT_NOT_EXISTS);
-
-            // 회원용 API : 권한이 있는 유저인가? (이 상품의 작성자인가?)
-            int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출
-            if (getUserIdxOfProduct(productIdx) != userIdxByJwt)
-                throw new RichException(INVALID_USER_JWT);
-
-            // validation : 존재하는 서브 카테고리인지?
-            if(checkSubCategoryExists(patchProductReq.getSubCategoryIdx()) == 0)
-                throw new RichException(SUBCATEGORY_NOT_EXISTS);
-
-
             // 상품 수정
             int result = productDao.updateProduct(productIdx, patchProductReq);
 
@@ -112,31 +104,28 @@ public class ProductService {
             } else throw new BaseException(DATABASE_ERROR);
 
 
-        } catch (RichException richException) {
-            logger.error("App - patchProduct Service Error", richException);
-            throw new RichException(richException.getStatus());
-        } catch (Exception exception) {
+        }  catch (Exception exception) {
             logger.error("App - patchProduct Service Error", exception);
             throw new BaseException(DATABASE_ERROR);
         }
     }
 
     // 판매상태 변경 메서드
-    public PatchProductRes patchSaleStatus(int productIdx, String saleStatus) throws BaseException, RichException {
+    public PatchProductRes patchSaleStatus(int productIdx, String saleStatus) throws BaseException {
+        // validation : 존재하는 상품인지?
+        if(checkProductExists(productIdx) == 0)
+            throw new BaseException(PRODUCT_NOT_EXISTS);
+
+        // 회원용 API : 권한이 있는 유저인가? (이 상품의 작성자인가?)
+        int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출
+        if (getUserIdxOfProduct(productIdx) != userIdxByJwt)
+            throw new BaseException(INVALID_USER_JWT);
+
+        // validation : 요청값의 saleStatus값이 올바른지?
+        List<String> saleStatusList = Arrays.asList("ONSALE", "ORDERED", "SOLD");
+        if(!saleStatusList.contains(saleStatus))
+            throw new BaseException(PATCH_INVALID_PRODUCT_STATUS);
         try {
-            // validation : 존재하는 상품인지?
-            if(checkProductExists(productIdx) == 0)
-                throw new RichException(PRODUCT_NOT_EXISTS);
-
-            // 회원용 API : 권한이 있는 유저인가? (이 상품의 작성자인가?)
-            int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출
-            if (getUserIdxOfProduct(productIdx) != userIdxByJwt)
-                throw new RichException(INVALID_USER_JWT);
-
-            // validation : 요청값의 saleStatus값이 올바른지?
-            List<String> saleStatusList = Arrays.asList("ONSALE", "ORDERED", "SOLD");
-            if(!saleStatusList.contains(saleStatus))
-                throw new RichException(PATCH_INVALID_PRODUCT_STATUS);
 
             // validation : 요청하는 판매 상태와 기존 판매상태가 같은지?
             if(saleStatus == getSaleStatus(productIdx))
@@ -146,10 +135,9 @@ public class ProductService {
 
             if (result == 1)
                 return new PatchProductRes(productIdx);
-            else throw new BaseException(DATABASE_ERROR);
-        } catch (RichException richException) {
-            logger.error("App - postProducts Service Error", richException);
-            throw new RichException(richException.getStatus());
+            else
+                throw new BaseException(DATABASE_ERROR);
+
         } catch (Exception exception) {
             logger.error("App - postProducts Service Error", exception);
             throw new BaseException(DATABASE_ERROR);
@@ -157,31 +145,25 @@ public class ProductService {
     }
 
     // 상품 삭제 메서드
-    public PatchProductRes deleteProduct(int productIdx) throws BaseException, RichException {
+    public PatchProductRes deleteProduct(int productIdx) throws BaseException {
+        // 회원용 API : 권한이 있는 유저인가? (이 상품의 작성자인가?)
+        int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출
+        if (getUserIdxOfProduct(productIdx) != userIdxByJwt)
+            throw new BaseException(INVALID_USER_JWT);
+
+        // validation : 존재하는 상품인지?
+        if(productDao.checkProductExists(productIdx) == 0)
+            throw new BaseException(PRODUCT_NOT_EXISTS);
+
+        // validation : 판매 상태가 예약중, 판매완료 인지?
+        if(getSaleStatus(productIdx) == "ONSALE")
+            throw new BaseException(INVALID_PRODUCT_STATUS);
         try {
-
-            // 회원용 API : 권한이 있는 유저인가? (이 상품의 작성자인가?)
-            int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출
-            if (getUserIdxOfProduct(productIdx) != userIdxByJwt)
-                throw new RichException(INVALID_USER_JWT);
-
-            // validation : 존재하는 상품인지?
-            if(productDao.checkProductExists(productIdx) == 0)
-                throw new RichException(PRODUCT_NOT_EXISTS);
-
-            // validation : 판매 상태가 예약중, 판매완료 인지?
-            if(getSaleStatus(productIdx) == "ONSALE")
-                throw new RichException(INVALID_PRODUCT_STATUS);
-
-
             int result = productDao.updateProductStatus(productIdx);
 
             if (result == 1)
                 return new PatchProductRes(productIdx);
             else throw new BaseException(DATABASE_ERROR);
-        } catch (RichException richException) {
-            logger.error("App - postProducts Service Error", richException);
-            throw new RichException(richException.getStatus());
         } catch (Exception exception) {
             logger.error("App - deleteProduct Service Error", exception);
             throw new BaseException(DATABASE_ERROR);

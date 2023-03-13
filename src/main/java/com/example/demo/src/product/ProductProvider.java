@@ -1,7 +1,6 @@
 package com.example.demo.src.product;
 
 import com.example.demo.config.BaseException;
-import com.example.demo.config.RichException;
 import com.example.demo.src.product.model.GetProductInfoRes;
 import com.example.demo.src.product.model.GetProductList;
 import com.example.demo.src.product.model.GetReviewList;
@@ -14,7 +13,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.example.demo.config.BaseResponseStatus.*;
+import static com.example.demo.config.BaseResponseStatus.DATABASE_ERROR;
+import static com.example.demo.config.BaseResponseStatus.PRODUCT_NOT_EXISTS;
 
 @Service
 public class ProductProvider {
@@ -172,7 +172,7 @@ public class ProductProvider {
     }
 
     // 상품 정보 불러오기
-    public GetProductInfoRes getProductInfoRes(int productIdx) throws BaseException, RichException {
+    public GetProductInfoRes getProductInfoRes(int productIdx) throws BaseException {
         // validation : 존재하는 상품인지?
         if (productDao.checkProductExists(productIdx) == 0)
             throw new BaseException(PRODUCT_NOT_EXISTS);

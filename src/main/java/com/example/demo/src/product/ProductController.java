@@ -2,7 +2,6 @@ package com.example.demo.src.product;
 
 import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponse;
-import com.example.demo.config.RichException;
 import com.example.demo.src.product.model.*;
 import com.example.demo.utils.JwtService;
 import org.slf4j.Logger;
@@ -50,8 +49,6 @@ public class ProductController {
             GetProductInfoRes getProductInfoRes = productProvider.getProductInfoRes(productIdx);
             GetProductRes getProductRes = new GetProductRes(getProductInfoRes, getShopRes);
             return new BaseResponse<>(getProductRes);
-        } catch (RichException richException) {
-            return new BaseResponse<>((richException.getStatus()));
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
@@ -77,8 +74,6 @@ public class ProductController {
             PostProductRes postProductRes = productService.postProducts(postProductReq.getUserIdx(), postProductReq);
             return new BaseResponse<>(postProductRes);
 
-        } catch (RichException richException) {
-            return new BaseResponse<>((richException.getStatus()));
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
@@ -105,8 +100,6 @@ public class ProductController {
             PatchProductRes patchProductRes = productService.patchProduct(productIdx, patchProductReq);
             return new BaseResponse<>(patchProductRes);
 
-        } catch (RichException richException) {
-            return new BaseResponse<>((richException.getStatus()));
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
@@ -130,8 +123,6 @@ public class ProductController {
                 PatchProductRes patchProductRes = productService.patchSaleStatus(productIdx, saleStatus);
                 return new BaseResponse<>(patchProductRes);
 
-            } catch (RichException richException) {
-                return new BaseResponse<>((richException.getStatus()));
             } catch (BaseException exception) {
                 return new BaseResponse<>((exception.getStatus()));
             }
@@ -155,8 +146,6 @@ public class ProductController {
                 PatchProductRes patchProductRes = productService.deleteProduct(productIdx);
                 return new BaseResponse<>(patchProductRes);
 
-            } catch (RichException richException) {
-                return new BaseResponse<>((richException.getStatus()));
             } catch (BaseException exception) {
                 return new BaseResponse<>((exception.getStatus()));
             }

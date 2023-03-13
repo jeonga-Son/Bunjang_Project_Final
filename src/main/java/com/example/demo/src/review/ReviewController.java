@@ -2,7 +2,6 @@ package com.example.demo.src.review;
 
 import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponse;
-import com.example.demo.config.RichException;
 import com.example.demo.src.product.model.ProductUserIdx;
 import com.example.demo.src.review.model.GetReviewsRes;
 import com.example.demo.src.review.model.PostReviewReq;
@@ -45,8 +44,6 @@ public class ReviewController {
             }
             int reviewIdx = reviewService.createReview(productIdx, postReviewReq);
             return new BaseResponse<>(reviewIdx);
-        } catch(RichException richException){
-            return new BaseResponse<>((richException.getStatus()));
         } catch(BaseException exception){
             return new BaseResponse<>((exception.getStatus()));
         }
@@ -66,8 +63,6 @@ public class ReviewController {
             }
             int deletedReviewIdx = reviewService.deleteReview(reviewIdx);
             return new BaseResponse<>(deletedReviewIdx);
-        } catch(RichException richException){
-            return new BaseResponse<>((richException.getStatus()));
         } catch(BaseException exception){
             return new BaseResponse<>((exception.getStatus()));
         }
