@@ -167,7 +167,7 @@ public class UserController {
      */
     @ResponseBody
     @PatchMapping("/{userIdx}/status")
-    public BaseResponse<String> deleteUser(@PathVariable("userIdx") int userIdx, @RequestBody User user) {
+    public BaseResponse<PatchDeleteUserRes> deleteUser(@PathVariable("userIdx") int userIdx, @RequestBody User user) {
         try {
 
             //jwt에서 idx 추출.
@@ -184,8 +184,12 @@ public class UserController {
             PatchDeleteUserReq patchDeleteUserReq = new PatchDeleteUserReq(userIdx, user.getDeleteReasonContent(), user.getUpdateAt());
             userService.deleteUser(patchDeleteUserReq);
 
-            String result = "회원탈퇴가 완료되었습니다.";
-            return new BaseResponse<>(result);
+            PatchDeleteUserRes patchDeleteUserRes = new PatchDeleteUserRes();
+
+            patchDeleteUserRes.setUserIdx(patchDeleteUserReq.getUserIdx());
+            patchDeleteUserRes.setDeleteReasonContent(patchDeleteUserReq.getDeleteReasonContent());
+
+            return new BaseResponse<>(patchDeleteUserRes);
             } else {
                 return new BaseResponse<>(INVALID_USER);
             }
