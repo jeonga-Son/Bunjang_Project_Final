@@ -28,5 +28,5 @@ public class GetChatRoomList {
     private String lastMessage;
 
     @JsonFormat(pattern = "yyyy-MM-dd hh:mm", timezone = "Asia/Seoul")
-    private Timestamp updateDate;
+    private Timestamp updateAt;
 }
