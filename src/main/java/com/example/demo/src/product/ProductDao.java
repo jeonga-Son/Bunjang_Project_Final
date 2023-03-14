@@ -53,10 +53,13 @@ public class ProductDao {
 //    }
 
     public List<GetReviewList> getReviews(int userIdx, int limit){
-        String getReviewsQuery = "select reviewIdx, round(Review.star,1) as star, content, reviewImgUrl, Review.userIdx, Review.createAt, name\n" +
-                "from Review left join User on Review.sellerIdx=User.userIdx\n" +
+        String getReviewsQuery = "select Review.reviewIdx, star, content, Review.userIdx, Review.createAt, name, reviewImgUrl, count(reviewImgIdx) as reviewImgCount\n" +
+                "from Review\n" +
+                "         left join User on Review.sellerIdx=User.userIdx\n" +
+                "         left join ReviewImg on Review.reviewIdx=ReviewImg.reviewIdx\n" +
                 "where Review.sellerIdx=?\n" +
-                "limit ?;";
+                "group by Review.reviewIdx\n" +
+                "limit ?";
 
         Object[] getReviewsParams = new Object[] {userIdx, limit};
 
@@ -68,6 +71,7 @@ public class ProductDao {
                         rs.getFloat("star"),
                         rs.getString("content"),
                         rs.getString("reviewImgUrl"),
+                        rs.getInt("reviewImgCount"),
                         rs.getString("name"),
                         sdf.format(rs.getTimestamp("createAt"))),
                 getReviewsParams);
@@ -313,7 +317,7 @@ public class ProductDao {
                 "    left join Product on User.userIdx = Product.userIdx\n" +
                 "    left join ProductImg on Product.productIdx=ProductImg.productIdx\n" +
                 "where Product.status='ACTIVE' and Product.saleStatus != 'SOLD' and subCategoryIdx=? \n" +
-                "group by Product.productIdx;";
+                "group by Product.productIdx \n";
 
         Object[] getProductsBySubCatParams = new Object[] {subCategoryIdx};
 
@@ -440,7 +444,7 @@ public class ProductDao {
     public GetProductInfoRes getProductInfoRes_auth(int productIdx, int userIdx) {
         String getProductQuery = "select prod_list.description, prod_list.productIdx, price, productName, prod_list.date as date, saleStatus,\n" +
                 "       prod_list.subCategoryIdx, prod_list.subCategoryName, prod_list.userIdx, if(isnull(fav_list.productIdx), 0, 1) as isFavorite,\n" +
-                "       prod_list.chatCount, prod_list.favoriteCount\n" +
+                "       prod_list.chatCount, prod_list.favoriteCount, count, productStatus, isExchange\n" +
                 "from\n" +
                 "    (select Product.description, Product.productIdx, price, productName, count, productStatus, isExchange, Product.createAt as date, saleStatus,\n" +
                 "       SubCategory.subCategoryIdx, SubCategory.subCategoryName, Product.userIdx, (0) as isFavorite,\n" +
@@ -620,7 +624,8 @@ public class ProductDao {
                 "    left join Tag on Tag.productIdx=Product.productIdx\n" +
                 "    left join ProductImg on Product.productIdx=ProductImg.productIdx\n" +
                 "where Tag.status='ACTIVE' and ProductImg.status='ACTIVE' and Product.saleStatus != 'SOLD' and Product.status='ACTIVE' and tag=?\n";
-        Object[] searchByTagParams = new Object[] {tag};
+
+                Object[] searchByTagParams = new Object[] {tag};
 
         return this.jdbcTemplate.query(searchByTag,
                 (rs, rowNum) -> new GetProductList(

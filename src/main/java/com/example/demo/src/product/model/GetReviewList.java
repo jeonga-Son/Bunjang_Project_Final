@@ -15,6 +15,7 @@ public class GetReviewList {
     private float star;
     private String content;
     private String reviewImgUrl;
+    private int reviewImgCount;
     private String userName;
     private String date;
 }

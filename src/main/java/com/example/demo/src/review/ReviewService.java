@@ -2,7 +2,6 @@ package com.example.demo.src.review;
 
 
 import com.example.demo.config.BaseException;
-import com.example.demo.config.RichException;
 import com.example.demo.src.review.model.PostReviewReq;
 import com.example.demo.utils.JwtService;
 import org.slf4j.Logger;
@@ -48,6 +47,12 @@ public class ReviewService {
         try {
             int userIdx = postReviewReq.getUserIdx();
             int reviewIdx = reviewDao.insertReview(productIdx, userIdx, postReviewReq);
+
+            if (!postReviewReq.getReviewImgUrl().isEmpty()) {
+                for (int i = 0; i < postReviewReq.getReviewImgUrl().size(); i++) {
+                    reviewDao.insertReviewImgs(reviewIdx, postReviewReq.getReviewImgUrl().get(i));
+                }
+            }
 
             return reviewIdx;
 

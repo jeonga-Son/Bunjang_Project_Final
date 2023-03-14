@@ -1,10 +1,7 @@
 package com.example.demo.src.product;
 
 import com.example.demo.config.BaseException;
-import com.example.demo.src.product.model.GetProductInfoRes;
-import com.example.demo.src.product.model.GetProductList;
-import com.example.demo.src.product.model.GetReviewList;
-import com.example.demo.src.product.model.GetShopInfo;
+import com.example.demo.src.product.model.*;
 import com.example.demo.utils.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -198,8 +195,8 @@ public class ProductProvider {
 
     // 태그 검색 메서드
     public List<GetProductList> getProductsByTag(String tag) throws BaseException {
-        try {
-            int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출
+        try{
+            int userIdxByJwt = jwtService.getUserIdx();
             try {
                 List<GetProductList> getProductLists = productDao.searchByTag_auth(tag, userIdxByJwt);
                 return getProductLists;

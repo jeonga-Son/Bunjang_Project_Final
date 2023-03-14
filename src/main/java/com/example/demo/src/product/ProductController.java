@@ -191,7 +191,7 @@ public class ProductController {
          */
         @ResponseBody
         @GetMapping("/category/{categoryIdx}") // (GET) 127.0.0.1:9000/products/category/1
-        public BaseResponse<List<GetProductList>> getProductsByCat ( @PathVariable("categoryIdx") int categoryIdx){
+        public BaseResponse<List<GetProductList>> getProductsByCat (@PathVariable("categoryIdx") int categoryIdx){
             try {
                 List<GetProductList> getProductList = productProvider.getProductsByCat(categoryIdx);
                 return new BaseResponse<>(getProductList);
@@ -208,8 +208,7 @@ public class ProductController {
          */
         @ResponseBody
         @GetMapping("/subCategory/{subCategoryIdx}") // (GET) 127.0.0.1:9000/products/subCategory/1
-        public BaseResponse<List<GetProductList>> getProductsBySubCat (
-        @PathVariable("subCategoryIdx") int subCategoryIdx){
+        public BaseResponse<List<GetProductList>> getProductsBySubCat (@PathVariable("subCategoryIdx") int subCategoryIdx){
             try {
                 List<GetProductList> getProductList = productProvider.getProductsBySubCat(subCategoryIdx);
                 return new BaseResponse<>(getProductList);
