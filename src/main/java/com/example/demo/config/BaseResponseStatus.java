@@ -42,7 +42,7 @@ public enum BaseResponseStatus {
     SUBCATEGORY_NOT_EXISTS(false, 2031, "존재하지 않는 카테고리 입니다."),
     INVALID_PRODUCT_STATUS(false, 2032, "판매 상태가 올바르지 않습니다."),
 
-    PATCH_INVALID_PRODUCT_STATUS(false, 2033, "유효하지 않은 판매 상태 입니다."),
+    PATCH_INVALID_PRODUCT_STATUS(false, 2033, "판매 상태를 다시 입력해주세요."),
     EMPTY_PRODUCT_IMG(false, 2034, "상품 이미지는 1장 이상이어야 합니다."),
     EMPTY_PRODUCT_IMG_LIST(false, 2034, "상품 이미지 객체가 없습니다."),
     EMPTY_PRODUCT_NAME(false, 2035, "상품 제목을 입력해주세요."),
@@ -52,11 +52,15 @@ public enum BaseResponseStatus {
     INVALID_PRODUCT_DESCRIPTION(false, 2039, "내용은 10자 이상 200000자 이하여야 합니다."),
     INVALID_PRODUCT_TAGS(false, 2040, "태그는 5개 이하여야 합니다."),
     INVALID_PRODUCT_IMG(false, 2041, "이미지 사이즈는 640X640 이하여야 합니다."),
+    MAX_PRODUCT_IMG_COUNT(false, 2042,"상품 이미지는 최대 12장입니다."),
+    EMPTY_SALE_STATUS(false, 2032, "판매 상태 값을 입력해주세요."),
 
 
     // Review
     REVIEW_NOT_EXISTS(false, 2050, "존재하지 않는 리뷰 입니다."),
     DUPLICATED_PRODUCT_REVIEW(false, 2051, "이미 리뷰가 작성된 상품입니다."),
+    EMPTY_REVIEW_CONTENT(false, 2052, "리뷰 내용을 입력해주세요."),
+    MAX_REVIEW_IMG_COUNT(false, 2053, "리뷰 이미지는 최대 6장 입니다."),
 
 
     // Follow

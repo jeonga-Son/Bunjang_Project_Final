@@ -126,6 +126,7 @@ public class ProductService {
         List<String> saleStatusList = Arrays.asList("ONSALE", "ORDERED", "SOLD");
         if(!saleStatusList.contains(saleStatus))
             throw new BaseException(PATCH_INVALID_PRODUCT_STATUS);
+
         try {
 
             // validation : 요청하는 판매 상태와 기존 판매상태가 같은지?

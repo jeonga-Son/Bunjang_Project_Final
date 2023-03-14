@@ -11,9 +11,11 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-import static com.example.demo.config.BaseResponseStatus.INVALID_USER_JWT;
+import static com.example.demo.config.BaseResponseStatus.*;
 
 @RestController
 @RequestMapping("/products")
@@ -65,24 +67,50 @@ public class ProductController {
      */
     @ResponseBody
     @PostMapping("") // (POST) 127.0.0.1:9000/products
-    public BaseResponse<PostProductRes> postProductRes(@Valid @RequestBody PostProductReq postProductReq, Errors errors) {
-//        // validation : 상품명을 입력했는지?
-//        if(postProductReq.getProductName().isEmpty())
-//            return new BaseResponse<>(EMPTY_PRODUCT_NAME);
-//
-//        // validation : 내용을 입력했는지?
-//        if(postProductReq.getDescription().isEmpty())
-//            return new BaseResponse<>(EMPTY_PRODUCT_NAME);
-//        // validation : 이미지를 1장 이상 첨부했는지?
-//        if(postProductReq.getProductImgs().size() < 1)
-//            return new BaseResponse<>(EMPTY_PRODUCT_IMG);
-        try {
-            // 회원용 API
-            int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출
-            if (postProductReq.getUserIdx() != userIdxByJwt) { // 유저가 제시한 userIdx != jwt에서 추출한 userIdx
-                return new BaseResponse(INVALID_USER_JWT);
-            }
+    public BaseResponse<PostProductRes> postProductRes(@Valid @RequestBody PostProductReq postProductReq, Errors errors) throws BaseException {
+        // 회원용 API
+        int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출
+        if (postProductReq.getUserIdx() != userIdxByJwt) { // 유저가 제시한 userIdx != jwt에서 추출한 userIdx
+            return new BaseResponse(INVALID_USER_JWT);
+        }
 
+        // validation : 상품명을 입력했는지?
+        if(postProductReq.getProductName().isEmpty())
+            return new BaseResponse<>(EMPTY_PRODUCT_NAME);
+
+        // validation : 내용을 입력했는지?
+        if(postProductReq.getDescription().isEmpty())
+            return new BaseResponse<>(EMPTY_PRODUCT_DESCRIPTION);
+
+        // validation : 이미지를 1장 이상 첨부했는지?
+        if(postProductReq.getProductImgs().size() < 1)
+            return new BaseResponse<>(EMPTY_PRODUCT_IMG);
+
+        //validation : 상품명 40자 이하
+        if(postProductReq.getProductName().length() > 40)
+            return new BaseResponse<>(INVALID_PRODUCT_NAME);
+
+        // validation : 내용 10~20,000자
+        if(postProductReq.getDescription().length() < 10 || postProductReq.getDescription().length() > 20000)
+            return new BaseResponse<>(INVALID_PRODUCT_DESCRIPTION);
+
+        // validation : 가격 500~999,999,999원
+        if(postProductReq.getPrice() < 500 || postProductReq.getPrice() > 999999999)
+            return new BaseResponse<>(INVALID_PRODUCT_PRICE);
+
+        // validation : 태그 최대 5개
+        if(postProductReq.getTags().size() > 5)
+            return new BaseResponse<>(INVALID_PRODUCT_TAGS);
+
+        // validation : 이미지 12장 이하
+        if(postProductReq.getProductImgs().size() > 12)
+            return new BaseResponse<>(MAX_PRODUCT_IMG_COUNT);
+
+        // validation : 이미지 사이즈 640X640 이하
+        // 테스트 이미지 링크 : https://picsum.photos/200/300
+
+
+        try {
             PostProductRes postProductRes = productService.postProducts(postProductReq.getUserIdx(), postProductReq);
             return new BaseResponse<>(postProductRes);
 
@@ -100,15 +128,46 @@ public class ProductController {
      */
     @ResponseBody
     @PatchMapping("/{productIdx}") // (PATCH) 127.0.0.1:9000/products/:productIdx
-    public BaseResponse<PatchProductRes> patchProduct(@RequestBody PatchProductReq patchProductReq, @PathVariable("productIdx") int productIdx){
+    public BaseResponse<PatchProductRes> patchProduct(@RequestBody PatchProductReq patchProductReq, @PathVariable("productIdx") int productIdx) throws BaseException {
+        // 회원용 API
+        int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출
+        if (patchProductReq.getUserIdx() != userIdxByJwt) { // 유저가 제시한 userIdx != jwt에서 추출한 userIdx
+            return new BaseResponse<>(INVALID_USER_JWT);
+        }
+
+        // validation : 상품명을 입력했는지?
+        if(patchProductReq.getProductName().isEmpty())
+            return new BaseResponse<>(EMPTY_PRODUCT_NAME);
+
+        // validation : 내용을 입력했는지?
+        if(patchProductReq.getDescription().isEmpty())
+            return new BaseResponse<>(EMPTY_PRODUCT_DESCRIPTION);
+
+        // validation : 이미지를 1장 이상 첨부했는지?
+        if(patchProductReq.getProductImgs().size() < 1)
+            return new BaseResponse<>(EMPTY_PRODUCT_IMG);
+
+        //validation : 상품명 40자 이하
+        if(patchProductReq.getProductName().length() > 40)
+            return new BaseResponse<>(INVALID_PRODUCT_NAME);
+
+        // validation : 내용 10~20,000자
+        if(patchProductReq.getDescription().length() < 10 || patchProductReq.getDescription().length() > 20000)
+            return new BaseResponse<>(INVALID_PRODUCT_DESCRIPTION);
+
+        // validation : 가격 500~999,999,999원
+        if(patchProductReq.getPrice() < 500 || patchProductReq.getPrice() > 999999999)
+            return new BaseResponse<>(INVALID_PRODUCT_PRICE);
+
+        // validation : 태그 최대 5개
+        if(patchProductReq.getTags().size() > 5)
+            return new BaseResponse<>(INVALID_PRODUCT_TAGS);
+
+        // validation : 이미지 12장 이하
+        if(patchProductReq.getProductImgs().size() > 12)
+            return new BaseResponse<>(MAX_PRODUCT_IMG_COUNT);
+
         try {
-            // 회원용 API
-            int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출
-            if (patchProductReq.getUserIdx() != userIdxByJwt) { // 유저가 제시한 userIdx != jwt에서 추출한 userIdx
-                return new BaseResponse<>(INVALID_USER_JWT);
-            }
-
-
             PatchProductRes patchProductRes = productService.patchProduct(productIdx, patchProductReq);
             return new BaseResponse<>(patchProductRes);
 
@@ -125,13 +184,27 @@ public class ProductController {
          */
         @ResponseBody
         @PatchMapping("") // (PATCH) 127.0.0.1:9000/products?productIdx={productIdx}&saleStatus={saleStatus}
-        public BaseResponse<PatchProductRes> patchSaleStatus (@RequestParam("productIdx") int productIdx, @RequestParam("saleStatus") String saleStatus, @RequestBody ProductUserIdx productUserIdx){
+        public BaseResponse<PatchProductRes> patchSaleStatus (@RequestParam("productIdx") int productIdx, @RequestParam("saleStatus") String saleStatus, @RequestBody ProductUserIdx productUserIdx) throws BaseException {
+            // 회원용 API
+            int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출
+            if (productUserIdx.getUserIdx() != userIdxByJwt) { // 유저가 제시한 userIdx != jwt에서 추출한 userIdx
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+
+            // validation : 요청값에 판매 상태가 존재하는지
+            if(saleStatus.isEmpty())
+                return new BaseResponse<>(EMPTY_SALE_STATUS);
+
+            // validation : 요청값의 판매상태가 {"ONSALE","ORDERED","SOLD"} 중 있는지?
+            String [] saleStatus_array =  {"ONSALE","ORDERED","SOLD"};
+            ArrayList<String>  saleStatus_enum = new ArrayList<>(Arrays.asList(saleStatus_array));
+
+            if(!saleStatus_enum.contains(saleStatus))
+                return new BaseResponse<>(PATCH_INVALID_PRODUCT_STATUS);
+
+
             try {
-                // 회원용 API
-                int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출
-                if (productUserIdx.getUserIdx() != userIdxByJwt) { // 유저가 제시한 userIdx != jwt에서 추출한 userIdx
-                    return new BaseResponse<>(INVALID_USER_JWT);
-                }
+
                 PatchProductRes patchProductRes = productService.patchSaleStatus(productIdx, saleStatus);
                 return new BaseResponse<>(patchProductRes);
 
