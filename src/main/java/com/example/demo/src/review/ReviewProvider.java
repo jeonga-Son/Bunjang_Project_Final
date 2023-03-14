@@ -33,7 +33,7 @@ public class ReviewProvider {
             GetReviewsRes getReviewsRes = reviewDao.getReviews(userIdx);
             return getReviewsRes;
         } catch (Exception exception) {
-            logger.error("App - getFollowings Provider Error", exception);
+            logger.error("App - getReviewsRes Provider Error", exception);
             throw new BaseException(DATABASE_ERROR);
         }
     }

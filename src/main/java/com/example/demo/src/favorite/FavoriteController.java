@@ -2,8 +2,8 @@ package com.example.demo.src.favorite;
 
 import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponse;
-import com.example.demo.config.RichException;
-import com.example.demo.src.favorite.model.*;
+import com.example.demo.src.favorite.model.GetFavoriteRes;
+import com.example.demo.src.favorite.model.PostFavoriteReq;
 import com.example.demo.src.product.model.ProductUserIdx;
 import com.example.demo.utils.JwtService;
 import org.slf4j.Logger;
@@ -52,8 +52,6 @@ public class FavoriteController {
             }
             int favoriteIdx = favoriteService.createFavorite(productIdx, postFavoriteReq);
             return new BaseResponse<>(favoriteIdx);
-        } catch (RichException richException) {
-            return new BaseResponse<>((richException.getStatus()));
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
@@ -100,8 +98,6 @@ public class FavoriteController {
             String message = favoriteService.cancelFavorite(productUserIdx.getUserIdx(), productIdx);
 
             return new BaseResponse<>(message);
-        } catch (RichException richException) {
-            return new BaseResponse<>((richException.getStatus()));
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
