@@ -7,8 +7,10 @@ import com.example.demo.utils.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 import static com.example.demo.config.BaseResponseStatus.INVALID_USER_JWT;
@@ -63,7 +65,7 @@ public class ProductController {
      */
     @ResponseBody
     @PostMapping("") // (POST) 127.0.0.1:9000/products
-    public BaseResponse<PostProductRes> postProductRes( @RequestBody PostProductReq postProductReq) {
+    public BaseResponse<PostProductRes> postProductRes(@Valid @RequestBody PostProductReq postProductReq, Errors errors) {
 //        // validation : 상품명을 입력했는지?
 //        if(postProductReq.getProductName().isEmpty())
 //            return new BaseResponse<>(EMPTY_PRODUCT_NAME);
@@ -74,19 +76,18 @@ public class ProductController {
 //        // validation : 이미지를 1장 이상 첨부했는지?
 //        if(postProductReq.getProductImgs().size() < 1)
 //            return new BaseResponse<>(EMPTY_PRODUCT_IMG);
-
         try {
             // 회원용 API
             int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출
             if (postProductReq.getUserIdx() != userIdxByJwt) { // 유저가 제시한 userIdx != jwt에서 추출한 userIdx
-                return new BaseResponse<>(INVALID_USER_JWT);
+                return new BaseResponse(INVALID_USER_JWT);
             }
 
             PostProductRes postProductRes = productService.postProducts(postProductReq.getUserIdx(), postProductReq);
             return new BaseResponse<>(postProductRes);
 
         } catch (BaseException exception) {
-            return new BaseResponse<>((exception.getStatus()));
+            return new BaseResponse<>(exception.getStatus());
         }
     }
 
