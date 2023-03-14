@@ -63,7 +63,18 @@ public class ProductController {
      */
     @ResponseBody
     @PostMapping("") // (POST) 127.0.0.1:9000/products
-    public BaseResponse<PostProductRes> postProductRes(@RequestBody PostProductReq postProductReq) throws BaseException {
+    public BaseResponse<PostProductRes> postProductRes( @RequestBody PostProductReq postProductReq) {
+//        // validation : 상품명을 입력했는지?
+//        if(postProductReq.getProductName().isEmpty())
+//            return new BaseResponse<>(EMPTY_PRODUCT_NAME);
+//
+//        // validation : 내용을 입력했는지?
+//        if(postProductReq.getDescription().isEmpty())
+//            return new BaseResponse<>(EMPTY_PRODUCT_NAME);
+//        // validation : 이미지를 1장 이상 첨부했는지?
+//        if(postProductReq.getProductImgs().size() < 1)
+//            return new BaseResponse<>(EMPTY_PRODUCT_IMG);
+
         try {
             // 회원용 API
             int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출

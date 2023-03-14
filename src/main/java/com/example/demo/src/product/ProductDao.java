@@ -10,10 +10,12 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
 
+
 @Repository
 public class ProductDao {
 
     private JdbcTemplate jdbcTemplate;
+
 
     @Autowired
     public void setDataSource(DataSource dataSource){
@@ -506,7 +508,7 @@ public class ProductDao {
     }
 
     public int insertProducts(int userIdx, PostProductReq postProductReq){
-        String insertProductsQuery = "insert into Product(categoryIdx, subCategoryidx, userIdx, productName, price, description, count, productStatus, isExchange) values(?,?,?,?,?,?)";
+        String insertProductsQuery = "insert into Product(categoryIdx, subCategoryidx, userIdx, productName, price, description, count, productStatus, isExchange) values(?,?,?,?,?,?,?,?,?)";
         Object [] insertProductsParams = new Object[] {
                 getCategoryIdx(postProductReq.getSubCategoryIdx()),
                 postProductReq.getSubCategoryIdx(),
