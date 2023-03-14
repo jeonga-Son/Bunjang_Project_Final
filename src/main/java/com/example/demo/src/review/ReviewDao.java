@@ -23,25 +23,32 @@ public class ReviewDao {
     }
 
     public int insertReview(int productIdx, int userIdx, PostReviewReq postReviewReq) {
-        String insertReviewQuery = "insert into Review(productIdx, userIdx, sellerIdx, star, content, reviewImgUrl)" +
-                "values(?,?,?,?,?,?)";
+        String insertReviewQuery = "insert into Review(productIdx, userIdx, sellerIdx, star, content)" +
+                "values(?,?,?,?,?)";
         int sellerIdx = getSellerIdx(productIdx);
 
         Object[] insertReviewParams = new Object[]{
-                // 유저 id, 별점, 리뷰내용, 리뷰이미지 url
+                // 유저 id, 별점, 리뷰내용,
                 productIdx,
                 userIdx,
                 sellerIdx,
                 postReviewReq.getStar(),
-                postReviewReq.getContent(),
-                postReviewReq.getReviewImgUrl()};
+                postReviewReq.getContent()
+        };
 
 
         this.jdbcTemplate.update(insertReviewQuery, insertReviewParams);
+
         String lastInsertIdQuery = "select last_insert_id()";
         return this.jdbcTemplate.queryForObject(lastInsertIdQuery, int.class);
 
 
+    }
+
+    public int insertReviewImgs(int reviewIdx, String reviewImgUrl) {
+        String insertReviewImgsQuery = "insert into ReviewImg(reviewIdx, reviewImgUrl) values(?,?);";
+        Object[] insertReviewImgsParams = new Object[]{reviewIdx, reviewImgUrl};
+        return this.jdbcTemplate.update(insertReviewImgsQuery, insertReviewImgsParams);
     }
 
     public int getSellerIdx (int productIdx) {
@@ -60,12 +67,15 @@ public class ReviewDao {
     }
 
     public GetReviewsRes getReviews(int userIdx) {
-        String getReviewsQuery="select Review.userIdx, star, name, content, reviewImgUrl, Review.createAt, Review.productIdx, productName\n" +
+        String getReviewsQuery="select Review.reviewIdx, Review.userIdx, star, name, content, Review.createAt, Review.productIdx, productName, reviewImgUrl,\n" +
+                "       count(reviewImgIdx) as reviewImgCount\n" +
                 "from Review\n" +
-                "    left join Product on Review.productIdx=Product.productIdx\n" +
-                "    left join User on Review.userIdx=User.userIdx\n" +
-                "where sellerIdx=? and Review.status='ACTIVE'";
-        int getReviewsParams = userIdx;
+                "         left join Product on Review.productIdx=Product.productIdx\n" +
+                "         left join User on Review.userIdx=User.userIdx\n" +
+                "         left join ReviewImg on Review.reviewIdx=ReviewImg.reviewIdx\n" +
+                "where sellerIdx=? and Review.status='ACTIVE'\n" +
+                "group by reviewIdx;";
+        Object[] getReviewsParams = new Object[] {userIdx};
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.KOREA);
 
@@ -76,14 +86,14 @@ public class ReviewDao {
                 (rs,rownum) -> new GetReviews(
                         // 작성자 id, 별점, 작성자 이름, 리뷰 내용, 리뷰 이미지, 리뷰 작성일, 거래 상품 id, 상품 이름
                         rs.getInt("Review.userIdx"),
-                        rs.getInt("star"),
+                        rs.getFloat("star"),
                         rs.getString("name"),
                         rs.getString("content"),
                         rs.getString("reviewImgUrl"),
+                        rs.getInt("reviewImgCount"),
                         sdf.format(rs.getTimestamp("createAt")),
                         rs.getInt("productIdx"),
                         rs.getString("productName")), getReviewsParams)),  getReviewsParams);
-
     }
 
     public int checkReviewExists(int reviewIdx) {

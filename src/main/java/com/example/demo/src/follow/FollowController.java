@@ -2,7 +2,6 @@ package com.example.demo.src.follow;
 
 import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponse;
-import com.example.demo.config.RichException;
 import com.example.demo.src.follow.model.GetFollowersRes;
 import com.example.demo.src.follow.model.GetFollowingsRes;
 import com.example.demo.src.follow.model.PostFollowReq;
@@ -93,8 +92,6 @@ public class FollowController {
             }
             int followIdx = followService.followUser(postFollowReq.getFollowerIdx(), followingUserIdx);
             return new BaseResponse<>(followIdx);
-        } catch (RichException richException) {
-            return new BaseResponse<>((richException.getStatus()));
         } catch(BaseException exception){
             return new BaseResponse<>((exception.getStatus()));
         }
@@ -117,8 +114,6 @@ public class FollowController {
             }
             int followIdx = followService.unfollow(postFollowReq.getFollowerIdx(), followingUserIdx);
             return new BaseResponse<>(followIdx);
-        } catch (RichException richException) {
-            return new BaseResponse<>((richException.getStatus()));
         } catch(BaseException exception){
             return new BaseResponse<>((exception.getStatus()));
         }

@@ -18,4 +18,7 @@ public class PatchProductReq {
    private List<PostTags> tags;
    private int price;
    private String description;
+   private int count;
+   private String productStatus;
+   private String isExchange;
 }

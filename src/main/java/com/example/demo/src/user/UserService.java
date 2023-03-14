@@ -106,7 +106,7 @@ public class UserService {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("grant_type", "authorization_code");
         params.add("client_id", "554ec8212c43b13071907450aa3d6f11");
-        params.add("redirect_uri", "http://localhost:9000/oauth/kakao");
+        params.add("redirect_uri", "http://dev.rising-bunjang.store:9000/oauth/kakao");
         params.add("code", code);
 
         //HttpHeader와 HttpBody를 하나의 오브젝트에 담기

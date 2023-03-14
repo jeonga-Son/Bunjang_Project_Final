@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -12,8 +14,8 @@ import lombok.Setter;
 public class PostReviewReq {
     // 유저 id, 별점, 리뷰내용, 리뷰이미지 url
     private int userIdx;
-    private int star;
+    private float star;
     private String content;
-    private String reviewImgUrl;
+    private List<String> reviewImgUrl;
 
 }

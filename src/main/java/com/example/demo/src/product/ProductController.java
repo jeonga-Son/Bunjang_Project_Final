@@ -2,7 +2,6 @@ package com.example.demo.src.product;
 
 import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponse;
-import com.example.demo.config.RichException;
 import com.example.demo.src.product.model.*;
 import com.example.demo.utils.JwtService;
 import org.slf4j.Logger;
@@ -50,8 +49,6 @@ public class ProductController {
             GetProductInfoRes getProductInfoRes = productProvider.getProductInfoRes(productIdx);
             GetProductRes getProductRes = new GetProductRes(getProductInfoRes, getShopRes);
             return new BaseResponse<>(getProductRes);
-        } catch (RichException richException) {
-            return new BaseResponse<>((richException.getStatus()));
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
@@ -66,7 +63,18 @@ public class ProductController {
      */
     @ResponseBody
     @PostMapping("") // (POST) 127.0.0.1:9000/products
-    public BaseResponse<PostProductRes> postProductRes(@RequestBody PostProductReq postProductReq) throws BaseException {
+    public BaseResponse<PostProductRes> postProductRes( @RequestBody PostProductReq postProductReq) {
+//        // validation : 상품명을 입력했는지?
+//        if(postProductReq.getProductName().isEmpty())
+//            return new BaseResponse<>(EMPTY_PRODUCT_NAME);
+//
+//        // validation : 내용을 입력했는지?
+//        if(postProductReq.getDescription().isEmpty())
+//            return new BaseResponse<>(EMPTY_PRODUCT_NAME);
+//        // validation : 이미지를 1장 이상 첨부했는지?
+//        if(postProductReq.getProductImgs().size() < 1)
+//            return new BaseResponse<>(EMPTY_PRODUCT_IMG);
+
         try {
             // 회원용 API
             int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출
@@ -77,8 +85,6 @@ public class ProductController {
             PostProductRes postProductRes = productService.postProducts(postProductReq.getUserIdx(), postProductReq);
             return new BaseResponse<>(postProductRes);
 
-        } catch (RichException richException) {
-            return new BaseResponse<>((richException.getStatus()));
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
@@ -105,8 +111,6 @@ public class ProductController {
             PatchProductRes patchProductRes = productService.patchProduct(productIdx, patchProductReq);
             return new BaseResponse<>(patchProductRes);
 
-        } catch (RichException richException) {
-            return new BaseResponse<>((richException.getStatus()));
         } catch (BaseException exception) {
             return new BaseResponse<>((exception.getStatus()));
         }
@@ -130,8 +134,6 @@ public class ProductController {
                 PatchProductRes patchProductRes = productService.patchSaleStatus(productIdx, saleStatus);
                 return new BaseResponse<>(patchProductRes);
 
-            } catch (RichException richException) {
-                return new BaseResponse<>((richException.getStatus()));
             } catch (BaseException exception) {
                 return new BaseResponse<>((exception.getStatus()));
             }
@@ -155,8 +157,6 @@ public class ProductController {
                 PatchProductRes patchProductRes = productService.deleteProduct(productIdx);
                 return new BaseResponse<>(patchProductRes);
 
-            } catch (RichException richException) {
-                return new BaseResponse<>((richException.getStatus()));
             } catch (BaseException exception) {
                 return new BaseResponse<>((exception.getStatus()));
             }
@@ -179,7 +179,7 @@ public class ProductController {
             }
         }
 
-        /** 상품 리스트 뽑아내기 api (홈화면 용)
+        /** 상품 리스트 뽑아내기 api (홈화면 용)면
          *
          * @return
          */
@@ -187,7 +187,7 @@ public class ProductController {
         @GetMapping("/home") // (GET) 127.0.0.1:9000/products/home
         public BaseResponse<List<GetProductList>> getProducts () {
             try {
-                List<GetProductList> getProductList = productProvider.getProducts();
+                List<GetProductList> getProductList = productProvider.getHomeProducts();
                 return new BaseResponse<>(getProductList);
 
             } catch (BaseException exception) {
@@ -202,7 +202,7 @@ public class ProductController {
          */
         @ResponseBody
         @GetMapping("/category/{categoryIdx}") // (GET) 127.0.0.1:9000/products/category/1
-        public BaseResponse<List<GetProductList>> getProductsByCat ( @PathVariable("categoryIdx") int categoryIdx){
+        public BaseResponse<List<GetProductList>> getProductsByCat (@PathVariable("categoryIdx") int categoryIdx){
             try {
                 List<GetProductList> getProductList = productProvider.getProductsByCat(categoryIdx);
                 return new BaseResponse<>(getProductList);
@@ -219,8 +219,7 @@ public class ProductController {
          */
         @ResponseBody
         @GetMapping("/subCategory/{subCategoryIdx}") // (GET) 127.0.0.1:9000/products/subCategory/1
-        public BaseResponse<List<GetProductList>> getProductsBySubCat (
-        @PathVariable("subCategoryIdx") int subCategoryIdx){
+        public BaseResponse<List<GetProductList>> getProductsBySubCat (@PathVariable("subCategoryIdx") int subCategoryIdx){
             try {
                 List<GetProductList> getProductList = productProvider.getProductsBySubCat(subCategoryIdx);
                 return new BaseResponse<>(getProductList);

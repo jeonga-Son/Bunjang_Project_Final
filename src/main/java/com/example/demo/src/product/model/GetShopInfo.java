@@ -16,4 +16,5 @@ public class GetShopInfo {
     private int followerCount;
     private int productCount;
     private int reviewCount;
+    private int isFollowing;
 }

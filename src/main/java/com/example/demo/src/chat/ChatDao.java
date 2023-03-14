@@ -116,8 +116,13 @@ public class ChatDao {
 
     public void patchChat(int chatRoomIdx) {
         String getPatchQuery = "update ChatRoom set status = 'DELETED' where chatRoomIdx = ? ";
-
         this.jdbcTemplate.update(getPatchQuery, chatRoomIdx);
+
+        String getChatPatchQuery = "update Chat set status = 'DELETED' where chatRoomIdx = ?;";
+        this.jdbcTemplate.update(getChatPatchQuery, chatRoomIdx);
+
+        String getChatMemberPatchQuery = "update ChatMember set status = 'DELETED' where chatRoomIdx = ?;";
+        this.jdbcTemplate.update(getChatMemberPatchQuery, chatRoomIdx);
     }
 }
 

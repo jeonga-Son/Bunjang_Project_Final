@@ -78,16 +78,17 @@ public class UserDao {
                         rs.getInt("point"),
                         rs.getInt("followerCount"),
                         rs.getInt("followingCount"),
-                        this.jdbcTemplate.query("select Product.productIdx, Product.price, Product.productName, ProductImg.productImgUrl\n" +
+                        this.jdbcTemplate.query("select Product.productIdx, Product.price, Product.productName, ProductImg.productImgUrl , 0 as isFavorite\n" +
                                         "    from Product\n" +
-                                        "        left join ProductImg on Product.productIdx = ProductImg.productIdx\n" +
-                                        "        where Product.userIdx = ? and ProductImg.status='ACTIVE' and Product.status='ACTIVE' and Product.saleStatus = 'ONSALE'\n" +
-                                        "Group by Product.productIdx;",
+                                        "            left join ProductImg on Product.productIdx = ProductImg.productIdx\n" +
+                                        "            where Product.userIdx = ? and ProductImg.status='ACTIVE' and Product.status='ACTIVE' and Product.saleStatus = 'ONSALE'\n" +
+                                        "    Group by Product.productIdx",
                                 (rs2, rowNum2) -> new GetProductList(
                                         rs2.getInt("productIdx"),
                                         rs2.getString("productImgUrl"),
                                         rs2.getInt("price"),
-                                        rs2.getString("productName")),
+                                        rs2.getString("productName"),
+                                        rs2.getInt("isFavorite")),
                                 rs.getInt("userIdx"))
                 ), getUserParams);
     }
