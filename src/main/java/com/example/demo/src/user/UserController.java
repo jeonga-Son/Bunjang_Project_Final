@@ -41,13 +41,6 @@ public class UserController {
     @GetMapping("/mypage/{userIdx}") // (GET) 127.0.0.1:9000/users/mypage/:userIdx
     public BaseResponse<GetMyPageRes> getMyPage(@PathVariable("userIdx") int userIdx) {
         try {
-            // 회원용 API
-            int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출
-
-            if (userIdx != userIdxByJwt) { // 유저의 userIdx != jwt에서 추출한 userIdx
-                return new BaseResponse<>(INVALID_USER_JWT);
-            }
-
             GetMyPageRes getMyPageRes = userProvider.getMyPage(userIdx);
             return new BaseResponse<>(getMyPageRes);
         } catch (BaseException exception) {

@@ -2,6 +2,7 @@ package com.example.demo.src.user;
 
 
 import com.example.demo.config.BaseException;
+import com.example.demo.config.BaseResponse;
 import com.example.demo.src.user.model.*;
 import com.example.demo.utils.JwtService;
 import org.slf4j.Logger;
@@ -40,9 +41,25 @@ public class UserProvider {
     }
 
     public GetMyPageRes getMyPage(int userIdx) throws BaseException {
+
+        // 존재하는 유저인지 체크
+        if (userDao.checkUserIdx(userIdx) == 0) {
+            throw new BaseException(USERS_NOT_EXISTS);
+        }
+
+        // 회원용 API
+        // jwt에서 userIdx 추출
+        int userIdxByJwt = jwtService.getUserIdx();
+
+        // 유저의 userIdx != jwt에서 추출한 userIdx
+        if (userIdx != userIdxByJwt) {
+            throw new BaseException(INVALID_USER_JWT);
+        }
+
         try {
             GetMyPageRes getMyPageRes = userDao.getMyPage(userIdx);
             return getMyPageRes;
+
         } catch (Exception exception) {
             logger.error("App - getUser Provider Error", exception);
             throw new BaseException(DATABASE_ERROR);
@@ -112,4 +129,9 @@ public class UserProvider {
         return idx;
     }
 
+    // 유저 id가 존재하는 지 체크
+    public int checkUserIdx(int userIdx) {
+        int findUserIdx = userDao.checkUserIdx(userIdx);
+        return findUserIdx;
+    }
 }

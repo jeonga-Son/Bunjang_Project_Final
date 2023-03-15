@@ -177,8 +177,8 @@ public class UserDao {
         String getPwdQuery = "select userIdx, name, phoneNo, birthday, address, latitude, longitude,\n" +
                 "       createAt, updateAt, status, profileImgUrl, shopDescription, deleteReasonContent\n" +
                 "From User\n" +
-                "    where phoneNo = ?;";
-        String getPwdParams = postLoginReq.getPhoneNo();
+                "    where phoneNo = ? and name = ?;";
+        Object[] checkUserParams = new Object[]{postLoginReq.getPhoneNo(), postLoginReq.getName()};
 
         return this.jdbcTemplate.queryForObject(getPwdQuery,
                 (rs,rowNum)-> new User(
@@ -197,7 +197,7 @@ public class UserDao {
                         rs.getString("deleteReasonContent")
 
                 ),
-                getPwdParams
+                checkUserParams
         );
     }
 
@@ -209,4 +209,13 @@ public class UserDao {
                 checkPhoneNoParams);
     }
 
+    // userIdx가
+    public int checkUserIdx(int userIdx) {
+        String checkUserIdxQuery = "select exists(select userIdx from User where userIdx = ?)";
+        int checkUserIdxParam = userIdx;
+
+        return this.jdbcTemplate.queryForObject(checkUserIdxQuery,
+                int.class,
+                checkUserIdxParam);
+    }
 }
