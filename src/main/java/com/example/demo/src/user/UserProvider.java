@@ -42,7 +42,7 @@ public class UserProvider {
 
     public GetMyPageRes getMyPage(int userIdx) throws BaseException {
 
-        // 존재하는 유저인지 체크
+        // 존재하는 유저(=상점)인지 체크
         if (userDao.checkUserIdx(userIdx) == 0) {
             throw new BaseException(USERS_NOT_EXISTS);
         }
@@ -51,7 +51,7 @@ public class UserProvider {
         // jwt에서 userIdx 추출
         int userIdxByJwt = jwtService.getUserIdx();
 
-        // 유저의 userIdx != jwt에서 추출한 userIdx
+        // 유저(=상점)의 userIdx != jwt에서 추출한 userIdx
         if (userIdx != userIdxByJwt) {
             throw new BaseException(INVALID_USER_JWT);
         }
@@ -68,9 +68,15 @@ public class UserProvider {
 
     public GetStoreRes getStore(int userIdx) throws BaseException {
 
-//        if (userDao.getUser(userIdx).equals(null)) {
-//            throw new BaseException(POST_USERS_EMPTY_USER);
-//        }
+        // 존재하는 유저(=상점)인지 체크
+        if (userDao.checkUserIdx(userIdx) == 0) {
+            throw new BaseException(USERS_NOT_EXISTS);
+        }
+
+        // 조회하는 유저(=상점)가 삭제되거나 비활성화 된 유저(=상점)인지 체크
+        if (userDao.checkUserStatus(userIdx) == 0) {
+            throw new BaseException(USERS_NOT_FOUND);
+        }
 
         try {
             GetStoreRes getStoreRes = userDao.getStore(userIdx);

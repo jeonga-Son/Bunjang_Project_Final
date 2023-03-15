@@ -218,4 +218,13 @@ public class UserDao {
                 int.class,
                 checkUserIdxParam);
     }
+
+    public int checkUserStatus(int userIdx) {
+        String checkUserStatusQuery = "select exists(select * from User where userIdx = ? and status = 'ACTIVE')";
+        int checkUserStatusParam = userIdx;
+
+        return this.jdbcTemplate.queryForObject(checkUserStatusQuery,
+                int.class,
+                checkUserStatusParam);
+    }
 }

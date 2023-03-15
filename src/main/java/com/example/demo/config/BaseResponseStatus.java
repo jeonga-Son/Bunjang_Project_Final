@@ -38,6 +38,8 @@ public enum BaseResponseStatus {
     POST_SHOP_NOT_EXISTS(false, 2022, "존재하지 않는 가게 입니다."),
     INVALID_USER(false, 2023, "이미 탈퇴한 회원입니다."),
 
+    USERS_NOT_FOUND(false, 2024, "삭제됐거나 비활성화 처리된 상점입니다."),
+
     // Product
     PRODUCT_NOT_EXISTS(false, 2030, "존재하지 않는 상품 입니다."),
     SUBCATEGORY_NOT_EXISTS(false, 2031, "존재하지 않는 카테고리 입니다."),
