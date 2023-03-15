@@ -10,6 +10,8 @@ import com.example.demo.utils.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import static com.example.demo.config.BaseResponseStatus.*;
@@ -88,16 +90,35 @@ public class UserController {
     @ResponseBody
     @PostMapping("")
     public BaseResponse<PostUserRes> createUser(@RequestBody PostUserReq postUserReq) {
+        // 회원가입 시 이름을 입력하지 않았을 때
         if (postUserReq.getName() == null) {
             return new BaseResponse<>(POST_USERS_EMPTY_NAME);
         }
 
+        // 회원가입 시 휴대폰 번호를 입력하지 않았을 때
         if (postUserReq.getPhoneNo() == null) {
             return new BaseResponse<>(POST_USERS_EMPTY_PHONENO);
         }
 
+        // 회원가입 시 생년월일을 입력하지 않았을 때
         if (postUserReq.getBirthday() == null) {
             return new BaseResponse<>(POST_USERS_EMPTY_BIRTHDAY);
+        }
+
+        String regExp = "^[가-힣]*$";
+         //회원가입 시 이름 입력란에 문자만 입력 가능
+        if (!postUserReq.getName().matches(regExp)) {
+            return new BaseResponse<>(POST_USERS_INVALID_NAME);
+        }
+
+        String regex = "[0-9]+";
+        // 회원가입 시 휴대폰 번호 입력란에 숫자만 입력 가능
+        if (!(postUserReq.getPhoneNo().matches(regex))) {
+            return new BaseResponse<>(POST_USERS_INVALID_PHONENO);
+        }
+
+        if(postUserReq.getPhoneNo().length() > 11) {
+            return new BaseResponse<>(POST_USERS_INVALID_PHONENO_LENGTH);
         }
 
         try {
@@ -116,12 +137,26 @@ public class UserController {
     @ResponseBody
     @PostMapping("/logIn")
     public BaseResponse<PostLoginRes> logIn(@RequestBody PostLoginReq postLoginReq){
-        if(postLoginReq.getName() == null){
+        // 로그인 시 이름을 입력하지 않았을 때
+        if (postLoginReq.getName() == null) {
             return new BaseResponse<>(POST_USERS_EMPTY_NAME);
         }
 
-        if(postLoginReq.getPhoneNo() == null){
+        // 로그인 시 휴대폰 번호를 입력하지 않았을 때
+        if (postLoginReq.getPhoneNo() == null) {
             return new BaseResponse<>(POST_USERS_EMPTY_PHONENO);
+        }
+
+        String regExp = "^[가-힣]*$";
+        //로그인 시 이름 입력란에 문자만 입력 가능
+        if (!postLoginReq.getName().matches(regExp)) {
+            return new BaseResponse<>(POST_USERS_INVALID_NAME);
+        }
+
+        String regex = "[0-9]+";
+        // 로그인 시 휴대폰 번호 입력란에 숫자만 입력 가능
+        if (!(postLoginReq.getPhoneNo().matches(regex))) {
+            return new BaseResponse<>(POST_USERS_INVALID_PHONENO);
         }
 
         try{

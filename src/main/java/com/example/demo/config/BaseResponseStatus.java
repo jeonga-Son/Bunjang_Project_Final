@@ -42,6 +42,11 @@ public enum BaseResponseStatus {
 
     USERS_NOT_FOUND(false, 2024, "삭제됐거나 비활성화 처리된 상점입니다."),
 
+    POST_USERS_INVALID_PHONENO(false, 2025, "휴대폰 번호는 숫자만 입력이 가능합니다."),
+    POST_USERS_INVALID_BIRTHDAY(false, 2026, "생일은 숫자만 입력이 가능합니다."),
+    POST_USERS_INVALID_NAME(false, 2027, "이름은 문자만 입력이 가능합니다."),
+
+    POST_USERS_INVALID_PHONENO_LENGTH(false, 2028, "휴대폰 번호는 최대 11자리까지 입력이 가능합니다."),
     // Product
     PRODUCT_NOT_EXISTS(false, 2030, "존재하지 않는 상품 입니다."),
     SUBCATEGORY_NOT_EXISTS(false, 2031, "존재하지 않는 카테고리 입니다."),
