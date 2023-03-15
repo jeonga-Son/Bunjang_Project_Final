@@ -35,6 +35,7 @@ public class FollowProvider {
         // validation : 존재하는 유저(상점)인지?
         if(checkUserExists(userIdx) == 0)
             throw new BaseException(POST_SHOP_NOT_EXISTS);
+
         try {
             List<GetFollowingsRes> getFollowingsRes = followDao.getFollowings(userIdx);
             return getFollowingsRes;

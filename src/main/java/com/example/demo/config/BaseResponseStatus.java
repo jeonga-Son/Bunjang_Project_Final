@@ -51,7 +51,7 @@ public enum BaseResponseStatus {
     EMPTY_PRODUCT_DESCRIPTION(false, 2038, "내용을 입력해주세요."),
     INVALID_PRODUCT_DESCRIPTION(false, 2039, "내용은 10자 이상 200000자 이하여야 합니다."),
     INVALID_PRODUCT_TAGS(false, 2040, "태그는 5개 이하여야 합니다."),
-    INVALID_PRODUCT_IMG(false, 2041, "이미지 사이즈는 640X640 이하여야 합니다."),
+    // INVALID_PRODUCT_IMG(false, 2041, "이미지 사이즈는 640X640 이하여야 합니다."),
     MAX_PRODUCT_IMG_COUNT(false, 2042,"상품 이미지는 최대 12장입니다."),
     EMPTY_SALE_STATUS(false, 2043, "판매 상태 값을 입력해주세요."),
     MAX_PRODUCT_IMG_SIZE(false, 2044,"상품 이미지 사이즈는 최대 640X640 입니다."),

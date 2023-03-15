@@ -26,7 +26,7 @@ public class FollowDao {
                 "    user_list.name,\n" +
                 "    user_list.profileImgUrl,\n" +
                 "    COUNT(distinct Follow.followIdx) as followerCount,\n" +
-                "    COUNT(distinct Product.productIdx) as productCount\n" +
+                "    COUNT(distinct Product.productIdx) as productCount,\n" +
                 "\n" +
                 "FROM\n" +
                 "    (select User.userIdx, profileImgUrl, User.name\n" +
@@ -62,6 +62,8 @@ public class FollowDao {
                                 ), rs.getInt("userIdx"))
                 ), getFollowingsParams);
     }
+
+
 
     public int insertFollow (int followerIdx, int followingUserIdx) {
         String insertFollowQuery = "insert into Follow(followerUserIdx, followingUserIdx) values (?,?)";
