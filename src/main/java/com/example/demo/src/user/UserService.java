@@ -70,9 +70,10 @@ public class UserService {
         }
     }
 
-    public void deleteUser(PatchDeleteUserReq patchDeleteUserReq) throws BaseException {
+
+    public void deleteUser(PatchDeleteUserReq patchDeleteUserReq, int userIdx) throws BaseException {
         try {
-            int result = userDao.deleteUser(patchDeleteUserReq);
+            int result = userDao.deleteUser(patchDeleteUserReq, userIdx);
 
             if(result == 0) {
                 throw new BaseException(DELETE_FAIL_USER);
@@ -84,6 +85,11 @@ public class UserService {
     }
 
     public PatchShopInfoRes modifyShop(int userIdx, PatchShopInfoReq patchShopInfoReq) throws BaseException {
+        // 존재하는 유저(=상점)인지 체크
+        if (userDao.checkUserIdx(userIdx) == 0) {
+            throw new BaseException(USERS_NOT_EXISTS);
+        }
+
         //jwt에서 idx 추출.
         int userIdxByJwt = jwtService.getUserIdx();
         //userIdx와 접근한 유저가 같은지 확인

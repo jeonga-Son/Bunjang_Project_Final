@@ -160,9 +160,9 @@ public class UserDao {
         return this.jdbcTemplate.queryForObject(checkUserIdxQuery,int.class, checkPhoneNoParma);
     }
 
-    public int deleteUser(PatchDeleteUserReq patchDeleteUserReq) {
+    public int deleteUser(PatchDeleteUserReq patchDeleteUserReq, int userIdx) {
         String deleteUserQuery = "update User set status = 'DELETED', deleteReasonContent = ?, updateAt = ? where userIdx = ? ";
-        Object[] insertDeleteReasonParams = new Object[]{ patchDeleteUserReq.getDeleteReasonContent(),patchDeleteUserReq.getUpdateAt(), patchDeleteUserReq.getUserIdx()};
+        Object[] insertDeleteReasonParams = new Object[]{ patchDeleteUserReq.getDeleteReasonContent(),patchDeleteUserReq.getUpdateAt(), userIdx};
 
         return this.jdbcTemplate.update(deleteUserQuery,insertDeleteReasonParams);
     }
