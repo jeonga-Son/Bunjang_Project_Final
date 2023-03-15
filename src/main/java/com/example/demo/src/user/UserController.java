@@ -1,5 +1,6 @@
 package com.example.demo.src.user;
 
+import com.example.demo.src.product.model.PatchProductRes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.example.demo.config.BaseException;
@@ -139,7 +140,7 @@ public class UserController {
      */
     @ResponseBody
     @PatchMapping("/{userIdx}")
-    public BaseResponse<String> modifyShopInfo(@PathVariable("userIdx") int userIdx, @RequestBody User user) {
+    public BaseResponse<PatchShopInfoReq> modifyShopInfo(@PathVariable("userIdx") int userIdx, @RequestBody User user) {
         try {
             //jwt에서 idx 추출.
             int userIdxByJwt = jwtService.getUserIdx();
@@ -152,8 +153,7 @@ public class UserController {
             PatchShopInfoReq patchShopInfoReq = new PatchShopInfoReq(userIdx, user.getProfileImgUrl(), user.getShopDescription(), user.getName());
             userService.modifyShop(patchShopInfoReq);
 
-            String result = "상점 소개가 수정되었습니다.";
-            return new BaseResponse<>(result);
+            return new BaseResponse<>(patchShopInfoReq);
 
         } catch (BaseException exception){
             return new BaseResponse<>(exception.getStatus());

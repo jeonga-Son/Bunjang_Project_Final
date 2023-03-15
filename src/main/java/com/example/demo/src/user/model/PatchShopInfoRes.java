@@ -16,4 +16,6 @@ public class PatchShopInfoRes {
 
     private String shopDescription;
 
+    private String name;
+
 }

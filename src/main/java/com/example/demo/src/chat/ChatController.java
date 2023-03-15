@@ -2,10 +2,7 @@ package com.example.demo.src.chat;
 
 import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponse;
-import com.example.demo.src.chat.model.GetChat;
-import com.example.demo.src.chat.model.GetChatRoomList;
-import com.example.demo.src.chat.model.PostChatReq;
-import com.example.demo.src.chat.model.PostChatRes;
+import com.example.demo.src.chat.model.*;
 import com.example.demo.utils.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,10 +89,14 @@ public class ChatController {
      */
     @ResponseBody
     @PatchMapping("/{chatRoomIdx}/status")
-    public BaseResponse<String> deleteChat(@PathVariable("chatRoomIdx") int chatRoomIdx) {
+    public BaseResponse<PatchChatRes> deleteChat(@PathVariable("chatRoomIdx") int chatRoomIdx) {
         chatService.patchChat(chatRoomIdx);
+
+        PatchChatRes patchChatRes = new PatchChatRes();
+        patchChatRes.setChatRoomIdx(chatRoomIdx);
         String result = "대화 내용이 모두 삭제됩니다.";
-        return new BaseResponse<>(result);
+        patchChatRes.setResultMessage(result);
+        return new BaseResponse<>(patchChatRes);
 
     }
 

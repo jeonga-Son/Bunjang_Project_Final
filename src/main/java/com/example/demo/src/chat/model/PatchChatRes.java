@@ -11,4 +11,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class PatchChatRes {
     private int chatRoomIdx;
+
+    private String resultMessage;
 }
