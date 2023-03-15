@@ -41,18 +41,24 @@ public class UserController {
     @GetMapping("/mypage/{userIdx}") // (GET) 127.0.0.1:9000/users/mypage/:userIdx
     public BaseResponse<GetMyPageRes> getMyPage(@PathVariable("userIdx") int userIdx) {
         try {
+            // 회원용 API
+            int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출
+
+            if (userIdx != userIdxByJwt) { // 유저의 userIdx != jwt에서 추출한 userIdx
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+
             GetMyPageRes getMyPageRes = userProvider.getMyPage(userIdx);
             return new BaseResponse<>(getMyPageRes);
         } catch (BaseException exception) {
-            return new BaseResponse<>((exception.getStatus()));
+            return new BaseResponse<>(exception.getStatus());
         }
-
     }
 
     /**
      * 상점 조회 API
      * [GET] /users/store/:userIdx
-     * @return BaseResponse<GetMyShopRes>
+     * @return BaseResponse<GetStoreRes>
      */
     @ResponseBody
     @GetMapping("/store/{userIdx}") // (GET) 127.0.0.1:9000/users/store/:userIdx
@@ -68,7 +74,7 @@ public class UserController {
     /**
      * 상점 상품 조회 API
      * [GET] /users/store/:userIdx/products
-     * @return BaseResponse<GetMyShopRes>
+     * @return BaseResponse<List<GetStoreProductsRes>>
      */
     @ResponseBody
     @GetMapping("/store/{userIdx}/products") // (GET) 127.0.0.1:9000/users/store/:userIdx/products
@@ -136,7 +142,7 @@ public class UserController {
     /**
      * 상점 소개 편집 API
      * [PATCH] /users/:userIdx
-     * @return BaseResponse<String>
+     * @return BaseResponse<PatchShopInfoReq>
      */
     @ResponseBody
     @PatchMapping("/{userIdx}")
@@ -163,7 +169,7 @@ public class UserController {
     /**
      * 회원 탈퇴 API
      * [PATCH] /users/:userIdx/status
-     * @return BaseResponse<String>
+     * @return BaseResponse<PatchDeleteUserRes>
      */
     @ResponseBody
     @PatchMapping("/{userIdx}/status")
