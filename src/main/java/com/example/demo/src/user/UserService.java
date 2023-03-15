@@ -3,6 +3,7 @@ package com.example.demo.src.user;
 
 
 import com.example.demo.config.BaseException;
+import com.example.demo.config.BaseResponse;
 import com.example.demo.src.login.kakao.model.KakaoProfile;
 import com.example.demo.src.login.kakao.model.OAuthToken;
 import com.example.demo.src.user.model.*;
@@ -82,12 +83,28 @@ public class UserService {
         }
     }
 
-    public void modifyShop(PatchShopInfoReq patchShopInfoReq) throws BaseException {
+    public PatchShopInfoRes modifyShop(int userIdx, PatchShopInfoReq patchShopInfoReq) throws BaseException {
+        //jwt에서 idx 추출.
+        int userIdxByJwt = jwtService.getUserIdx();
+        //userIdx와 접근한 유저가 같은지 확인
+        if (userIdx != userIdxByJwt) {
+            throw new BaseException(INVALID_USER_JWT);
+        }
+
         try {
-            int result = userDao.modifyShop(patchShopInfoReq);
+            int result = userDao.modifyShop(userIdx,patchShopInfoReq);
             if(result == 0) {
                 throw new BaseException(MODIFY_FAIL_SHOP);
             }
+
+            PatchShopInfoRes patchShopInfoRes = new PatchShopInfoRes(
+                    userIdx,
+                    patchShopInfoReq.getProfileImgUrl(),
+                    patchShopInfoReq.getShopDescription(),
+                    patchShopInfoReq.getName()
+            );
+            return patchShopInfoRes;
+
         } catch (Exception exception) {
             logger.error("App - modifyShop Service Error", exception);
             throw new BaseException(DATABASE_ERROR);

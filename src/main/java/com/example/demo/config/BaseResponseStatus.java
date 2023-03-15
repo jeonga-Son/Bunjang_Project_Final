@@ -29,8 +29,8 @@ public enum BaseResponseStatus {
     USERS_PRODUCTS_NOT_EXISTS(false, 2012, "등록된 상품이 없습니다."),
 
     // [POST] /users
-    POST_USERS_EMPTY_EMAIL(false, 2015, "이메일을 입력해주세요."),
-    POST_USERS_INVALID_EMAIL(false, 2016, "이메일 형식을 확인해주세요."),
+    PATCH_INVALID_SHOPDESCRIPTION_LENGTH(false, 2015, "상점 소개는 최대 1000자까지 입력이 가능합니다."),
+    PATCH_INVALID_NAME_PATTERN(false, 2016, "상점 이름은 한글, 영어, 숫자만 사용할 수 있어요."),
     POST_USERS_EXISTS_PHONENO(false, 2017, "중복된 휴대폰번호 입니다."),
     POST_USERS_EMPTY_NAME(false, 2018, "이름을 입력해주세요."),
     POST_USERS_EMPTY_PHONENO(false, 2018, "핸드폰 번호를 입력해주세요."),
@@ -47,6 +47,10 @@ public enum BaseResponseStatus {
     POST_USERS_INVALID_NAME(false, 2027, "이름은 문자만 입력이 가능합니다."),
 
     POST_USERS_INVALID_PHONENO_LENGTH(false, 2028, "휴대폰 번호는 최대 11자리까지 입력이 가능합니다."),
+
+    PATCH_INVALID_NAME_LENGTH(false, 2029, "상점 이름은 최대 10자 입니다."),
+
+
     // Product
     PRODUCT_NOT_EXISTS(false, 2030, "존재하지 않는 상품 입니다."),
     SUBCATEGORY_NOT_EXISTS(false, 2031, "존재하지 않는 카테고리 입니다."),

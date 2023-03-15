@@ -167,9 +167,9 @@ public class UserDao {
         return this.jdbcTemplate.update(deleteUserQuery,insertDeleteReasonParams);
     }
 
-    public int modifyShop(PatchShopInfoReq patchShopInfoReq) {
+    public int modifyShop(int userIdx, PatchShopInfoReq patchShopInfoReq) {
         String modifyShopQuery = "update User set profileImgUrl = ?, shopDescription = ?, name = ? where userIdx = ? ";
-        Object[] modifyShopParams = new Object[]{patchShopInfoReq.getProfileImgUrl(), patchShopInfoReq.getShopDescription(), patchShopInfoReq.getName() , patchShopInfoReq.getUserIdx()};
+        Object[] modifyShopParams = new Object[]{patchShopInfoReq.getProfileImgUrl(), patchShopInfoReq.getShopDescription(), patchShopInfoReq.getName() , userIdx};
         return this.jdbcTemplate.update(modifyShopQuery, modifyShopParams);
     }
 

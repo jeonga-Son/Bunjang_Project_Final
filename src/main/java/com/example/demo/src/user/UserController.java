@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import static com.example.demo.config.BaseResponseStatus.*;
 
@@ -105,11 +106,12 @@ public class UserController {
             return new BaseResponse<>(POST_USERS_EMPTY_BIRTHDAY);
         }
 
-        String regExp = "^[가-힣]*$";
-         //회원가입 시 이름 입력란에 문자만 입력 가능
-        if (!postUserReq.getName().matches(regExp)) {
-            return new BaseResponse<>(POST_USERS_INVALID_NAME);
-        }
+        // user명이 상점명이기 때문에 문자만 입력 가능하게 하면 안될 듯.
+//        String regExp = "^[가-힣]*$";
+//         //회원가입 시 이름 입력란에 문자만 입력 가능
+//        if (!postUserReq.getName().matches(regExp)) {
+//            return new BaseResponse<>(POST_USERS_INVALID_NAME);
+//        }
 
         String regex = "[0-9]+";
         // 회원가입 시 휴대폰 번호 입력란에 숫자만 입력 가능
@@ -117,6 +119,7 @@ public class UserController {
             return new BaseResponse<>(POST_USERS_INVALID_PHONENO);
         }
 
+        // 회원가입 시 휴대폰 번호 최대 11자리까지만 입력 가능
         if(postUserReq.getPhoneNo().length() > 11) {
             return new BaseResponse<>(POST_USERS_INVALID_PHONENO_LENGTH);
         }
@@ -147,16 +150,22 @@ public class UserController {
             return new BaseResponse<>(POST_USERS_EMPTY_PHONENO);
         }
 
-        String regExp = "^[가-힣]*$";
-        //로그인 시 이름 입력란에 문자만 입력 가능
-        if (!postLoginReq.getName().matches(regExp)) {
-            return new BaseResponse<>(POST_USERS_INVALID_NAME);
-        }
+        // user명이 상점명이기 때문에 문자만 입력 가능하게 하면 안될 듯.
+//        String regExp = "^[가-힣]*$";
+//        //로그인 시 이름 입력란에 문자만 입력 가능
+//        if (!postLoginReq.getName().matches(regExp)) {
+//            return new BaseResponse<>(POST_USERS_INVALID_NAME);
+//        }
 
         String regex = "[0-9]+";
         // 로그인 시 휴대폰 번호 입력란에 숫자만 입력 가능
         if (!(postLoginReq.getPhoneNo().matches(regex))) {
             return new BaseResponse<>(POST_USERS_INVALID_PHONENO);
+        }
+
+        // 로그인 시 휴대폰 번호 최대 11자리까지만 입력 가능
+        if(postLoginReq.getPhoneNo().length() > 11) {
+            return new BaseResponse<>(POST_USERS_INVALID_PHONENO_LENGTH);
         }
 
         try{
@@ -172,22 +181,29 @@ public class UserController {
      * [PATCH] /users/:userIdx
      * @return BaseResponse<PatchShopInfoReq>
      */
+
     @ResponseBody
     @PatchMapping("/{userIdx}")
-    public BaseResponse<PatchShopInfoReq> modifyShopInfo(@PathVariable("userIdx") int userIdx, @RequestBody User user) {
+    public BaseResponse<PatchShopInfoRes> modifyShopInfo(@PathVariable("userIdx") int userIdx, @RequestBody PatchShopInfoReq patchShopInfoReq) {
         try {
-            //jwt에서 idx 추출.
-            int userIdxByJwt = jwtService.getUserIdx();
-            //userIdx와 접근한 유저가 같은지 확인
-            if (userIdx != userIdxByJwt) {
-                System.out.println("userIdx : " + userIdx + " // userIdxByJwt : " + userIdxByJwt);
-                return new BaseResponse<>(INVALID_USER_JWT);
+            // 상점 이름 길이가 10자 초과되는지 체크
+            if(patchShopInfoReq.getName().length() > 10) {
+                throw new BaseException(PATCH_INVALID_NAME_LENGTH);
             }
 
-            PatchShopInfoReq patchShopInfoReq = new PatchShopInfoReq(userIdx, user.getProfileImgUrl(), user.getShopDescription(), user.getName());
-            userService.modifyShop(patchShopInfoReq);
+            // 상점 소개 길이가 1000자 초과되는지 체크
+            if(patchShopInfoReq.getShopDescription().length() > 1000) {
+                throw new BaseException(PATCH_INVALID_SHOPDESCRIPTION_LENGTH);
+            }
 
-            return new BaseResponse<>(patchShopInfoReq);
+            // 상점 이름이에 한글, 영어, 숫자 이외의 문자가 있는지 체크
+            if(Pattern.matches("^[0-9a-zA-Zㄱ-ㅎ가-힣]*$", patchShopInfoReq.getName()) == false) {
+                throw new BaseException(PATCH_INVALID_NAME_PATTERN);
+            }
+
+            PatchShopInfoRes patchShopInfoRes = userService.modifyShop(userIdx, patchShopInfoReq);
+
+            return new BaseResponse<>(patchShopInfoRes);
 
         } catch (BaseException exception){
             return new BaseResponse<>(exception.getStatus());
