@@ -10,8 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.example.demo.config.BaseResponseStatus.DATABASE_ERROR;
-import static com.example.demo.config.BaseResponseStatus.PRODUCT_NOT_EXISTS;
+import static com.example.demo.config.BaseResponseStatus.*;
 
 @Service
 public class ProductProvider {
@@ -97,6 +96,10 @@ public class ProductProvider {
 
     // 카테고리 별 상품 목록 뽑아내기
     public List<GetProductList> getProductsByCat(int categoryIdx) throws BaseException {
+        // validation : 좁재하는 카테고리인지?
+        if(checkCategoryExists(categoryIdx) == 0)
+            throw new BaseException(INVALID_CATEGORY_IDX);
+
         try { // 회원이 접속했을 때
             int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출
             try {
@@ -121,6 +124,9 @@ public class ProductProvider {
 
     // 서브 카테고리 상품 목록 뽑아내기
     public List<GetProductList> getProductsBySubCat(int subCategoryIdx) throws BaseException {
+        // validation : 좁재하는 서브 카테고리인지?
+        if(checkSubCategoryExists(subCategoryIdx) == 0)
+            throw new BaseException(INVALID_SUBCATEGORY_IDX);
         try { // 회원용
             int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출
             try {
@@ -232,6 +238,16 @@ public class ProductProvider {
             return productDao.checkSubCategoryExists(subCategoryIdx);
         } catch (Exception exception){
             logger.error("App - checkSubCategoryExists Provider Error", exception);
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    // 존재하는 카테고리인지?
+    public int checkCategoryExists(int categoryIdx) throws BaseException{
+        try{
+            return productDao.checkCategoryExists(categoryIdx);
+        } catch (Exception exception){
+            logger.error("App - checkCategoryExists Provider Error", exception);
             throw new BaseException(DATABASE_ERROR);
         }
     }

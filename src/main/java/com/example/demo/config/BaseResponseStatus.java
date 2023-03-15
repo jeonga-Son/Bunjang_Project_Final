@@ -34,7 +34,7 @@ public enum BaseResponseStatus {
     POST_USERS_EMPTY_BIRTHDAY(false, 2019, "생년월일을 입력해주세요."),
     INACTIVE_USER(false, 2020, "비활성화 상태입니다"),
     DELETED_USER(false, 2021, "삭제된 사용자 입니다."),
-    POST_SHOP_NOT_EXISTS(false, 2022, "존재하지 않는 가게 입니다."),
+    POST_SHOP_NOT_EXISTS(false, 2022, "존재하지 않는 상점 입니다."),
     INVALID_USER(false, 2023, "이미 탈퇴한 회원입니다."),
 
     // Product
@@ -53,7 +53,10 @@ public enum BaseResponseStatus {
     INVALID_PRODUCT_TAGS(false, 2040, "태그는 5개 이하여야 합니다."),
     INVALID_PRODUCT_IMG(false, 2041, "이미지 사이즈는 640X640 이하여야 합니다."),
     MAX_PRODUCT_IMG_COUNT(false, 2042,"상품 이미지는 최대 12장입니다."),
-    EMPTY_SALE_STATUS(false, 2032, "판매 상태 값을 입력해주세요."),
+    EMPTY_SALE_STATUS(false, 2043, "판매 상태 값을 입력해주세요."),
+    MAX_PRODUCT_IMG_SIZE(false, 2044,"상품 이미지 사이즈는 최대 640X640 입니다."),
+    INVALID_CATEGORY_IDX(false, 2045, "존재하지 않는 카테고리 입니다."),
+    INVALID_SUBCATEGORY_IDX(false, 2046, "존재하지 않는 서브 카테고리 입니다."),
 
 
     // Review

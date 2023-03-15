@@ -10,7 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
+import javax.imageio.ImageIO;
 import javax.validation.Valid;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -67,7 +72,7 @@ public class ProductController {
      */
     @ResponseBody
     @PostMapping("") // (POST) 127.0.0.1:9000/products
-    public BaseResponse<PostProductRes> postProductRes(@Valid @RequestBody PostProductReq postProductReq, Errors errors) throws BaseException {
+    public <NullPointException extends Throwable> BaseResponse<PostProductRes> postProductRes(@Valid @RequestBody PostProductReq postProductReq, Errors errors) throws BaseException, MalformedURLException {
         // 회원용 API
         int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출
         if (postProductReq.getUserIdx() != userIdxByJwt) { // 유저가 제시한 userIdx != jwt에서 추출한 userIdx
@@ -94,6 +99,9 @@ public class ProductController {
         if(postProductReq.getDescription().length() < 10 || postProductReq.getDescription().length() > 20000)
             return new BaseResponse<>(INVALID_PRODUCT_DESCRIPTION);
 
+        // validation : 가격을 입력했는지?
+
+
         // validation : 가격 500~999,999,999원
         if(postProductReq.getPrice() < 500 || postProductReq.getPrice() > 999999999)
             return new BaseResponse<>(INVALID_PRODUCT_PRICE);
@@ -108,6 +116,21 @@ public class ProductController {
 
         // validation : 이미지 사이즈 640X640 이하
         // 테스트 이미지 링크 : https://picsum.photos/200/300
+        int width = 0;
+        int height = 0;
+        for(int i=0 ; i<postProductReq.getProductImgs().size() ; i++) {
+            try {
+                URL img = new URL(postProductReq.getProductImgs().get(i).toString());
+                BufferedImage bufferedImage = ImageIO.read(img);
+                width = bufferedImage.getWidth();
+                height = bufferedImage.getHeight();
+                System.out.println(String.format("width = %d height = %d", width, height));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        if(width > 640 || height > 640)
+            return new BaseResponse<>(MAX_PRODUCT_IMG_SIZE);
 
 
         try {

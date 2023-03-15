@@ -1,25 +1,18 @@
 package com.example.demo.src.product.validator;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+@Getter
+@AllArgsConstructor
 public enum ErrorCode {
-
-    NOT_NULL(false,2030,"필수 값이 누락되었습니다")
-    , MIN_VALUE(false,2031, "최소값보다 커야 합니다.")
+    NOT_FOUND(false,404,"PAGE NOT FOUND"),
+    INTER_SERVER_ERROR(false,500,"INTER SERVER ERROR"),
+    EMAIL_DUPLICATION(false,400,"EMAIL DUPLICATED"),
     ;
-
-    @Getter
     private boolean isSuccess;
-
-    @Getter
     private int code;
 
-    @Getter
     private String message;
 
-    ErrorCode(boolean isSuccess, int code, String description) {
-        this.isSuccess = isSuccess;
-        this.code = code;
-        this.message = description;
-    }
 }

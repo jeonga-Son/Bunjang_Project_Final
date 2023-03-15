@@ -15,7 +15,7 @@ import java.util.List;
 public class PostReviewReq {
     // 유저 id, 별점, 리뷰내용, 리뷰이미지 url
     private int userIdx;
-    @NotNull
+    @NotNull(message = "별점을 입력해주세요.")
     private float star;
     private String content;
     private List<String> reviewImgUrl;

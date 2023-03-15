@@ -666,6 +666,13 @@ public class ProductDao {
         return this.jdbcTemplate.queryForObject(checkSubCategoryExistsQuery, int.class, checkSubCategoryExistsParams);
     }
 
+    // 존재하는 카테고리인지?
+    public int checkCategoryExists(int categoryIdx){
+        String checkCategoryExistsQuery = "select exists(select categoryIdx from Category where categoryIdx = ? and status='ACTIVE');";
+        int checkCategoryExistsParams = categoryIdx;
+        return this.jdbcTemplate.queryForObject(checkCategoryExistsQuery, int.class, checkCategoryExistsParams);
+    }
+
     // 판매상태 반환 함수
     public String getSaleStatus(int productIdx){
         String checkSaleStatusQuery = "select saleStatus from Product where productIdx=?";

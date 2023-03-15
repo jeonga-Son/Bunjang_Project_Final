@@ -1181,7 +1181,7 @@ sys|schema||mysql.sys|localhost|TRIGGER|G</Grants>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
     <column id="322" parent="300" name="chatIdx">
-      <AutoIncrement>24</AutoIncrement>
+      <AutoIncrement>35</AutoIncrement>
       <DasType>int|0s</DasType>
       <NotNull>1</NotNull>
       <Position>1</Position>
@@ -1234,17 +1234,17 @@ sys|schema||mysql.sys|localhost|TRIGGER|G</Grants>
       <NotNull>1</NotNull>
       <Position>1</Position>
     </column>
-    <column id="332" parent="301" name="userIdx1">
+    <column id="332" parent="301" name="chatRoomIdx">
       <DasType>int|0s</DasType>
       <NotNull>1</NotNull>
       <Position>2</Position>
     </column>
-    <column id="333" parent="301" name="userIdx2">
+    <column id="333" parent="301" name="userIdx1">
       <DasType>int|0s</DasType>
       <NotNull>1</NotNull>
       <Position>3</Position>
     </column>
-    <column id="334" parent="301" name="chatRoomIdx">
+    <column id="334" parent="301" name="userIdx2">
       <DasType>int|0s</DasType>
       <NotNull>1</NotNull>
       <Position>4</Position>
@@ -1275,12 +1275,12 @@ sys|schema||mysql.sys|localhost|TRIGGER|G</Grants>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <column id="340" parent="302" name="chatRoomIdx">
+    <column id="340" parent="302" name="chatProductIdx">
       <DasType>int|0s</DasType>
       <NotNull>1</NotNull>
       <Position>1</Position>
     </column>
-    <column id="341" parent="302" name="chatProductIdx">
+    <column id="341" parent="302" name="chatRoomIdx">
       <DasType>int|0s</DasType>
       <NotNull>1</NotNull>
       <Position>2</Position>
@@ -1376,7 +1376,7 @@ sys|schema||mysql.sys|localhost|TRIGGER|G</Grants>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
     <column id="359" parent="305" name="favoriteIdx">
-      <AutoIncrement>27</AutoIncrement>
+      <AutoIncrement>34</AutoIncrement>
       <DasType>int|0s</DasType>
       <NotNull>1</NotNull>
       <Position>1</Position>
@@ -1428,7 +1428,7 @@ sys|schema||mysql.sys|localhost|TRIGGER|G</Grants>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
     <column id="368" parent="306" name="followIdx">
-      <AutoIncrement>13</AutoIncrement>
+      <AutoIncrement>14</AutoIncrement>
       <DasType>int|0s</DasType>
       <NotNull>1</NotNull>
       <Position>1</Position>
@@ -1490,40 +1490,40 @@ sys|schema||mysql.sys|localhost|TRIGGER|G</Grants>
       <NotNull>1</NotNull>
       <Position>2</Position>
     </column>
-    <column id="379" parent="307" name="point">
-      <Comment>해당 사용내역의 포인트 값</Comment>
-      <DasType>int|0s</DasType>
-      <DefaultExpression>0</DefaultExpression>
-      <NotNull>1</NotNull>
-      <Position>3</Position>
-    </column>
-    <column id="380" parent="307" name="createAt">
-      <DasType>timestamp|0s</DasType>
-      <DefaultExpression>CURRENT_TIMESTAMP</DefaultExpression>
-      <NotNull>1</NotNull>
-      <Position>4</Position>
-    </column>
-    <column id="381" parent="307" name="updateAt">
-      <DasType>timestamp|0s</DasType>
-      <DefaultExpression>CURRENT_TIMESTAMP</DefaultExpression>
-      <OnUpdate>CURRENT_TIMESTAMP</OnUpdate>
-      <Position>5</Position>
-    </column>
-    <column id="382" parent="307" name="status">
-      <DasType>varchar(10)|0s</DasType>
-      <DefaultExpression>&apos;ACTIVE&apos;</DefaultExpression>
-      <NotNull>1</NotNull>
-      <Position>6</Position>
-    </column>
-    <column id="383" parent="307" name="pointName">
+    <column id="379" parent="307" name="pointName">
       <Comment>포인트 적립 내역에 대한 설명
 ex) 광고 참여 리워드</Comment>
       <DasType>varchar(20)|0s</DasType>
       <NotNull>1</NotNull>
+      <Position>3</Position>
+    </column>
+    <column id="380" parent="307" name="point">
+      <Comment>해당 사용내역의 포인트 값</Comment>
+      <DasType>int|0s</DasType>
+      <DefaultExpression>0</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>4</Position>
+    </column>
+    <column id="381" parent="307" name="expireDate">
+      <DasType>date|0s</DasType>
+      <NotNull>1</NotNull>
+      <Position>5</Position>
+    </column>
+    <column id="382" parent="307" name="createAt">
+      <DasType>timestamp|0s</DasType>
+      <DefaultExpression>CURRENT_TIMESTAMP</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>6</Position>
+    </column>
+    <column id="383" parent="307" name="updateAt">
+      <DasType>timestamp|0s</DasType>
+      <DefaultExpression>CURRENT_TIMESTAMP</DefaultExpression>
+      <OnUpdate>CURRENT_TIMESTAMP</OnUpdate>
       <Position>7</Position>
     </column>
-    <column id="384" parent="307" name="expireDate">
-      <DasType>date|0s</DasType>
+    <column id="384" parent="307" name="status">
+      <DasType>varchar(10)|0s</DasType>
+      <DefaultExpression>&apos;ACTIVE&apos;</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>8</Position>
     </column>
@@ -1538,7 +1538,7 @@ ex) 광고 참여 리워드</Comment>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
     <column id="387" parent="308" name="productIdx">
-      <AutoIncrement>30</AutoIncrement>
+      <AutoIncrement>87</AutoIncrement>
       <DasType>int|0s</DasType>
       <NotNull>1</NotNull>
       <Position>1</Position>
@@ -1637,7 +1637,7 @@ ex) 광고 참여 리워드</Comment>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
     <column id="405" parent="309" name="productImgIdx">
-      <AutoIncrement>57</AutoIncrement>
+      <AutoIncrement>117</AutoIncrement>
       <DasType>int|0s</DasType>
       <NotNull>1</NotNull>
       <Position>1</Position>
@@ -1681,7 +1681,7 @@ ex) 광고 참여 리워드</Comment>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
     <column id="413" parent="310" name="reviewIdx">
-      <AutoIncrement>14</AutoIncrement>
+      <AutoIncrement>21</AutoIncrement>
       <DasType>int|0s</DasType>
       <NotNull>1</NotNull>
       <Position>1</Position>
@@ -1745,7 +1745,7 @@ ex) 광고 참여 리워드</Comment>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
     <column id="424" parent="311" name="reviewImgIdx">
-      <AutoIncrement>1</AutoIncrement>
+      <AutoIncrement>31</AutoIncrement>
       <DasType>int|0s</DasType>
       <NotNull>1</NotNull>
       <Position>1</Position>
@@ -1834,7 +1834,7 @@ ex) 광고 참여 리워드</Comment>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
     <column id="440" parent="313" name="tagIdx">
-      <AutoIncrement>100</AutoIncrement>
+      <AutoIncrement>158</AutoIncrement>
       <DasType>int|0s</DasType>
       <NotNull>1</NotNull>
       <Position>1</Position>
@@ -1878,7 +1878,7 @@ ex) 광고 참여 리워드</Comment>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
     <column id="448" parent="314" name="userIdx">
-      <AutoIncrement>17</AutoIncrement>
+      <AutoIncrement>49</AutoIncrement>
       <DasType>int|0s</DasType>
       <NotNull>1</NotNull>
       <Position>1</Position>
