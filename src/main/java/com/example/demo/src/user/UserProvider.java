@@ -88,9 +88,20 @@ public class UserProvider {
     }
 
     public List<GetStoreProductsRes> getStoreProducts(int userIdx) throws BaseException {
-//        if (userDao.getUser(userIdx).equals(null)) {
-//            throw new BaseException(POST_USERS_EMPTY_USER);
-//        }
+        // 존재하는 유저(=상점)인지 체크
+        if (userDao.checkUserIdx(userIdx) == 0) {
+            throw new BaseException(USERS_NOT_EXISTS);
+        }
+
+        // 조회하는 유저(=상점)가 삭제되거나 비활성화 된 유저(=상점)인지 체크
+        if (userDao.checkUserStatus(userIdx) == 0) {
+            throw new BaseException(USERS_NOT_FOUND);
+        }
+
+        // 해당 상점에 상품이 존재하는지 체크
+        if (userDao.checkUserProductStatus(userIdx) == 0) {
+            throw new BaseException(USERS_PRODUCTS_NOT_EXISTS);
+        }
 
         try {
             List<GetStoreProductsRes> getStoreProductsRes = userDao.getStoreProducts(userIdx);

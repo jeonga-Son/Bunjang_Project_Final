@@ -227,4 +227,16 @@ public class UserDao {
                 int.class,
                 checkUserStatusParam);
     }
+
+    public int checkUserProductStatus(int userIdx) {
+        String checkUserProductStatusQuery = "select count(Product.productIdx)\n" +
+                "from Product\n" +
+                "    left join User on User.userIdx = Product.userIdx\n" +
+                "    where User.userIdx = ? and Product.status = 'ACTIVE';";
+        int checkUserProductStatusParam = userIdx;
+
+        return this.jdbcTemplate.queryForObject(checkUserProductStatusQuery,
+                int.class,
+                checkUserProductStatusParam);
+    }
 }
