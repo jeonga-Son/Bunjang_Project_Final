@@ -57,6 +57,9 @@ public enum BaseResponseStatus {
     MAX_PRODUCT_IMG_SIZE(false, 2044,"상품 이미지 사이즈는 최대 640X640 입니다."),
     INVALID_CATEGORY_IDX(false, 2045, "존재하지 않는 카테고리 입니다."),
     INVALID_SUBCATEGORY_IDX(false, 2046, "존재하지 않는 서브 카테고리 입니다."),
+    EMPTY_PRODUCT_PRICE(false, 2047, "상품 가격을 입력해주세요."),
+    EMPTY_PRODUCT_SUBCATEGORY(false, 2048, "카테고리를 선택해주세요."),
+    INVALID_SORT_VALUE(false, 2049, "정렬 기준이 유효하지 않습니다."),
 
 
     // Review
@@ -64,6 +67,7 @@ public enum BaseResponseStatus {
     DUPLICATED_PRODUCT_REVIEW(false, 2051, "이미 리뷰가 작성된 상품입니다."),
     EMPTY_REVIEW_CONTENT(false, 2052, "리뷰 내용을 입력해주세요."),
     MAX_REVIEW_IMG_COUNT(false, 2053, "리뷰 이미지는 최대 6장 입니다."),
+    EMPTY_REVIEW_STAR(false, 2054, "리뷰 별점을 입력해주세요."),
 
 
     // Follow

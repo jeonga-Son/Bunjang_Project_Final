@@ -12,7 +12,6 @@ public enum ErrorCode {
     ;
     private boolean isSuccess;
     private int code;
-
     private String message;
 
 }

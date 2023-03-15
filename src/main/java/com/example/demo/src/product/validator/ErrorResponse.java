@@ -10,4 +10,6 @@ public class ErrorResponse {
     private int code;
     private String message;
 
+    public ErrorResponse(ErrorCode errorCode) {
+    }
 }
