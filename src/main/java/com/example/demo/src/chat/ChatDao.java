@@ -1,9 +1,6 @@
 package com.example.demo.src.chat;
 
-import com.example.demo.src.chat.model.GetChat;
-import com.example.demo.src.chat.model.ChatPartnerStore;
-import com.example.demo.src.chat.model.GetChatRoomList;
-import com.example.demo.src.chat.model.PostChatReq;
+import com.example.demo.src.chat.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -145,6 +142,13 @@ public class ChatDao {
                 int.class,
                 checkChatStatusParam);
     }
+
+    public int checkChatRoomIdx(int chatRoomIdx) {
+        String checkChatRoomIdxQuery = "select exists(select * from ChatRoom where chatRoomIdx = ? and ChatRoom.status = 'ACTIVE')";
+        int checkChatRoomIdxParam = chatRoomIdx;
+        return this.jdbcTemplate.queryForObject(checkChatRoomIdxQuery, int.class,checkChatRoomIdxParam);
+    }
+
 }
 
 

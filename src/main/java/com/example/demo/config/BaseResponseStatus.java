@@ -83,9 +83,13 @@ public enum BaseResponseStatus {
 
     // Chat
     CHATS_NOT_EXISTS(false, 2080, "채팅 내역이 존재하지 않습니다."),
+    CHATROOM_NOT_EXISTS(false, 2081, "존재하지 않는 채팅방 입니다."),
 
+    FAILED_TO_CREATE_CHAT(false, 2082, "채팅에 실패하였습니다."),
 
-
+    POST_EMPTY_CHATROOMIDX(false, 2083, "채팅방 번호를 입력해주세요."),
+    POST_EMPTY_CHAT_MESSAGE(false, 2084, "채팅 메시지를 입력해주세요"),
+    POST_USERS_INVALID_CHATROOMIDX(false, 2085, "채팅방 번호는 숫자만 입력이 가능합니다."),
     /**
      * 3000 : Response 오류
      */

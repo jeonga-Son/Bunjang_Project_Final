@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static com.example.demo.config.BaseResponseStatus.*;
+
 @Controller
 @RequestMapping("/chats")
 public class ChatController {
@@ -75,6 +77,16 @@ public class ChatController {
     @ResponseBody
     @PostMapping("")
     public BaseResponse<PostChatRes> createChat(@RequestBody PostChatReq postChatReq, @RequestParam("userIdx") int userIdx) throws BaseException {
+        // 채팅방 번호 입력 안할 시
+        if(postChatReq.getChatRoomIdx() == 0) {
+            return new BaseResponse<>(POST_EMPTY_CHATROOMIDX);
+        }
+
+        // 채팅 내용 입력 안할 시
+        if(postChatReq.getMessage() == null) {
+            return new BaseResponse<>(POST_EMPTY_CHAT_MESSAGE);
+        }
+
         try{
             PostChatRes createChat = chatService.createChat(postChatReq, userIdx);
             return new BaseResponse<>(createChat);
@@ -91,13 +103,19 @@ public class ChatController {
     @ResponseBody
     @PatchMapping("/{chatRoomIdx}/status")
     public BaseResponse<PatchChatRes> deleteChat(@PathVariable("chatRoomIdx") int chatRoomIdx) {
-        chatService.patchChat(chatRoomIdx);
+        try{
+            chatService.patchChat(chatRoomIdx);
+            PatchChatRes patchChatRes = new PatchChatRes();
+            patchChatRes.setChatRoomIdx(chatRoomIdx);
 
-        PatchChatRes patchChatRes = new PatchChatRes();
-        patchChatRes.setChatRoomIdx(chatRoomIdx);
-        String result = "대화 내용이 모두 삭제됩니다.";
-        patchChatRes.setResultMessage(result);
-        return new BaseResponse<>(patchChatRes);
+            String result = "대화 내용이 모두 삭제됩니다.";
+
+            patchChatRes.setResultMessage(result);
+
+            return new BaseResponse<>(patchChatRes);
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
 
     }
 

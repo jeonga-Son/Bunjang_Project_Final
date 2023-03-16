@@ -166,4 +166,5 @@ public class UserProvider {
         int findUserIdx = userDao.checkUserIdx(userIdx);
         return findUserIdx;
     }
+
 }

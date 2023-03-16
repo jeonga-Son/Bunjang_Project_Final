@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 
-import static com.example.demo.config.BaseResponseStatus.DATABASE_ERROR;
+import static com.example.demo.config.BaseResponseStatus.*;
 
 @Service
 public class ChatService {
@@ -25,13 +25,13 @@ public class ChatService {
     }
 
     public PostChatRes createChat(PostChatReq postChatReq, int userIdx) throws BaseException {
-         int idx = chatDao.createChat(postChatReq, userIdx);
-
-//         if (idx == 0) {
-//             throw new BaseException(FAILED_TO_CREATE_CHAT);
-//         }
-
          try{
+             int idx = chatDao.createChat(postChatReq, userIdx);
+
+             if (idx == 0) {
+                 throw new BaseException(FAILED_TO_CREATE_CHAT);
+             }
+
              int chatRoomIdx = postChatReq.getChatRoomIdx();
              String message = postChatReq.getMessage();
              Timestamp updateAt = postChatReq.getUpdateAt();
@@ -44,7 +44,17 @@ public class ChatService {
          }
     }
 
-    public void patchChat(int chatRoomIdx) {
-        chatDao.patchChat(chatRoomIdx);
+    public void patchChat(int chatRoomIdx) throws BaseException {
+        // 존재하는 채팅방인지 체크
+        if (chatDao.checkChatRoomIdx(chatRoomIdx) == 0) {
+            throw new BaseException(CHATROOM_NOT_EXISTS);
+        }
+
+        try{
+            chatDao.patchChat(chatRoomIdx);
+        } catch (Exception exception) {
+            logger.error("App - patchChat Service Error", exception);
+            throw new BaseException(DATABASE_ERROR);
+        }
     }
 }
