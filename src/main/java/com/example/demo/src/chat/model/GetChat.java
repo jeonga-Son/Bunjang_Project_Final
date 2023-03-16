@@ -17,6 +17,8 @@ public class GetChat {
 
     private String message;
 
+    private String readStatus;
+
     @JsonFormat(pattern = "yyyy-MM-dd hh:mm", timezone = "Asia/Seoul")
     private Timestamp updateAt;
 

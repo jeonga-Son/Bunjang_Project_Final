@@ -79,7 +79,7 @@ public class ChatDao {
                         rs.getString("name"),
                         rs.getFloat("avgStar"),
                         rs.getInt("saleCount"),
-                        this.jdbcTemplate.query("(select ChatRoom.userIdx1 as userIdx,  Chat.message, Chat.updateAt\n" +
+                        this.jdbcTemplate.query("(select ChatRoom.userIdx1 as userIdx,  Chat.message, Chat.updateAt, Chat.readStatus\n" +
                                         "                from Chat\n" +
                                         "                    left join ChatRoom on Chat.chatRoomIdx = ChatRoom.chatRoomIdx\n" +
                                         "                    left join User on User.userIdx = ChatRoom.userIdx1\n" +
@@ -87,7 +87,7 @@ public class ChatDao {
                                         "                    left join Product on User.userIdx = Product.userIdx\n" +
                                         "                    where ChatRoom.chatRoomIdx = ? and Chat.userIdx = User.userIdx and User.status = 'ACTIVE' and ChatRoom.status = 'ACTIVE')\n" +
                                         "union\n" +
-                                        "(select ChatRoom.userIdx2 as userIdx, Chat.message, Chat.updateAt\n" +
+                                        "(select ChatRoom.userIdx2 as userIdx, Chat.message, Chat.updateAt, Chat.readStatus\n" +
                                         "from Chat\n" +
                                         "    left join ChatRoom on Chat.chatRoomIdx = ChatRoom.chatRoomIdx\n" +
                                         "    left join User on User.userIdx = ChatRoom.userIdx2\n" +
@@ -97,6 +97,7 @@ public class ChatDao {
                                 (rs2, rowNum2) -> new GetChat(
                                         rs2.getInt("userIdx"),
                                         rs2.getString("message"),
+                                        rs2.getString("readStatus"),
                                         rs2.getTimestamp("updateAt")),
                                 getChatParams))
                 , getChatParams);
