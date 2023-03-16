@@ -60,9 +60,9 @@ public class ChatController {
      */
     @ResponseBody
     @GetMapping("/{chatRoomIdx}")
-    public BaseResponse<List<ChatPartnerStore>> getChat(@PathVariable("chatRoomIdx") int chatRoomIdx) {
+    public BaseResponse<List<ChatPartnerStore>> getChat(@PathVariable("chatRoomIdx") int chatRoomIdx, @RequestParam("userIdx") int userIdx) {
         try{
-            List<ChatPartnerStore> getChat = chatProvider.getChat(chatRoomIdx);
+            List<ChatPartnerStore> getChat = chatProvider.getChat(chatRoomIdx, userIdx);
             return new BaseResponse<>(getChat);
 
         } catch(BaseException exception) {
@@ -102,9 +102,9 @@ public class ChatController {
      */
     @ResponseBody
     @PatchMapping("/{chatRoomIdx}/status")
-    public BaseResponse<PatchChatRes> deleteChat(@PathVariable("chatRoomIdx") int chatRoomIdx) {
+    public BaseResponse<PatchChatRes> deleteChat(@PathVariable("chatRoomIdx") int chatRoomIdx, @RequestParam("userIdx") int userIdx) {
         try{
-            chatService.patchChat(chatRoomIdx);
+            chatService.patchChat(chatRoomIdx, userIdx);
             PatchChatRes patchChatRes = new PatchChatRes();
             patchChatRes.setChatRoomIdx(chatRoomIdx);
 
