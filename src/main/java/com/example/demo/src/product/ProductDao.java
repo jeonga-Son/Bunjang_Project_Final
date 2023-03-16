@@ -136,7 +136,7 @@ public class ProductDao {
     }
 
     // 홈화면용 랜덤 상품 출력
-    public List<GetProductList> getHomeProducts(int limit) {
+    public List<GetProductList> getHomeProducts(int limit, String orderBy) {
         String getProductsQuery = "select Product.productIdx,productImgUrl, price, productName, (0) as isFavorite\n" +
                 "    from User\n" +
                 "        left join Product on User.userIdx = Product.userIdx\n" +
@@ -144,6 +144,7 @@ public class ProductDao {
                 "        left join Favorite on Product.productIdx=Favorite.productIdx\n" +
                 "where Product.status = 'ACTIVE' and Product.saleStatus = 'ONSALE'\n" +
                 "group by Product.productIdx\n" +
+                "order by " + orderBy +"\n"+
                 "limit ?";
         Object[] getProductsParams = new Object[] {limit};
 
@@ -159,7 +160,7 @@ public class ProductDao {
         );
     }
 
-    public List<GetProductList> getHomeProducts_auth(int userIdx, int limit) {
+    public List<GetProductList> getHomeProducts_auth(int userIdx, int limit, String orderBy) {
         String getProductsQuery = "select prod_list.productIdx, productImgUrl, price, productName, if(isnull(fav_list.productIdx), 0, 1) as isFavorite\n" +
                 "from\n" +
                 "    (select Product.productIdx,productImgUrl, price, productName" +
@@ -169,6 +170,7 @@ public class ProductDao {
                 "        left join Favorite on Product.productIdx=Favorite.productIdx\n" +
                 "where Product.status = 'ACTIVE' and Product.saleStatus = 'ONSALE'\n" +
                 "group by Product.productIdx\n" +
+                "order by " + orderBy +" ) prod_list\n" +
                 "limit ?\n" +
                 ") prod_list\n" +
                 "    left join\n" +
@@ -233,13 +235,14 @@ public class ProductDao {
 //        );
 //    }
 
-    public List<GetProductList> getProductsByCat(int categoryIdx) {
+    public List<GetProductList> getProductsByCat(int categoryIdx, String orderBy) {
         String getProductsQuery = "select Product.productIdx,productImgUrl, price, productName, (0) as isFavorite\n" +
                 "from User\n" +
                 "    left join Product on User.userIdx = Product.userIdx\n" +
                 "    left join ProductImg on Product.productIdx=ProductImg.productIdx\n" +
                 "where Product.status='ACTIVE' and Product.saleStatus !='SOLD' and categoryIdx=? \n" +
-                "group by Product.productIdx\n";
+                "group by Product.productIdx\n" +
+                "order by" + orderBy ;
         Object[] getProductsByCatParams = new Object[] {categoryIdx};
 
         return this.jdbcTemplate.query(getProductsQuery,
@@ -254,7 +257,7 @@ public class ProductDao {
     }
 
 
-    public List<GetProductList> getProductsByCat_auth(int categoryIdx, int userIdx) {
+    public List<GetProductList> getProductsByCat_auth(int categoryIdx, int userIdx, String orderBy) {
         String getProductsQuery = "select prod_list.productIdx, productImgUrl, price, productName, if(isnull(fav_list.productIdx), 0, 1) as isFavorite\n" +
         "from\n" +
                 "    (select Product.productIdx,productImgUrl, price, productName\n" +
@@ -263,7 +266,7 @@ public class ProductDao {
                 "    left join ProductImg on Product.productIdx=ProductImg.productIdx\n" +
                 "where Product.status='ACTIVE' and Product.saleStatus !='SOLD' and categoryIdx=? \n" +
                 "group by Product.productIdx\n" +
-                ") prod_list\n" +
+                "order by " + orderBy + ") prod_list\n" +
                 "left join\n" +
                 "    (select productIdx, userIdx\n" +
                 "    from Favorite\n" +
@@ -285,7 +288,7 @@ public class ProductDao {
 
 
 
-    public List<GetProductList> getProductsBySubCat_auth(int subCategoryIdx, int userIdx) {
+    public List<GetProductList> getProductsBySubCat_auth(int subCategoryIdx, int userIdx, String orderBy) {
         String getProductsQuery = "select prod_list.productIdx, productImgUrl, price, productName, if(isnull(fav_list.productIdx), 0, 1) as isFavorite\n" +
                 "from\n" +
                 "    (select Product.productIdx,productImgUrl, price, productName\n" +
@@ -294,7 +297,7 @@ public class ProductDao {
                 "    left join ProductImg on Product.productIdx=ProductImg.productIdx\n" +
                 "where Product.status='ACTIVE' and Product.saleStatus != 'SOLD' and subCategoryIdx=? \n" +
                 "group by Product.productIdx\n" +
-                ") prod_list\n" +
+                "order by " + orderBy + ") prod_list\n" +
                 "left join\n" +
                 "    (select productIdx, userIdx\n" +
                 "    from Favorite\n" +
@@ -313,13 +316,14 @@ public class ProductDao {
         );
     }
 
-    public List<GetProductList> getProductsBySubCat(int subCategoryIdx) {
+    public List<GetProductList> getProductsBySubCat(int subCategoryIdx, String orderBy) {
         String getProductsQuery = "select Product.productIdx,productImgUrl, price, productName, (0) as isFavorite\n" +
                 "from User\n" +
                 "    left join Product on User.userIdx = Product.userIdx\n" +
                 "    left join ProductImg on Product.productIdx=ProductImg.productIdx\n" +
                 "where Product.status='ACTIVE' and Product.saleStatus != 'SOLD' and subCategoryIdx=? \n" +
-                "group by Product.productIdx \n";
+                "group by Product.productIdx \n" +
+                "order by " + orderBy ;
 
         Object[] getProductsBySubCatParams = new Object[] {subCategoryIdx};
 
@@ -591,7 +595,7 @@ public class ProductDao {
         return this.jdbcTemplate.update(updateProductStatusQuery, updateProductStatusParams);
     }
 
-    public List<GetProductList> searchByTag_auth(String tag, int userIdx) {
+    public List<GetProductList> searchByTag_auth(String tag, int userIdx, String orderBy) {
         String searchByTag = "select prod_list.productIdx, productName, productImgUrl, price, if(isnull(fav_list.productIdx), 0, 1) as isFavorite\n" +
                 "from\n" +
                 "    (select Tag.productIdx, productImgUrl, price, productName\n" +
@@ -599,7 +603,7 @@ public class ProductDao {
                 "    left join Tag on Tag.productIdx=Product.productIdx\n" +
                 "    left join ProductImg on Product.productIdx=ProductImg.productIdx\n" +
                 "where Tag.status='ACTIVE' and ProductImg.status='ACTIVE' and Product.saleStatus != 'SOLD' and Product.status='ACTIVE' and tag=?\n" +
-                ") prod_list\n" +
+                "order by " + orderBy +" ) prod_list\n" +
                 "left join\n" +
                 "    (select productIdx, userIdx\n" +
                 "    from Favorite\n" +
@@ -620,14 +624,16 @@ public class ProductDao {
 
     }
 
-    public List<GetProductList> searchByTag(String tag) {
+    public List<GetProductList> searchByTag(String tag, String orderBy) {
+
         String searchByTag = "select Tag.productIdx, productImgUrl, price, productName, (0) as isFavorite\n" +
                 "from Product\n" +
                 "    left join Tag on Tag.productIdx=Product.productIdx\n" +
                 "    left join ProductImg on Product.productIdx=ProductImg.productIdx\n" +
-                "where Tag.status='ACTIVE' and ProductImg.status='ACTIVE' and Product.saleStatus != 'SOLD' and Product.status='ACTIVE' and tag=?\n";
+                "where Tag.status='ACTIVE' and ProductImg.status='ACTIVE' and Product.saleStatus != 'SOLD' and Product.status='ACTIVE' and tag=?\n" +
+                "order by "+ orderBy ;
 
-                Object[] searchByTagParams = new Object[] {tag};
+        Object[] searchByTagParams = new Object[] {tag};
 
         return this.jdbcTemplate.query(searchByTag,
                 (rs, rowNum) -> new GetProductList(
@@ -664,6 +670,13 @@ public class ProductDao {
         String checkSubCategoryExistsQuery = "select exists(select subCategoryIdx from SubCategory where subCategoryIdx = ? and status='ACTIVE');";
         int checkSubCategoryExistsParams = subCategoryIdx;
         return this.jdbcTemplate.queryForObject(checkSubCategoryExistsQuery, int.class, checkSubCategoryExistsParams);
+    }
+
+    // 존재하는 카테고리인지?
+    public int checkCategoryExists(int categoryIdx){
+        String checkCategoryExistsQuery = "select exists(select categoryIdx from Category where categoryIdx = ? and status='ACTIVE');";
+        int checkCategoryExistsParams = categoryIdx;
+        return this.jdbcTemplate.queryForObject(checkCategoryExistsQuery, int.class, checkCategoryExistsParams);
     }
 
     // 판매상태 반환 함수

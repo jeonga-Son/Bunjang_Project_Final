@@ -10,8 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.example.demo.config.BaseResponseStatus.DATABASE_ERROR;
-import static com.example.demo.config.BaseResponseStatus.PRODUCT_NOT_EXISTS;
+import static com.example.demo.config.BaseResponseStatus.*;
 
 @Service
 public class ProductProvider {
@@ -73,11 +72,13 @@ public class ProductProvider {
 
 
     // 랜덤으로 상품 목록 뽑아내기 (홈 화면 용)
-    public List<GetProductList> getHomeProducts() throws BaseException {
+    public List<GetProductList> getHomeProducts(String sort) throws BaseException {
+        String orderBy = convertSortIntoOrderBy(sort);
+
         try { // 회원이 접속했을 때
             int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출
             try {
-                List<GetProductList> getProductList = productDao.getHomeProducts_auth(userIdxByJwt, 500);
+                List<GetProductList> getProductList = productDao.getHomeProducts_auth(userIdxByJwt, 500 , orderBy);
                 return getProductList;
             } catch (Exception exception) {
                 logger.error("App - getProducts Provider Error", exception);
@@ -85,7 +86,7 @@ public class ProductProvider {
             }
         } catch (Exception e) { // 비회원이 접속했을 때
             try {
-                List<GetProductList> getProductList = productDao.getHomeProducts(500);
+                List<GetProductList> getProductList = productDao.getHomeProducts(500, orderBy);
                 return getProductList;
             } catch (Exception exception) {
                 logger.error("App - getProducts Provider Error", exception);
@@ -96,11 +97,17 @@ public class ProductProvider {
     }
 
     // 카테고리 별 상품 목록 뽑아내기
-    public List<GetProductList> getProductsByCat(int categoryIdx) throws BaseException {
+    public List<GetProductList> getProductsByCat(int categoryIdx, String sort) throws BaseException {
+        // validation : 좁재하는 카테고리인지?
+        if(checkCategoryExists(categoryIdx) == 0)
+            throw new BaseException(INVALID_CATEGORY_IDX);
+
+        String orderBy = convertSortIntoOrderBy(sort);
+
         try { // 회원이 접속했을 때
             int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출
             try {
-                List<GetProductList> getProductList = productDao.getProductsByCat_auth(categoryIdx, userIdxByJwt);
+                List<GetProductList> getProductList = productDao.getProductsByCat_auth(categoryIdx, userIdxByJwt, orderBy);
                 return getProductList;
             } catch (Exception exception) {
                 logger.error("App - getProducts Provider Error", exception);
@@ -108,7 +115,7 @@ public class ProductProvider {
             }
         } catch (Exception e) { // 비회원
             try {
-                List<GetProductList> getProductList = productDao.getProductsByCat(categoryIdx);
+                List<GetProductList> getProductList = productDao.getProductsByCat(categoryIdx, orderBy);
                 return getProductList;
             } catch (Exception exception) {
                 logger.error("App - getProducts Provider Error", exception);
@@ -120,11 +127,17 @@ public class ProductProvider {
 
 
     // 서브 카테고리 상품 목록 뽑아내기
-    public List<GetProductList> getProductsBySubCat(int subCategoryIdx) throws BaseException {
+    public List<GetProductList> getProductsBySubCat(int subCategoryIdx, String sort) throws BaseException {
+        // validation : 좁재하는 서브 카테고리인지?
+        if(checkSubCategoryExists(subCategoryIdx) == 0)
+            throw new BaseException(INVALID_SUBCATEGORY_IDX);
+
+        String orderBy = convertSortIntoOrderBy(sort);
+
         try { // 회원용
             int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출
             try {
-                List<GetProductList> getProductList = productDao.getProductsBySubCat_auth(subCategoryIdx, userIdxByJwt);
+                List<GetProductList> getProductList = productDao.getProductsBySubCat_auth(subCategoryIdx, userIdxByJwt, orderBy);
                 return getProductList;
             } catch (Exception exception) {
                 logger.error("App - getProducts Provider Error", exception);
@@ -132,7 +145,7 @@ public class ProductProvider {
             }
         } catch (Exception e) {
             try { // 비회원용
-                List<GetProductList> getProductList = productDao.getProductsBySubCat(subCategoryIdx);
+                List<GetProductList> getProductList = productDao.getProductsBySubCat(subCategoryIdx, orderBy);
                 return getProductList;
             } catch (Exception exception) {
                 logger.error("App - getProducts Provider Error", exception);
@@ -193,12 +206,30 @@ public class ProductProvider {
         }
     }
 
+    // sort -> orderBy 변환 메서드
+    public String convertSortIntoOrderBy(String sort) {
+        String orderBy = "";
+        switch (sort) {
+            case "LOW" :
+                orderBy = "price";
+                break;
+            case "HIGH" :
+                orderBy = "price desc";
+                break;
+            case "NEW" :
+                orderBy = "Product.createAt desc";
+        }
+
+        return orderBy;
+    }
+
     // 태그 검색 메서드
-    public List<GetProductList> getProductsByTag(String tag) throws BaseException {
+    public List<GetProductList> getProductsByTag(String tag, String sort) throws BaseException {
+        String orderBy = convertSortIntoOrderBy(sort);
         try{
             int userIdxByJwt = jwtService.getUserIdx();
             try {
-                List<GetProductList> getProductLists = productDao.searchByTag_auth(tag, userIdxByJwt);
+                List<GetProductList> getProductLists = productDao.searchByTag_auth(tag, userIdxByJwt, orderBy);
                 return getProductLists;
             } catch (Exception exception) {
                 logger.error("App - getProductsByTag Provider Error", exception);
@@ -206,7 +237,7 @@ public class ProductProvider {
             }
         } catch (Exception e) {
             try {
-                List<GetProductList> getProductLists = productDao.searchByTag(tag);
+                List<GetProductList> getProductLists = productDao.searchByTag(tag, orderBy);
                 return getProductLists;
             } catch (Exception exception) {
                 logger.error("App - getProductsByTag Provider Error", exception);
@@ -232,6 +263,16 @@ public class ProductProvider {
             return productDao.checkSubCategoryExists(subCategoryIdx);
         } catch (Exception exception){
             logger.error("App - checkSubCategoryExists Provider Error", exception);
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    // 존재하는 카테고리인지?
+    public int checkCategoryExists(int categoryIdx) throws BaseException{
+        try{
+            return productDao.checkCategoryExists(categoryIdx);
+        } catch (Exception exception){
+            logger.error("App - checkCategoryExists Provider Error", exception);
             throw new BaseException(DATABASE_ERROR);
         }
     }

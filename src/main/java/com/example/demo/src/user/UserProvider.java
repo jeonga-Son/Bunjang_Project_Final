@@ -2,6 +2,7 @@ package com.example.demo.src.user;
 
 
 import com.example.demo.config.BaseException;
+import com.example.demo.config.BaseResponse;
 import com.example.demo.src.user.model.*;
 import com.example.demo.utils.JwtService;
 import org.slf4j.Logger;
@@ -40,9 +41,30 @@ public class UserProvider {
     }
 
     public GetMyPageRes getMyPage(int userIdx) throws BaseException {
+
+        // 존재하는 유저(=상점)인지 체크
+        if (userDao.checkUserIdx(userIdx) == 0) {
+            throw new BaseException(USERS_NOT_EXISTS);
+        }
+
+        // 조회하는 유저(=상점)가 삭제되거나 비활성화 된 유저(=상점)인지 체크
+        if (userDao.checkUserStatus(userIdx) == 0) {
+            throw new BaseException(USERS_NOT_FOUND);
+        }
+
+        // 회원용 API
+        // jwt에서 userIdx 추출
+        int userIdxByJwt = jwtService.getUserIdx();
+
+        // 유저(=상점)의 userIdx != jwt에서 추출한 userIdx
+        if (userIdx != userIdxByJwt) {
+            throw new BaseException(INVALID_USER_JWT);
+        }
+
         try {
             GetMyPageRes getMyPageRes = userDao.getMyPage(userIdx);
             return getMyPageRes;
+
         } catch (Exception exception) {
             logger.error("App - getUser Provider Error", exception);
             throw new BaseException(DATABASE_ERROR);
@@ -51,9 +73,15 @@ public class UserProvider {
 
     public GetStoreRes getStore(int userIdx) throws BaseException {
 
-//        if (userDao.getUser(userIdx).equals(null)) {
-//            throw new BaseException(POST_USERS_EMPTY_USER);
-//        }
+        // 존재하는 유저(=상점)인지 체크
+        if (userDao.checkUserIdx(userIdx) == 0) {
+            throw new BaseException(USERS_NOT_EXISTS);
+        }
+
+        // 조회하는 유저(=상점)가 삭제되거나 비활성화 된 유저(=상점)인지 체크
+        if (userDao.checkUserStatus(userIdx) == 0) {
+            throw new BaseException(USERS_NOT_FOUND);
+        }
 
         try {
             GetStoreRes getStoreRes = userDao.getStore(userIdx);
@@ -65,9 +93,20 @@ public class UserProvider {
     }
 
     public List<GetStoreProductsRes> getStoreProducts(int userIdx) throws BaseException {
-//        if (userDao.getUser(userIdx).equals(null)) {
-//            throw new BaseException(POST_USERS_EMPTY_USER);
-//        }
+        // 존재하는 유저(=상점)인지 체크
+        if (userDao.checkUserIdx(userIdx) == 0) {
+            throw new BaseException(USERS_NOT_EXISTS);
+        }
+
+        // 조회하는 유저(=상점)가 삭제되거나 비활성화 된 유저(=상점)인지 체크
+        if (userDao.checkUserStatus(userIdx) == 0) {
+            throw new BaseException(USERS_NOT_FOUND);
+        }
+
+        // 해당 상점에 상품이 존재하는지 체크
+        if (userDao.checkUserProductStatus(userIdx) == 0) {
+            throw new BaseException(USERS_PRODUCTS_NOT_EXISTS);
+        }
 
         try {
             List<GetStoreProductsRes> getStoreProductsRes = userDao.getStoreProducts(userIdx);
@@ -79,9 +118,19 @@ public class UserProvider {
     }
 
     public PostLoginRes logIn(PostLoginReq postLoginReq) throws BaseException {
-        try {
             User user = userDao.checkUser(postLoginReq);
 
+            // 존재하는 유저(=상점)인지 체크
+            if (userDao.checkUserIdx(user.getUserIdx()) == 0) {
+                throw new BaseException(USERS_NOT_EXISTS);
+            }
+
+            // 조회하는 유저(=상점)가 삭제되거나 비활성화 된 유저(=상점)인지 체크
+            if (userDao.checkUserStatus(user.getUserIdx()) == 0) {
+                throw new BaseException(USERS_NOT_FOUND);
+            }
+
+        try {
             if(!user.getPhoneNo().isEmpty()){
                 int userIdx = user.getUserIdx();
                 String name = user.getName();
@@ -110,6 +159,12 @@ public class UserProvider {
     public int checkKakaoUserName(String kakaoUserName) {
         int idx = userDao.checkKakaoUserName(kakaoUserName);
         return idx;
+    }
+
+    // 유저 id가 존재하는 지 체크
+    public int checkUserIdx(int userIdx) {
+        int findUserIdx = userDao.checkUserIdx(userIdx);
+        return findUserIdx;
     }
 
 }

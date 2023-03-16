@@ -42,11 +42,11 @@ public class FollowController {
     @GetMapping("users/{userIdx}/followers") // (PATCH) 127.0.0.1:9000/users/:userIdx/followers
     public BaseResponse<List<GetFollowersRes>> getFollowerRes(@PathVariable("userIdx") int userIdx) {
         try{
-            // 회원용 API
-            int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출
-            if (userIdx != userIdxByJwt) { // 유저가 제시한 userIdx != jwt에서 추출한 userIdx
-                return new BaseResponse<>(INVALID_USER_JWT);
-            }
+//            // 회원용 API
+//            int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출
+//            if (userIdx != userIdxByJwt) { // 유저가 제시한 userIdx != jwt에서 추출한 userIdx
+//                return new BaseResponse<>(INVALID_USER_JWT);
+//            }
             List<GetFollowersRes> getFollowersRes = followProvider.getFollowers(userIdx);
             return new BaseResponse<>(getFollowersRes);
         } catch(BaseException exception){
@@ -63,11 +63,11 @@ public class FollowController {
     @GetMapping("users/{userIdx}/followings") // (GET) 127.0.0.1:9000/users/:userIdx/followings
     public BaseResponse<List<GetFollowingsRes>> getFollowingsRes(@PathVariable("userIdx") int userIdx) {
         try{
-            // 회원용 API
-            int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출
-            if (userIdx != userIdxByJwt) { // 유저가 제시한 userIdx != jwt에서 추출한 userIdx
-                return new BaseResponse<>(INVALID_USER_JWT);
-            }
+//            // 회원용 API
+//            int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출
+//            if (userIdx != userIdxByJwt) { // 유저가 제시한 userIdx != jwt에서 추출한 userIdx
+//                return new BaseResponse<>(INVALID_USER_JWT);
+//            }
             List<GetFollowingsRes> getFollowingsRes = followProvider.getFollowings(userIdx);
             return new BaseResponse<>(getFollowingsRes);
         } catch(BaseException exception){

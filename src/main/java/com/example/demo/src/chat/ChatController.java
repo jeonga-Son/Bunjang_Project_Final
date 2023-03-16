@@ -2,10 +2,7 @@ package com.example.demo.src.chat;
 
 import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponse;
-import com.example.demo.src.chat.model.GetChat;
-import com.example.demo.src.chat.model.GetChatRoomList;
-import com.example.demo.src.chat.model.PostChatReq;
-import com.example.demo.src.chat.model.PostChatRes;
+import com.example.demo.src.chat.model.*;
 import com.example.demo.utils.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +11,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static com.example.demo.config.BaseResponseStatus.*;
 
 @Controller
 @RequestMapping("/chats")
@@ -43,6 +42,7 @@ public class ChatController {
     @ResponseBody
     @GetMapping("/chatList")
     public BaseResponse<List<GetChatRoomList>> getChatList(@RequestParam("userIdx") int userIdx) {
+
         try{
             List<GetChatRoomList> getChatRoomList = chatProvider.getChatList(userIdx);
             return new BaseResponse<>(getChatRoomList);
@@ -57,12 +57,12 @@ public class ChatController {
      *
      * @param
      * @return
-//     */
+     */
     @ResponseBody
     @GetMapping("/{chatRoomIdx}")
-    public BaseResponse<List<GetChat>> getChat(@PathVariable("chatRoomIdx") int chatRoomIdx) {
+    public BaseResponse<List<ChatPartnerStore>> getChat(@PathVariable("chatRoomIdx") int chatRoomIdx, @RequestParam("userIdx") int userIdx) {
         try{
-            List<GetChat> getChat = chatProvider.getChat(chatRoomIdx);
+            List<ChatPartnerStore> getChat = chatProvider.getChat(chatRoomIdx, userIdx);
             return new BaseResponse<>(getChat);
 
         } catch(BaseException exception) {
@@ -77,6 +77,16 @@ public class ChatController {
     @ResponseBody
     @PostMapping("")
     public BaseResponse<PostChatRes> createChat(@RequestBody PostChatReq postChatReq, @RequestParam("userIdx") int userIdx) throws BaseException {
+        // 채팅방 번호 입력 안할 시
+        if(postChatReq.getChatRoomIdx() == 0) {
+            return new BaseResponse<>(POST_EMPTY_CHATROOMIDX);
+        }
+
+        // 채팅 내용 입력 안할 시
+        if(postChatReq.getMessage() == null) {
+            return new BaseResponse<>(POST_EMPTY_CHAT_MESSAGE);
+        }
+
         try{
             PostChatRes createChat = chatService.createChat(postChatReq, userIdx);
             return new BaseResponse<>(createChat);
@@ -92,10 +102,20 @@ public class ChatController {
      */
     @ResponseBody
     @PatchMapping("/{chatRoomIdx}/status")
-    public BaseResponse<String> deleteChat(@PathVariable("chatRoomIdx") int chatRoomIdx) {
-        chatService.patchChat(chatRoomIdx);
-        String result = "대화 내용이 모두 삭제됩니다.";
-        return new BaseResponse<>(result);
+    public BaseResponse<PatchChatRes> deleteChat(@PathVariable("chatRoomIdx") int chatRoomIdx, @RequestParam("userIdx") int userIdx) {
+        try{
+            chatService.patchChat(chatRoomIdx, userIdx);
+            PatchChatRes patchChatRes = new PatchChatRes();
+            patchChatRes.setChatRoomIdx(chatRoomIdx);
+
+            String result = "대화 내용이 모두 삭제됩니다.";
+
+            patchChatRes.setResultMessage(result);
+
+            return new BaseResponse<>(patchChatRes);
+        } catch (BaseException exception) {
+            return new BaseResponse<>(exception.getStatus());
+        }
 
     }
 

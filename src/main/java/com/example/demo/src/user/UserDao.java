@@ -79,10 +79,11 @@ public class UserDao {
                         rs.getInt("followerCount"),
                         rs.getInt("followingCount"),
                         this.jdbcTemplate.query("select Product.productIdx, Product.price, Product.productName, ProductImg.productImgUrl , 0 as isFavorite\n" +
-                                        "    from Product\n" +
-                                        "            left join ProductImg on Product.productIdx = ProductImg.productIdx\n" +
-                                        "            where Product.userIdx = ? and ProductImg.status='ACTIVE' and Product.status='ACTIVE' and Product.saleStatus = 'ONSALE'\n" +
-                                        "    Group by Product.productIdx",
+                                        "from Product\n" +
+                                        "        left join ProductImg on Product.productIdx = ProductImg.productIdx\n" +
+                                        "        where Product.userIdx = ? and ProductImg.status='ACTIVE'\n" +
+                                        "Group by Product.productIdx\n" +
+                                        "order by Product.createAt desc;",
                                 (rs2, rowNum2) -> new GetProductList(
                                         rs2.getInt("productIdx"),
                                         rs2.getString("productImgUrl"),
@@ -103,7 +104,7 @@ public class UserDao {
                 "                    left join Follow on Review.status = Follow.status\n" +
                 "                    left join Product on Review.productIdx = Product.productIdx\n" +
                 "                    left join ProductImg on Product.productIdx = ProductImg.productIdx\n" +
-                "                    where User.userIdx=? and ProductImg.status='ACTIVE'";
+                "                    where User.userIdx=? and ProductImg.status='ACTIVE' and User.status = 'ACTIVE'";
         Object[] getUserParams = new Object[]{userIdx, userIdx, userIdx};
 
         return this.jdbcTemplate.queryForObject(getUserQuery,
@@ -124,7 +125,7 @@ public class UserDao {
                 "                                        from Product\n" +
                 "                                            left join User on User.userIdx = Product.userIdx\n" +
                 "                                            left join ProductImg on Product.productIdx = ProductImg.productIdx\n" +
-                "                                            where User.userIdx = ? and Product.status='ACTIVE' and ProductImg.status='ACTIVE'\n" +
+                "                                            where User.userIdx = ? and Product.status='ACTIVE' and ProductImg.status='ACTIVE' and User.status = 'ACTIVE'\n" +
                 "                                            order by Product.createAt desc;";
         Object[] getUserParams = new Object[]{userIdx, userIdx};
 
@@ -153,23 +154,18 @@ public class UserDao {
         return this.jdbcTemplate.queryForObject(lastInserIdQuery,int.class);
     }
 
-    public int checkPhoneNo(PostUserReq postUserReq) {
-        String checkUserIdxQuery = "select exists(select name, phoneNo from User where phoneNo = ?)";
-        String checkPhoneNoParma = postUserReq.getPhoneNo();
-
-        return this.jdbcTemplate.queryForObject(checkUserIdxQuery,int.class, checkPhoneNoParma);
-    }
-
-    public int deleteUser(PatchDeleteUserReq patchDeleteUserReq) {
+    public PatchDeleteUserRes deleteUser(PatchDeleteUserReq patchDeleteUserReq, int userIdx) {
         String deleteUserQuery = "update User set status = 'DELETED', deleteReasonContent = ?, updateAt = ? where userIdx = ? ";
-        Object[] insertDeleteReasonParams = new Object[]{ patchDeleteUserReq.getDeleteReasonContent(),patchDeleteUserReq.getUpdateAt(), patchDeleteUserReq.getUserIdx()};
+        Object[] insertDeleteReasonParams = new Object[]{ patchDeleteUserReq.getDeleteReasonContent(),patchDeleteUserReq.getUpdateAt(), userIdx};
 
-        return this.jdbcTemplate.update(deleteUserQuery,insertDeleteReasonParams);
+        this.jdbcTemplate.update(deleteUserQuery,insertDeleteReasonParams);
+
+        return new PatchDeleteUserRes(userIdx, patchDeleteUserReq.getDeleteReasonContent());
     }
 
-    public int modifyShop(PatchShopInfoReq patchShopInfoReq) {
+    public int modifyShop(int userIdx, PatchShopInfoReq patchShopInfoReq) {
         String modifyShopQuery = "update User set profileImgUrl = ?, shopDescription = ?, name = ? where userIdx = ? ";
-        Object[] modifyShopParams = new Object[]{patchShopInfoReq.getProfileImgUrl(), patchShopInfoReq.getShopDescription(), patchShopInfoReq.getName() , patchShopInfoReq.getUserIdx()};
+        Object[] modifyShopParams = new Object[]{patchShopInfoReq.getProfileImgUrl(), patchShopInfoReq.getShopDescription(), patchShopInfoReq.getName() , userIdx};
         return this.jdbcTemplate.update(modifyShopQuery, modifyShopParams);
     }
 
@@ -177,8 +173,8 @@ public class UserDao {
         String getPwdQuery = "select userIdx, name, phoneNo, birthday, address, latitude, longitude,\n" +
                 "       createAt, updateAt, status, profileImgUrl, shopDescription, deleteReasonContent\n" +
                 "From User\n" +
-                "    where phoneNo = ?;";
-        String getPwdParams = postLoginReq.getPhoneNo();
+                "    where phoneNo = ? and name = ?;";
+        Object[] checkUserParams = new Object[]{postLoginReq.getPhoneNo(), postLoginReq.getName()};
 
         return this.jdbcTemplate.queryForObject(getPwdQuery,
                 (rs,rowNum)-> new User(
@@ -197,7 +193,7 @@ public class UserDao {
                         rs.getString("deleteReasonContent")
 
                 ),
-                getPwdParams
+                checkUserParams
         );
     }
 
@@ -209,4 +205,34 @@ public class UserDao {
                 checkPhoneNoParams);
     }
 
+    // userIdx가 존재하는 지?
+    public int checkUserIdx(int userIdx) {
+        String checkUserIdxQuery = "select exists(select userIdx from User where userIdx = ?)";
+        int checkUserIdxParam = userIdx;
+
+        return this.jdbcTemplate.queryForObject(checkUserIdxQuery,
+                int.class,
+                checkUserIdxParam);
+    }
+
+    public int checkUserStatus(int userIdx) {
+        String checkUserStatusQuery = "select exists(select * from User where userIdx = ? and status = 'ACTIVE')";
+        int checkUserStatusParam = userIdx;
+
+        return this.jdbcTemplate.queryForObject(checkUserStatusQuery,
+                int.class,
+                checkUserStatusParam);
+    }
+
+    public int checkUserProductStatus(int userIdx) {
+        String checkUserProductStatusQuery = "select count(Product.productIdx)\n" +
+                "from Product\n" +
+                "    left join User on User.userIdx = Product.userIdx\n" +
+                "    where User.userIdx = ? and Product.status = 'ACTIVE';";
+        int checkUserProductStatusParam = userIdx;
+
+        return this.jdbcTemplate.queryForObject(checkUserProductStatusQuery,
+                int.class,
+                checkUserProductStatusParam);
+    }
 }

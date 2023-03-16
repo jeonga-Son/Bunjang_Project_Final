@@ -8,18 +8,14 @@ import lombok.Setter;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostUserReq {
-    private String name;
+public class PatchDeleteUserRes {
+    private int userIdx;
 
-    private String phoneNo;
-
-    @JsonFormat(pattern = "yyMMdd", timezone = "Asia/Seoul")
-    private Date birthday;
+    private String deleteReasonContent;
 
 }

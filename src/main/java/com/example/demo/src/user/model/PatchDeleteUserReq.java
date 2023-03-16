@@ -13,8 +13,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PatchDeleteUserReq {
-    private int userIdx;
-
     private String deleteReasonContent;
 
     private Timestamp updateAt = Timestamp.valueOf(LocalDateTime.now());

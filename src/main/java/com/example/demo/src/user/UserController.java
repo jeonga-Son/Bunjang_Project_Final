@@ -1,5 +1,6 @@
 package com.example.demo.src.user;
 
+import com.example.demo.src.product.model.PatchProductRes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.example.demo.config.BaseException;
@@ -9,7 +10,11 @@ import com.example.demo.utils.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import static com.example.demo.config.BaseResponseStatus.*;
 
@@ -43,15 +48,14 @@ public class UserController {
             GetMyPageRes getMyPageRes = userProvider.getMyPage(userIdx);
             return new BaseResponse<>(getMyPageRes);
         } catch (BaseException exception) {
-            return new BaseResponse<>((exception.getStatus()));
+            return new BaseResponse<>(exception.getStatus());
         }
-
     }
 
     /**
      * 상점 조회 API
      * [GET] /users/store/:userIdx
-     * @return BaseResponse<GetMyShopRes>
+     * @return BaseResponse<GetStoreRes>
      */
     @ResponseBody
     @GetMapping("/store/{userIdx}") // (GET) 127.0.0.1:9000/users/store/:userIdx
@@ -67,7 +71,7 @@ public class UserController {
     /**
      * 상점 상품 조회 API
      * [GET] /users/store/:userIdx/products
-     * @return BaseResponse<GetMyShopRes>
+     * @return BaseResponse<List<GetStoreProductsRes>>
      */
     @ResponseBody
     @GetMapping("/store/{userIdx}/products") // (GET) 127.0.0.1:9000/users/store/:userIdx/products
@@ -88,16 +92,37 @@ public class UserController {
     @ResponseBody
     @PostMapping("")
     public BaseResponse<PostUserRes> createUser(@RequestBody PostUserReq postUserReq) {
+        // 회원가입 시 이름을 입력하지 않았을 때
         if (postUserReq.getName() == null) {
             return new BaseResponse<>(POST_USERS_EMPTY_NAME);
         }
 
+        // 회원가입 시 휴대폰 번호를 입력하지 않았을 때
         if (postUserReq.getPhoneNo() == null) {
             return new BaseResponse<>(POST_USERS_EMPTY_PHONENO);
         }
 
+        // 회원가입 시 생년월일을 입력하지 않았을 때
         if (postUserReq.getBirthday() == null) {
             return new BaseResponse<>(POST_USERS_EMPTY_BIRTHDAY);
+        }
+
+        // user명이 상점명이기 때문에 문자만 입력 가능하게 하면 안될 듯.
+//        String regExp = "^[가-힣]*$";
+//         //회원가입 시 이름 입력란에 문자만 입력 가능
+//        if (!postUserReq.getName().matches(regExp)) {
+//            return new BaseResponse<>(POST_USERS_INVALID_NAME);
+//        }
+
+        String regex = "[0-9]+";
+        // 회원가입 시 휴대폰 번호 입력란에 숫자만 입력 가능
+        if (!(postUserReq.getPhoneNo().matches(regex))) {
+            return new BaseResponse<>(POST_USERS_INVALID_PHONENO);
+        }
+
+        // 회원가입 시 휴대폰 번호 최대 11자리까지만 입력 가능
+        if(postUserReq.getPhoneNo().length() > 11) {
+            return new BaseResponse<>(POST_USERS_INVALID_PHONENO_LENGTH);
         }
 
         try {
@@ -116,12 +141,32 @@ public class UserController {
     @ResponseBody
     @PostMapping("/logIn")
     public BaseResponse<PostLoginRes> logIn(@RequestBody PostLoginReq postLoginReq){
-        if(postLoginReq.getName() == null){
+        // 로그인 시 이름을 입력하지 않았을 때
+        if (postLoginReq.getName() == null) {
             return new BaseResponse<>(POST_USERS_EMPTY_NAME);
         }
 
-        if(postLoginReq.getPhoneNo() == null){
+        // 로그인 시 휴대폰 번호를 입력하지 않았을 때
+        if (postLoginReq.getPhoneNo() == null) {
             return new BaseResponse<>(POST_USERS_EMPTY_PHONENO);
+        }
+
+        // user명이 상점명이기 때문에 문자만 입력 가능하게 하면 안될 듯.
+//        String regExp = "^[가-힣]*$";
+//        //로그인 시 이름 입력란에 문자만 입력 가능
+//        if (!postLoginReq.getName().matches(regExp)) {
+//            return new BaseResponse<>(POST_USERS_INVALID_NAME);
+//        }
+
+        String regex = "[0-9]+";
+        // 로그인 시 휴대폰 번호 입력란에 숫자만 입력 가능
+        if (!(postLoginReq.getPhoneNo().matches(regex))) {
+            return new BaseResponse<>(POST_USERS_INVALID_PHONENO);
+        }
+
+        // 로그인 시 휴대폰 번호 최대 11자리까지만 입력 가능
+        if(postLoginReq.getPhoneNo().length() > 11) {
+            return new BaseResponse<>(POST_USERS_INVALID_PHONENO_LENGTH);
         }
 
         try{
@@ -135,61 +180,50 @@ public class UserController {
     /**
      * 상점 소개 편집 API
      * [PATCH] /users/:userIdx
-     * @return BaseResponse<String>
+     * @return BaseResponse<PatchShopInfoReq>
      */
+
     @ResponseBody
     @PatchMapping("/{userIdx}")
-    public BaseResponse<String> modifyShopInfo(@PathVariable("userIdx") int userIdx, @RequestBody User user) {
+    public BaseResponse<PatchShopInfoRes> modifyShopInfo(@PathVariable("userIdx") int userIdx, @RequestBody PatchShopInfoReq patchShopInfoReq) {
         try {
-            //jwt에서 idx 추출.
-            int userIdxByJwt = jwtService.getUserIdx();
-            //userIdx와 접근한 유저가 같은지 확인
-            if (userIdx != userIdxByJwt) {
-                System.out.println("userIdx : " + userIdx + " // userIdxByJwt : " + userIdxByJwt);
-                return new BaseResponse<>(INVALID_USER_JWT);
+            // 상점 이름 길이가 10자 초과되는지 체크
+            if(patchShopInfoReq.getName().length() > 10) {
+                throw new BaseException(PATCH_INVALID_NAME_LENGTH);
             }
 
-            PatchShopInfoReq patchShopInfoReq = new PatchShopInfoReq(userIdx, user.getProfileImgUrl(), user.getShopDescription(), user.getName());
-            userService.modifyShop(patchShopInfoReq);
+            // 상점 소개 길이가 1000자 초과되는지 체크
+            if(patchShopInfoReq.getShopDescription().length() > 1000) {
+                throw new BaseException(PATCH_INVALID_SHOPDESCRIPTION_LENGTH);
+            }
 
-            String result = "상점 소개가 수정되었습니다.";
-            return new BaseResponse<>(result);
+            // 상점 이름에 한글, 영어, 숫자 이외의 문자가 있는지 체크
+            if(Pattern.matches("^[0-9a-zA-Zㄱ-ㅎ가-힣]*$", patchShopInfoReq.getName()) == false) {
+                throw new BaseException(PATCH_INVALID_NAME_PATTERN);
+            }
+
+            PatchShopInfoRes patchShopInfoRes = userService.modifyShop(userIdx, patchShopInfoReq);
+
+            return new BaseResponse<>(patchShopInfoRes);
 
         } catch (BaseException exception){
             return new BaseResponse<>(exception.getStatus());
         }
     }
 
+
     /**
      * 회원 탈퇴 API
      * [PATCH] /users/:userIdx/status
-     * @return BaseResponse<String>
+     * @return BaseResponse<PatchDeleteUserRes>
      */
     @ResponseBody
     @PatchMapping("/{userIdx}/status")
-    public BaseResponse<String> deleteUser(@PathVariable("userIdx") int userIdx, @RequestBody User user) {
+    public BaseResponse<PatchDeleteUserRes> deleteUser(@PathVariable("userIdx") int userIdx, @RequestBody PatchDeleteUserReq patchDeleteUserReq) {
         try {
+            PatchDeleteUserRes patchDeleteUserRes = userService.deleteUser(patchDeleteUserReq, userIdx);
 
-            //jwt에서 idx 추출.
-            int userIdxByJwt = jwtService.getUserIdx();
-            //userIdx와 접근한 유저가 같은지 확인
-            if (userIdx != userIdxByJwt) {
-                return new BaseResponse<>(INVALID_USER_JWT);
-            }
-
-            GetUserRes getUser = userProvider.getUser(userIdx);
-            //접근한 유저가 같고, 유저의 상태가 'Deleted'가 아닐 경우 회원 탈퇴 상태로 변경
-            String status = getUser.getStatus();
-            if (!status.equals("DELETED")) {
-            PatchDeleteUserReq patchDeleteUserReq = new PatchDeleteUserReq(userIdx, user.getDeleteReasonContent(), user.getUpdateAt());
-            userService.deleteUser(patchDeleteUserReq);
-
-            String result = "회원탈퇴가 완료되었습니다.";
-            return new BaseResponse<>(result);
-            } else {
-                return new BaseResponse<>(INVALID_USER);
-            }
-
+            return new BaseResponse<>(patchDeleteUserRes);
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
         }

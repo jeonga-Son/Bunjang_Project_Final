@@ -5,12 +5,18 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PatchChatRes {
-    private int chatRoomIdx;
+public class ChatPartnerStore {
+    private String name;
 
-    private String resultMessage;
+    private Float avgStar;
+
+    private int saleCount;
+
+    private List<GetChat> getChatList;
 }

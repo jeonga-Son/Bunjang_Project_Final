@@ -1,4 +1,4 @@
-package com.example.demo.src.user.model;
+package com.example.demo.src.chat.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,13 +9,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PatchShopInfoRes {
+public class GetChatUserRes {
     private int userIdx;
 
-    private String profileImgUrl;
-
-    private String shopDescription;
-
-    private String name;
-
+    private int chatRoomIdx;
 }

@@ -4,6 +4,7 @@ import com.example.demo.config.BaseException;
 import com.example.demo.config.BaseResponse;
 import com.example.demo.src.point.model.GetPointListRes;
 import com.example.demo.src.point.model.GetPointRes;
+import com.example.demo.utils.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,8 +19,12 @@ public class PointController {
     @Autowired
     private final PointProvider pointProvider;
 
-    public PointController(PointProvider pointProvider) {
+    @Autowired
+    private final JwtService jwtService;
+
+    public PointController(PointProvider pointProvider, JwtService jwtService) {
         this.pointProvider = pointProvider;
+        this.jwtService = jwtService;
     }
 
     /**
