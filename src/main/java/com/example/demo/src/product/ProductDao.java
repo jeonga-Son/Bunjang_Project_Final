@@ -163,14 +163,14 @@ public class ProductDao {
     public List<GetProductList> getHomeProducts_auth(int userIdx, int limit, String orderBy) {
         String getProductsQuery = "select prod_list.productIdx, productImgUrl, price, productName, if(isnull(fav_list.productIdx), 0, 1) as isFavorite\n" +
                 "from\n" +
-                "    (select Product.productIdx,productImgUrl, price, productName" +
+                "    (select Product.productIdx,productImgUrl, price, productName\n" +
                 "    from User\n" +
                 "        left join Product on User.userIdx = Product.userIdx\n" +
                 "        left join ProductImg on Product.productIdx=ProductImg.productIdx\n" +
                 "        left join Favorite on Product.productIdx=Favorite.productIdx\n" +
                 "where Product.status = 'ACTIVE' and Product.saleStatus = 'ONSALE'\n" +
                 "group by Product.productIdx\n" +
-                "order by " + orderBy +" ) prod_list\n" +
+                "order by " + orderBy +"\n" +
                 "limit ?\n" +
                 ") prod_list\n" +
                 "    left join\n" +
@@ -242,7 +242,7 @@ public class ProductDao {
                 "    left join ProductImg on Product.productIdx=ProductImg.productIdx\n" +
                 "where Product.status='ACTIVE' and Product.saleStatus !='SOLD' and categoryIdx=? \n" +
                 "group by Product.productIdx\n" +
-                "order by" + orderBy ;
+                "order by " + orderBy ;
         Object[] getProductsByCatParams = new Object[] {categoryIdx};
 
         return this.jdbcTemplate.query(getProductsQuery,
