@@ -1581,7 +1581,7 @@ NEW:새상품</Comment>
 ORDERED:예약중
 SOLD:판매완료</Comment>
       <DasType>varchar(10)|0s</DasType>
-      <DefaultExpression>&apos;ACTIVE&apos;</DefaultExpression>
+      <DefaultExpression>&apos;ONSALE&apos;</DefaultExpression>
       <Position>16</Position>
     </column>
     <index id="398" parent="306" name="PRIMARY">

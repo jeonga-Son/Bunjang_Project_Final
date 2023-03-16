@@ -359,6 +359,7 @@ public class ProductController {
             // validation
             if(!checkSortValid(sort))
                 return new BaseResponse<>(INVALID_SORT_VALUE);
+
             try {
                 List<GetProductList> getProductList = productProvider.getProductsBySubCat(subCategoryIdx, sort);
                 return new BaseResponse<>(getProductList);
