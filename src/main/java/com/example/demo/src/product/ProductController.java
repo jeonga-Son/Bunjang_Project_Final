@@ -126,7 +126,6 @@ public class ProductController {
                 BufferedImage bufferedImage = ImageIO.read(img);
                 width = bufferedImage.getWidth();
                 height = bufferedImage.getHeight();
-                System.out.println(String.format("width = %d height = %d", width, height));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -210,7 +209,6 @@ public class ProductController {
                 BufferedImage bufferedImage = ImageIO.read(img);
                 width = bufferedImage.getWidth();
                 height = bufferedImage.getHeight();
-                System.out.println(String.format("width = %d height = %d", width, height));
             } catch (IOException e) {
                 e.printStackTrace();
             }
