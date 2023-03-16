@@ -13,8 +13,6 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GetChat {
-//    private GetChatStore getChatStore;
-
     private int userIdx;
 
     private String message;

@@ -22,7 +22,7 @@ public class ChatDao {
     }
 
     public List<GetChatRoomList> getChatList(int userIdx) {
-        // 프로필 이미지 url, 이름, 상점 소개
+        // 프로필 이미지 url, 유저 이름(상점 이름), 마지막 메세지, 마지막 메세지 날짜
         String searchChatRoomsByUserIdxQuery = "(SELECT *\n" +
                 "FROM (select Chat.chatRoomIdx, userIdx1, userIdx2, profileImgUrl, name, Chat.updateAt, message as lastMessage\n" +
                 "      from ChatRoom\n" +
@@ -58,6 +58,7 @@ public class ChatDao {
     }
 
     public List<ChatPartnerStore> getChat(int chatRoomIdx) {
+        // 채팅 상대방 이름(상점 이름), 후기 평점, 거래 내역
         String getChatQuery = "select User.name, AVG(Review.star) as avgStar,\n" +
                 "        (select count(Product.saleStatus)\n" +
                 "            from Product\n" +
@@ -72,6 +73,7 @@ public class ChatDao {
                 "    where ChatRoom.chatRoomIdx = ? and Chat.userIdx = User.userIdx and User.status = 'ACTIVE' and ChatRoom.status = 'ACTIVE';";
         Object[] getChatParams = new Object[]{chatRoomIdx, chatRoomIdx};
 
+        // 채팅 메세지, 채팅 파트너(상대방), 채팅 유저(나), 채팅 일시
         return this.jdbcTemplate.query(getChatQuery,
                 (rs, rowNum) -> new ChatPartnerStore(
                         rs.getString("name"),
@@ -100,47 +102,6 @@ public class ChatDao {
                 , getChatParams);
     }
 
-//    public List<GetChat> getChat(int chatRoomIdx) {
-//        String getChatQuery = "(select User.name, AVG(Review.star) as avgStar,\n" +
-//                "         (select count(Product.saleStatus)\n" +
-//                "            from Product\n" +
-//                "                left join User on User.userIdx = Product.userIdx\n" +
-//                "                left join ChatRoom on ChatRoom.userIdx1 = User.userIdx\n" +
-//                "                 where Product.saleStatus ='SOLD' and ChatRoom.chatRoomIdx = ?) as saleCount,\n" +
-//                "        ChatRoom.userIdx1 as userIdx,  Chat.message, Chat.updateAt\n" +
-//                "from Chat\n" +
-//                "    left join ChatRoom on Chat.chatRoomIdx = ChatRoom.chatRoomIdx\n" +
-//                "    left join User on User.userIdx = ChatRoom.userIdx1\n" +
-//                "    left join Review on User.userIdx = Review.userIdx\n" +
-//                "    left join Product on User.userIdx = Product.userIdx\n" +
-//                "    where ChatRoom.chatRoomIdx = ? and Chat.userIdx = User.userIdx and User.status = 'ACTIVE' and ChatRoom.status = 'ACTIVE')\n" +
-//                "union\n" +
-//                "(select User.name, AVG(Review.star),\n" +
-//                "        (select count(Product.saleStatus)\n" +
-//                "            from Product\n" +
-//                "                left join User on User.userIdx = Product.userIdx\n" +
-//                "                left join ChatRoom on ChatRoom.userIdx2 = User.userIdx\n" +
-//                "                 where Product.saleStatus ='SOLD' and ChatRoom.chatRoomIdx = ?) as saleCount,\n" +
-//                "        ChatRoom.userIdx2 as userIdx, Chat.message, Chat.updateAt\n" +
-//                "from Chat\n" +
-//                "    left join ChatRoom on Chat.chatRoomIdx = ChatRoom.chatRoomIdx\n" +
-//                "    left join User on User.userIdx = ChatRoom.userIdx2\n" +
-//                "    left join Review on User.userIdx = Review.userIdx\n" +
-//                "    left join Product on User.userIdx = Product.userIdx\n" +
-//                "    where ChatRoom.chatRoomIdx = ? and Chat.userIdx = User.userIdx and User.status = 'ACTIVE' and ChatRoom.status = 'ACTIVE');";
-//        Object[] getChatParams = new Object[]{chatRoomIdx, chatRoomIdx, chatRoomIdx, chatRoomIdx};
-//
-//        return this.jdbcTemplate.query(getChatQuery,
-//                (rs, rowNum) -> new GetChat(
-//                        rs.getString("name"),
-//                        rs.getFloat("avgStar"),
-//                        rs.getInt("saleCount"),
-//                        rs.getInt("userIdx"),
-//                        rs.getString("message"),
-//                        rs.getTimestamp("updateAt")
-//                ), getChatParams);
-//    }
-
     // post, insert into
     public int createChat(PostChatReq postChatReq, int userIdx) {
         String getChatQuery = "insert into Chat (userIdx, chatRoomIdx, message, updateAt) values(?, ?, ?, ?)";
@@ -167,6 +128,21 @@ public class ChatDao {
 
         String getChatMemberPatchQuery = "update ChatMember set status = 'DELETED' where chatRoomIdx = ?;";
         this.jdbcTemplate.update(getChatMemberPatchQuery, chatRoomIdx);
+    }
+
+    public int checkChatStatus(int userIdx) {
+        String checkChatStatusQuery = "select count(*)\n" +
+                "from User\n" +
+                "    left join Chat on User.userIdx = Chat.userIdx\n" +
+                "    left join ChatRoom on Chat.chatRoomIdx = ChatRoom.chatRoomIdx\n" +
+                "    left join ChatMember on ChatMember.chatRoomIdx = ChatRoom.chatRoomIdx\n" +
+                "    where User.userIdx = ? and User.status = 'ACTIVE' and ChatRoom.status = 'ACTIVE'\n" +
+                "    and Chat.status = 'ACTIVE';";
+        int checkChatStatusParam = userIdx;
+
+        return this.jdbcTemplate.queryForObject(checkChatStatusQuery,
+                int.class,
+                checkChatStatusParam);
     }
 }
 

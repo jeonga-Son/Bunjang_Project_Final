@@ -40,6 +40,7 @@ public class ChatController {
     @ResponseBody
     @GetMapping("/chatList")
     public BaseResponse<List<GetChatRoomList>> getChatList(@RequestParam("userIdx") int userIdx) {
+
         try{
             List<GetChatRoomList> getChatRoomList = chatProvider.getChatList(userIdx);
             return new BaseResponse<>(getChatRoomList);
@@ -54,7 +55,7 @@ public class ChatController {
      *
      * @param
      * @return
-//     */
+     */
     @ResponseBody
     @GetMapping("/{chatRoomIdx}")
     public BaseResponse<List<ChatPartnerStore>> getChat(@PathVariable("chatRoomIdx") int chatRoomIdx) {

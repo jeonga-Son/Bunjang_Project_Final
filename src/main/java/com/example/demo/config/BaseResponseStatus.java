@@ -81,6 +81,8 @@ public enum BaseResponseStatus {
     FAVORITE_NOT_EXISTS(false, 2070, "존재하지 않는 찜 입니다."),
     DUPLICATED_FAVORITE(false, 2071, "이미 찜한 상품입니다."),
 
+    // Chat
+    CHATS_NOT_EXISTS(false, 2080, "채팅 내역이 존재하지 않습니다."),
 
 
 
