@@ -1,8 +1,8 @@
 package com.example.demo.src.chat;
 
 import com.example.demo.config.BaseException;
-import com.example.demo.src.chat.model.GetChat;
 import com.example.demo.src.chat.model.GetChatRoomList;
+import com.example.demo.src.chat.model.ChatPartnerStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,9 +34,9 @@ public class ChatProvider {
         }
     }
 
-    public List<GetChat> getChat(int chatRoomIdx) throws BaseException {
+    public List<ChatPartnerStore> getChat(int chatRoomIdx) throws BaseException {
         try {
-            List<GetChat> getChat = chatDao.getChat(chatRoomIdx);
+            List<ChatPartnerStore> getChat = chatDao.getChat(chatRoomIdx);
             return getChat;
         } catch (Exception exception) {
             logger.error("App - getProductLists Provider Error", exception);

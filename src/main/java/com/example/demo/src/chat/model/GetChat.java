@@ -13,11 +13,7 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GetChat {
-    private String name;
-
-    private Float avgStar;
-
-    private int saleCount;
+//    private GetChatStore getChatStore;
 
     private int userIdx;
 
