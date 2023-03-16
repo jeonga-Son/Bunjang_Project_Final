@@ -104,7 +104,7 @@ public class UserDao {
                 "                    left join Follow on Review.status = Follow.status\n" +
                 "                    left join Product on Review.productIdx = Product.productIdx\n" +
                 "                    left join ProductImg on Product.productIdx = ProductImg.productIdx\n" +
-                "                    where User.userIdx=? and ProductImg.status='ACTIVE'";
+                "                    where User.userIdx=? and ProductImg.status='ACTIVE' and User.status = 'ACTIVE'";
         Object[] getUserParams = new Object[]{userIdx, userIdx, userIdx};
 
         return this.jdbcTemplate.queryForObject(getUserQuery,
@@ -125,7 +125,7 @@ public class UserDao {
                 "                                        from Product\n" +
                 "                                            left join User on User.userIdx = Product.userIdx\n" +
                 "                                            left join ProductImg on Product.productIdx = ProductImg.productIdx\n" +
-                "                                            where User.userIdx = ? and Product.status='ACTIVE' and ProductImg.status='ACTIVE'\n" +
+                "                                            where User.userIdx = ? and Product.status='ACTIVE' and ProductImg.status='ACTIVE' and User.status = 'ACTIVE'\n" +
                 "                                            order by Product.createAt desc;";
         Object[] getUserParams = new Object[]{userIdx, userIdx};
 
@@ -154,18 +154,13 @@ public class UserDao {
         return this.jdbcTemplate.queryForObject(lastInserIdQuery,int.class);
     }
 
-    public int checkPhoneNo(PostUserReq postUserReq) {
-        String checkUserIdxQuery = "select exists(select name, phoneNo from User where phoneNo = ?)";
-        String checkPhoneNoParma = postUserReq.getPhoneNo();
-
-        return this.jdbcTemplate.queryForObject(checkUserIdxQuery,int.class, checkPhoneNoParma);
-    }
-
-    public int deleteUser(PatchDeleteUserReq patchDeleteUserReq, int userIdx) {
+    public PatchDeleteUserRes deleteUser(PatchDeleteUserReq patchDeleteUserReq, int userIdx) {
         String deleteUserQuery = "update User set status = 'DELETED', deleteReasonContent = ?, updateAt = ? where userIdx = ? ";
         Object[] insertDeleteReasonParams = new Object[]{ patchDeleteUserReq.getDeleteReasonContent(),patchDeleteUserReq.getUpdateAt(), userIdx};
 
-        return this.jdbcTemplate.update(deleteUserQuery,insertDeleteReasonParams);
+        this.jdbcTemplate.update(deleteUserQuery,insertDeleteReasonParams);
+
+        return new PatchDeleteUserRes(userIdx, patchDeleteUserReq.getDeleteReasonContent());
     }
 
     public int modifyShop(int userIdx, PatchShopInfoReq patchShopInfoReq) {
@@ -210,7 +205,7 @@ public class UserDao {
                 checkPhoneNoParams);
     }
 
-    // userIdx가
+    // userIdx가 존재하는 지?
     public int checkUserIdx(int userIdx) {
         String checkUserIdxQuery = "select exists(select userIdx from User where userIdx = ?)";
         int checkUserIdxParam = userIdx;

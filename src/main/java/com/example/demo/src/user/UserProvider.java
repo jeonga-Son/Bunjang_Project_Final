@@ -47,6 +47,11 @@ public class UserProvider {
             throw new BaseException(USERS_NOT_EXISTS);
         }
 
+        // 조회하는 유저(=상점)가 삭제되거나 비활성화 된 유저(=상점)인지 체크
+        if (userDao.checkUserStatus(userIdx) == 0) {
+            throw new BaseException(USERS_NOT_FOUND);
+        }
+
         // 회원용 API
         // jwt에서 userIdx 추출
         int userIdxByJwt = jwtService.getUserIdx();
@@ -113,9 +118,19 @@ public class UserProvider {
     }
 
     public PostLoginRes logIn(PostLoginReq postLoginReq) throws BaseException {
-        try {
             User user = userDao.checkUser(postLoginReq);
 
+            // 존재하는 유저(=상점)인지 체크
+            if (userDao.checkUserIdx(user.getUserIdx()) == 0) {
+                throw new BaseException(USERS_NOT_EXISTS);
+            }
+
+            // 조회하는 유저(=상점)가 삭제되거나 비활성화 된 유저(=상점)인지 체크
+            if (userDao.checkUserStatus(user.getUserIdx()) == 0) {
+                throw new BaseException(USERS_NOT_FOUND);
+            }
+
+        try {
             if(!user.getPhoneNo().isEmpty()){
                 int userIdx = user.getUserIdx();
                 String name = user.getName();

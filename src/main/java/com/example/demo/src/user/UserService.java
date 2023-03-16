@@ -71,11 +71,34 @@ public class UserService {
     }
 
 
-    public void deleteUser(PatchDeleteUserReq patchDeleteUserReq, int userIdx) throws BaseException {
-        try {
-            int result = userDao.deleteUser(patchDeleteUserReq, userIdx);
+    public PatchDeleteUserRes deleteUser(PatchDeleteUserReq patchDeleteUserReq, int userIdx) throws BaseException {
+        // 존재하는 유저(=상점)인지 체크
+        if (userDao.checkUserIdx(userIdx) == 0) {
+            throw new BaseException(USERS_NOT_EXISTS);
+        }
 
-            if(result == 0) {
+        // 조회하는 유저(=상점)가 삭제되거나 비활성화 된 유저(=상점)인지 체크
+        if (userDao.checkUserStatus(userIdx) == 0) {
+            throw new BaseException(USERS_NOT_FOUND);
+        }
+
+        //jwt에서 idx 추출.
+        int userIdxByJwt = jwtService.getUserIdx();
+        //userIdx와 접근한 유저가 같은지 확인
+        if (userIdx != userIdxByJwt) {
+            throw new BaseException(INVALID_USER_JWT);
+        }
+
+        GetUserRes getUser = userProvider.getUser(userIdx);
+        String status = getUser.getStatus();
+
+        try {
+            //접근한 유저가 같고, 유저의 상태가 'Deleted'가 아닐 경우 회원 탈퇴 상태로 변경
+            if (!status.equals("DELETED")) {
+                PatchDeleteUserRes patchDeleteUserRes = userDao.deleteUser(patchDeleteUserReq, userIdx);
+
+                return patchDeleteUserRes;
+            } else {
                 throw new BaseException(DELETE_FAIL_USER);
             }
         } catch (Exception exception) {
@@ -88,6 +111,11 @@ public class UserService {
         // 존재하는 유저(=상점)인지 체크
         if (userDao.checkUserIdx(userIdx) == 0) {
             throw new BaseException(USERS_NOT_EXISTS);
+        }
+
+        // 조회하는 유저(=상점)가 삭제되거나 비활성화 된 유저(=상점)인지 체크
+        if (userDao.checkUserStatus(userIdx) == 0) {
+            throw new BaseException(USERS_NOT_FOUND);
         }
 
         //jwt에서 idx 추출.

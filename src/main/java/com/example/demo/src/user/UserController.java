@@ -211,6 +211,7 @@ public class UserController {
         }
     }
 
+
     /**
      * 회원 탈퇴 API
      * [PATCH] /users/:userIdx/status
@@ -218,37 +219,11 @@ public class UserController {
      */
     @ResponseBody
     @PatchMapping("/{userIdx}/status")
-    public BaseResponse<PatchDeleteUserRes> deleteUser(@PathVariable("userIdx") int userIdx, @RequestBody User user) {
+    public BaseResponse<PatchDeleteUserRes> deleteUser(@PathVariable("userIdx") int userIdx, @RequestBody PatchDeleteUserReq patchDeleteUserReq) {
         try {
-            // 존재하는 유저(=상점)인지 체크
-            if (userProvider.checkUserIdx(userIdx) == 0) {
-                throw new BaseException(USERS_NOT_EXISTS);
-            }
-
-            //jwt에서 idx 추출.
-            int userIdxByJwt = jwtService.getUserIdx();
-            //userIdx와 접근한 유저가 같은지 확인
-            if (userIdx != userIdxByJwt) {
-                return new BaseResponse<>(INVALID_USER_JWT);
-            }
-
-            GetUserRes getUser = userProvider.getUser(userIdx);
-            //접근한 유저가 같고, 유저의 상태가 'Deleted'가 아닐 경우 회원 탈퇴 상태로 변경
-            String status = getUser.getStatus();
-
-            if (!status.equals("DELETED")) {
-            PatchDeleteUserReq patchDeleteUserReq = new PatchDeleteUserReq(userIdx, user.getDeleteReasonContent(), user.getUpdateAt());
-            userService.deleteUser(patchDeleteUserReq, userIdx);
-
-            PatchDeleteUserRes patchDeleteUserRes = new PatchDeleteUserRes();
-            patchDeleteUserRes.setUserIdx(patchDeleteUserReq.getUserIdx());
-            patchDeleteUserRes.setDeleteReasonContent(patchDeleteUserReq.getDeleteReasonContent());
+            PatchDeleteUserRes patchDeleteUserRes = userService.deleteUser(patchDeleteUserReq, userIdx);
 
             return new BaseResponse<>(patchDeleteUserRes);
-            } else {
-                return new BaseResponse<>(INVALID_USER);
-            }
-
         } catch (BaseException exception) {
             return new BaseResponse<>(exception.getStatus());
         }
