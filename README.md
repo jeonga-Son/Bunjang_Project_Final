@@ -116,13 +116,13 @@
 - 회원용 api인데 헤더에 jwt 명세가 안되어 있음. 명세 하기. ⭕️
 - 판매상품에서 최신순 조회, 판매중, 예약중, 판매완료 필터링 다 적용하기.
 - 상점 상품 조회 보면 필터링이 되어있는데 최신순⇒ 사진에는 안나와있음. 브랜드, 카테고리, 동네 이것들도 필터링 적용하기
-- validation 처리 다하기
+- validation 처리 다하기 ⭕️
 - 7번 api 보면 userIdx ⇒ int형으로 변경 ⭕️
-- 회원탈퇴 바디값에 들어가는거 명세 안함, 그리고 response에 이거 추가 ⇒ userIdx, deleteReasonContent
+- 회원탈퇴 바디값에 들어가는거 명세 안함, 그리고 response에 이거 추가 ⇒ userIdx, deleteReasonContent ⭕️
 - 21번 api에서 userIdx1, 2 ⇒ description 자세하게 적기 ⭕️
 - updateAt ⇒ timestamp이지만 string임, updateDate → updateAt으로 변경하기 ⭕️
-- 22번 api 채팅내역 조회 result→ object 아니고 리스트임. 읽음, 안읽음 표시 추가하기.
-- 22번 api 채팅내역 조회 result→ object 아니고 리스트임. 읽음, 안읽음 표시 추가하기. 후기 개수 안나와있음. 표시하기.
+- 22번 api 채팅내역 조회 result→ object 아니고 리스트임. 읽음, 안읽음 표시 추가하기. ⭕️
+- 22번 api 채팅내역 조회 result→ object 아니고 리스트임. 읽음, 안읽음 표시 추가하기. ⭕️
 - 23번에서 method ⇒ post, 바디값 꼭 명세하기, update ⇒ String ⭕️
 - 24번 PathVariable로 chatIDx 옮기기. userIdx1, userIdx2 확실히 명세, result ⇒ string으로 바꾸기 ⭕️
 - 더미데이터를 실제 데이터처럼 작성해야됨. ⭕️
@@ -139,6 +139,18 @@
 - 상점 조회 시 논리적 유효성 검사 추가
 - 상점 상품 조회 시 논리적 유효성 검사 구현
 - 회원가입 시 형식적 유효성 검사 추가
+
+## 2023-03-16 진행상황
+- [feat] 회원가입 시 형식적 유효성 검사 추가
+- [feat] 상점 소개 편집 시 형식적, 논리적 유효성 검사 처리
+- [fix] 마이페이지 상품 조회 시 최신순 정렬되도록 수정
+- [fix] 회원가입 시 생년월일 format 변경
+- [fix] 채팅시 상대방 상점과 채팅 내역이 보이도록 수정
+- [feat] 채팅목록 조회 시 논리적 유효성 검사 추가
+- [fix] 회원 탈퇴 코드 정리 및 변경
+- [feat] 채팅 내역 조회 시 메세지 읽음 여부 추가
+- [feat] 채팅 API 유효성 검사 추가
+- [feat] 포인트 조회, 포인트 사용 내역 조회 논리적 유효성 검사 추가
 
 ---
 
