@@ -135,6 +135,13 @@ public class ReviewDao {
         return this.jdbcTemplate.queryForObject(checkProductExistsQuery, int.class, checkProductExistsParams);
     }
 
+    // 존재하는 유저(상점)인지?
+    public int checkUserExists(int userIdx) {
+        String checkUserExistsQuery = "select exists(select userIdx from User where userIdx = ? and status='ACTIVE');";
+        int checkUserExistsParams = userIdx;
+        return this.jdbcTemplate.queryForObject(checkUserExistsQuery, int.class, checkUserExistsParams);
+    }
+
 
 }
 

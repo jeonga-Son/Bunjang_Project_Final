@@ -35,6 +35,7 @@ public class ProductService {
 
     }
 
+
     // 상품 등록 메서드 (상품 정보 + 이미지 + 키워드)
     public PostProductRes postProducts(int userId, PostProductReq postProductReq) throws BaseException {
         // validation : 존재하는 서브 카테고리인지?
@@ -125,6 +126,7 @@ public class ProductService {
         List<String> saleStatusList = Arrays.asList("ONSALE", "ORDERED", "SOLD");
         if(!saleStatusList.contains(saleStatus))
             throw new BaseException(PATCH_INVALID_PRODUCT_STATUS);
+
         try {
 
             // validation : 요청하는 판매 상태와 기존 판매상태가 같은지?

@@ -37,7 +37,7 @@ public enum BaseResponseStatus {
     POST_USERS_EMPTY_BIRTHDAY(false, 2019, "생년월일을 입력해주세요."),
     INACTIVE_USER(false, 2020, "비활성화 상태입니다"),
     DELETED_USER(false, 2021, "삭제된 사용자 입니다."),
-    POST_SHOP_NOT_EXISTS(false, 2022, "존재하지 않는 가게 입니다."),
+    POST_SHOP_NOT_EXISTS(false, 2022, "존재하지 않는 상점 입니다."),
     INVALID_USER(false, 2023, "이미 탈퇴한 회원입니다."),
 
     USERS_NOT_FOUND(false, 2024, "삭제됐거나 비활성화 처리된 상점입니다."),
@@ -56,7 +56,7 @@ public enum BaseResponseStatus {
     SUBCATEGORY_NOT_EXISTS(false, 2031, "존재하지 않는 카테고리 입니다."),
     INVALID_PRODUCT_STATUS(false, 2032, "판매 상태가 올바르지 않습니다."),
 
-    PATCH_INVALID_PRODUCT_STATUS(false, 2033, "유효하지 않은 판매 상태 입니다."),
+    PATCH_INVALID_PRODUCT_STATUS(false, 2033, "판매 상태를 다시 입력해주세요."),
     EMPTY_PRODUCT_IMG(false, 2034, "상품 이미지는 1장 이상이어야 합니다."),
     EMPTY_PRODUCT_IMG_LIST(false, 2034, "상품 이미지 객체가 없습니다."),
     EMPTY_PRODUCT_NAME(false, 2035, "상품 제목을 입력해주세요."),
@@ -65,12 +65,23 @@ public enum BaseResponseStatus {
     EMPTY_PRODUCT_DESCRIPTION(false, 2038, "내용을 입력해주세요."),
     INVALID_PRODUCT_DESCRIPTION(false, 2039, "내용은 10자 이상 200000자 이하여야 합니다."),
     INVALID_PRODUCT_TAGS(false, 2040, "태그는 5개 이하여야 합니다."),
-    INVALID_PRODUCT_IMG(false, 2041, "이미지 사이즈는 640X640 이하여야 합니다."),
+    // INVALID_PRODUCT_IMG(false, 2041, "이미지 사이즈는 640X640 이하여야 합니다."),
+    MAX_PRODUCT_IMG_COUNT(false, 2042,"상품 이미지는 최대 12장입니다."),
+    EMPTY_SALE_STATUS(false, 2043, "판매 상태 값을 입력해주세요."),
+    MAX_PRODUCT_IMG_SIZE(false, 2044,"상품 이미지 사이즈는 최대 640X640 입니다."),
+    INVALID_CATEGORY_IDX(false, 2045, "존재하지 않는 카테고리 입니다."),
+    INVALID_SUBCATEGORY_IDX(false, 2046, "존재하지 않는 서브 카테고리 입니다."),
+    EMPTY_PRODUCT_PRICE(false, 2047, "상품 가격을 입력해주세요."),
+    EMPTY_PRODUCT_SUBCATEGORY(false, 2048, "카테고리를 선택해주세요."),
+    INVALID_SORT_VALUE(false, 2049, "정렬 기준이 유효하지 않습니다."),
 
 
     // Review
     REVIEW_NOT_EXISTS(false, 2050, "존재하지 않는 리뷰 입니다."),
     DUPLICATED_PRODUCT_REVIEW(false, 2051, "이미 리뷰가 작성된 상품입니다."),
+    EMPTY_REVIEW_CONTENT(false, 2052, "리뷰 내용을 입력해주세요."),
+    MAX_REVIEW_IMG_COUNT(false, 2053, "리뷰 이미지는 최대 6장 입니다."),
+    EMPTY_REVIEW_STAR(false, 2054, "리뷰 별점을 입력해주세요."),
 
 
     // Follow

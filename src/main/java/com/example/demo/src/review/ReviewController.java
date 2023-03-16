@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import static com.example.demo.config.BaseResponseStatus.INVALID_USER_JWT;
+import static com.example.demo.config.BaseResponseStatus.*;
 
 @RestController
 @RequestMapping("/reviews")
@@ -35,13 +35,26 @@ public class ReviewController {
     // 리뷰 쓰기 api
     @ResponseBody
     @PostMapping("") // (POST) 127.0.0.1:9000/reviews?productIdx=1
-    public BaseResponse<Integer> postReviews(@RequestBody PostReviewReq postReviewReq, @RequestParam("productIdx") int productIdx) throws BaseException {
+    public BaseResponse<Integer> postReviews(/*@Valid*/ @RequestBody PostReviewReq postReviewReq, @RequestParam("productIdx") int productIdx) throws BaseException {
+        // 회원용 API
+        int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출
+        if (postReviewReq.getUserIdx() != userIdxByJwt) { // 유저가 제시한 userIdx != jwt에서 추출한 userIdx
+            return new BaseResponse<>(INVALID_USER_JWT);
+        }
+
+        // validation : 내용 입력했는지?
+        if(postReviewReq.getContent().isEmpty())
+            return new BaseResponse<>(EMPTY_REVIEW_CONTENT);
+
+        // validation : 별접을 입력했는지?
+        if(postReviewReq.getStar() == null)
+            return new BaseResponse<>(EMPTY_REVIEW_STAR);
+
+        // validation : 리뷰 이미지 6장 이하
+        if(postReviewReq.getReviewImgUrl().size() > 6)
+            return new BaseResponse<>(MAX_REVIEW_IMG_COUNT);
+
         try{
-            // 회원용 API
-            int userIdxByJwt = jwtService.getUserIdx(); // jwt에서 userIdx 추출
-            if (postReviewReq.getUserIdx() != userIdxByJwt) { // 유저가 제시한 userIdx != jwt에서 추출한 userIdx
-                return new BaseResponse<>(INVALID_USER_JWT);
-            }
             int reviewIdx = reviewService.createReview(productIdx, postReviewReq);
             return new BaseResponse<>(reviewIdx);
         } catch(BaseException exception){

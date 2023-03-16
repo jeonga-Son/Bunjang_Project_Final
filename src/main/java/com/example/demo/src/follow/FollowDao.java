@@ -20,13 +20,13 @@ public class FollowDao {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
-    public List<GetFollowingsRes> getFollowings(int userIdx, int userIdxByJwt) {
+    public List<GetFollowingsRes> getFollowings(int userIdx) {
         String getFollowingsQuery = "SELECT\n" +
                 "    user_list.userIdx,\n" +
                 "    user_list.name,\n" +
                 "    user_list.profileImgUrl,\n" +
                 "    COUNT(distinct Follow.followIdx) as followerCount,\n" +
-                "    COUNT(distinct Product.productIdx) as productCount\n" +
+                "    COUNT(distinct Product.productIdx) as productCount,\n" +
                 "\n" +
                 "FROM\n" +
                 "    (select User.userIdx, profileImgUrl, User.name\n" +
@@ -62,6 +62,8 @@ public class FollowDao {
                                 ), rs.getInt("userIdx"))
                 ), getFollowingsParams);
     }
+
+
 
     public int insertFollow (int followerIdx, int followingUserIdx) {
         String insertFollowQuery = "insert into Follow(followerUserIdx, followingUserIdx) values (?,?)";
@@ -154,6 +156,13 @@ public class FollowDao {
         } catch (Exception exception) {
             return 0;
         }
+    }
+
+    // 존재하는 유저(상점)인지?
+    public int checkUserExists(int userIdx) {
+        String checkUserExistsQuery = "select exists(select userIdx from User where userIdx = ? and status='ACTIVE');";
+        int checkUserExistsParams = userIdx;
+        return this.jdbcTemplate.queryForObject(checkUserExistsQuery, int.class, checkUserExistsParams);
     }
 
 
