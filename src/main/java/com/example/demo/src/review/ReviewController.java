@@ -47,7 +47,7 @@ public class ReviewController {
             return new BaseResponse<>(EMPTY_REVIEW_CONTENT);
 
         // validation : 별접을 입력했는지?
-        if(postReviewReq.getStar() == null)
+        if(postReviewReq.getStar() == 0)
             return new BaseResponse<>(EMPTY_REVIEW_STAR);
 
         // validation : 리뷰 이미지 6장 이하
